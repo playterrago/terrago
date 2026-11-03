@@ -9,6 +9,7 @@ Small daily games about the world.
 | `/polygo/` | **Polygo**: daily game. Name the country from its outline: 2 edges, doubling with every miss up to 128. |
 | `/equalo/` | **Equalo**: daily game. Split 7 countries across two pans so population, area and GDP balance. |
 | `/roadtripo/` | **Roadtripo**: daily game. Drive between two US states through the state of one famous landmark. |
+| `/voyago/` | **Voyago** (beta): ten geography prompts a day; rarer answers carry you further from Brussels to Kampala. |
 | `/about/` | About Terrago: how each game works, who makes it, credits |
 | `/privacy/` | Privacy page (no ads, no tracking; progress saved in the browser) |
 | `404.html` | Shown for any page that doesn't exist |

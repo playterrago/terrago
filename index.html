@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Terrago: daily geography games · Capitalo, Polygo, Equalo, Roadtripo</title>
+<title>Terrago: daily geography games · Capitalo, Polygo, Equalo, Roadtripo, Voyago</title>
 <meta name="description" content="Terrago makes small daily games about the world. Two new puzzles every day: Capitalo and Polygo.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://playterrago.com/">
@@ -116,7 +116,8 @@ window.tgTrack = function (name) {
   {"@type":"VideoGame","name":"Capitalo","url":"https://playterrago.com/capitalo/","genre":"Geography puzzle","description":"Guess the daily capital city in six turns."},
   {"@type":"VideoGame","name":"Polygo","url":"https://playterrago.com/polygo/","genre":"Geography puzzle","description":"Name the country from its outline, starting at 2 edges."},
   {"@type":"VideoGame","name":"Equalo","url":"https://playterrago.com/equalo/","genre":"Geography puzzle","description":"Balance seven countries by population, area and GDP."},
-  {"@type":"VideoGame","name":"Roadtripo","url":"https://playterrago.com/roadtripo/","genre":"Geography puzzle","description":"Drive across the US through a famous landmark."}]}
+  {"@type":"VideoGame","name":"Roadtripo","url":"https://playterrago.com/roadtripo/","genre":"Geography puzzle","description":"Drive across the US through a famous landmark."},
+  {"@type":"VideoGame","name":"Voyago","url":"https://playterrago.com/voyago/","genre":"Geography trivia","description":"Rare geography answers take you further around the world."}]}
 </script>
 </head>
 <body>
@@ -124,7 +125,7 @@ window.tgTrack = function (name) {
   <header class="mast">
     <div>
       <h1 class="logo">terra<i>go</i></h1>
-      <p class="tag">Small daily games about the world. Four new puzzles every day.</p>
+      <p class="tag">Small daily games about the world. Five new puzzles every day.</p>
     </div>
     <div class="mast-right"><a class="about-link" href="/about/">About</a><div class="date" id="date"></div></div>
   </header>
@@ -171,6 +172,17 @@ window.tgTrack = function (name) {
       <div class="status" id="rtStatus"></div>
     </div>
     <a class="play" id="rtBtn" href="/roadtripo/">Play today's Roadtripo</a>
+  </section>
+
+  <section class="daily" aria-labelledby="vgTitle">
+    <div>
+      <div class="eyebrow" id="vgNo">Today's puzzle</div>
+      <h2 id="vgTitle">Voyag<span>o</span><small class="tg-beta">BETA</small></h2>
+      <p>Ten geography prompts with 30 seconds each. Any right answer scores, but the rarer it is, the further you travel from Brussels to Kampala.</p>
+      <div class="turns" aria-hidden="true"><span>⬜</span><span>🟨</span><span>🟩</span><span>🟦</span><span>🟪</span><span>🌟</span></div>
+      <div class="status" id="vgStatus"></div>
+    </div>
+    <a class="play" id="vgBtn" href="/voyago/">Play today's Voyago</a>
   </section>
 
   <p class="soon">More games are on the way. Next up: <strong>Compass</strong>, where you head due east from a capital and name the first one you hit.</p>
@@ -229,6 +241,16 @@ if (stats.played) add("Played", stats.played);
   else if (rd && rd.day === DAY && rd.guesses && rd.guesses.length) { rb.textContent = "Finish today's trip"; put("States named:", rd.guesses.length); }
   if (rs.streak) put("Streak", rs.streak);
   if (rs.played) put("Played", rs.played);
+}
+{
+  const vd = read("voyago-v2:day"), vs = read("voyago-v2:stats") || {}, st = document.getElementById("vgStatus"), vb = document.getElementById("vgBtn");
+  const put = (label, val) => { const s = document.createElement("span"); s.append(label + " "); const b = document.createElement("b"); b.textContent = val; s.append(b); st.append(s); };
+  document.getElementById("vgNo").textContent = `Today's puzzle · No. ${DAY}`;
+  const pts = vd && vd.answers ? vd.answers.reduce((a, x) => a + x.pts, 0) : 0;
+  if (vd && vd.day === DAY && vd.answers && vd.answers.length >= 10) { vb.textContent = "See today's result"; vb.classList.add("done"); put("Today:", `${pts} points`); }
+  else if (vd && vd.day === DAY && vd.answers && vd.answers.length) { vb.textContent = "Finish today's voyage"; put("Prompt", `${vd.answers.length + 1} of 10`); }
+  if (vs.best) put("Best", vs.best);
+  if (vs.played) put("Played", vs.played);
 }
 </script>
 </body>
