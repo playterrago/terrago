@@ -87,6 +87,8 @@ body {
 .soon { color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); padding-top: 16px; }
 footer { color: var(--muted); font-size: 13px; display: flex; gap: 8px 18px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 16px; }
 footer a { color: inherit; }
+.tg-beta{display:inline-block;margin-left:8px;padding:2px 6px;border:1.5px solid currentColor;border-radius:5px;color:#c2672b;font:600 11px/1.2 "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.08em;vertical-align:middle;position:relative;top:-.15em}
+.tg-nav .tg-beta{margin-left:4px;padding:0 4px;font-size:9px;border-width:1px;top:-.1em}
 </style>
 <script>
 /* Terrago analytics: GoatCounter visit counting (no cookies) + anonymous game and return events */
@@ -154,7 +156,7 @@ window.tgTrack = function (name) {
   <section class="daily" aria-labelledby="rtTitle">
     <div>
       <div class="eyebrow" id="rtNo">Today's puzzle</div>
-      <h2 id="rtTitle">Roadtrip<span>o</span></h2>
+      <h2 id="rtTitle">Roadtrip<span>o</span><small class="tg-beta">BETA</small></h2>
       <p>Drive from one US state to another and stop at a famous landmark on the way. Name every state you pass through.</p>
       <div class="turns" aria-hidden="true"><span>🟩</span><span>🟩</span><span>📍</span><span>🟧</span><span>🟩</span></div>
       <div class="status" id="rtStatus"></div>
