@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>About · Terrago</title>
+<meta name="description" content="Terrago makes small daily games about the world. How Capitalo and Polygo work, and who makes them.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Terrago">
+<meta property="og:title" content="About Terrago">
+<meta property="og:description" content="Small daily games about the world, made in Montreal.">
+<meta property="og:image" content="https://playterrago.com/og.png">
+<meta property="og:url" content="https://playterrago.com/about/">
+<link rel="canonical" href="https://playterrago.com/about/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: same studio column as the home page; a short intro, then one card per game with numbered how-to steps, then how it works, who, credits. */
+:root {
+  --bg: #e9edf1;
+  --surface: #ffffff;
+  --ink: #111a24;
+  --muted: #5d6a78;
+  --line: #d3dae2;
+  --accent: #d9590b;
+  --accent-ink: #ffffff;
+  --accent-soft: #fde9da;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d131a; --surface: #151e28; --ink: #e5ebf1; --muted: #93a1af; --line: #263342;
+    --accent: #ff8a3d; --accent-ink: #1c0c02; --accent-soft: #3a2212; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d131a; --surface: #151e28; --ink: #e5ebf1; --muted: #93a1af; --line: #263342;
+  --accent: #ff8a3d; --accent-ink: #1c0c02; --accent-soft: #3a2212; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 24px 48px;
+}
+.wrap { max-width: 680px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+nav { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; font: 500 14px var(--body); }
+nav a { color: var(--muted); text-decoration: none; }
+nav a:hover, nav a[aria-current=page] { color: var(--ink); }
+nav .brand { font: 800 20px var(--display); letter-spacing: -0.03em; color: var(--ink); margin-right: 6px; }
+nav .brand i, .logo i { font-style: normal; color: var(--accent); }
+h1 { font: 800 clamp(36px, 8vw, 52px)/1 var(--display); letter-spacing: -0.04em; margin: 8px 0 12px; text-wrap: balance; }
+.lede { font-size: 19px; color: var(--muted); margin: 0; max-width: 56ch; }
+h2 { font: 700 13px var(--body); letter-spacing: .09em; text-transform: uppercase; color: var(--muted); margin: 8px 0 -10px; }
+.game { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px 24px; display: flex; flex-direction: column; gap: 10px; }
+.game h3 { font: 800 28px/1 var(--display); letter-spacing: -0.03em; margin: 0; }
+.game h3 span { color: var(--accent); }
+.game p { margin: 0; color: var(--muted); }
+.game ol { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; counter-reset: step; }
+.game li { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; align-items: start; counter-increment: step; }
+.game li::before { content: counter(step); width: 24px; height: 24px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font: 600 12px/24px var(--mono); text-align: center; margin-top: 1px; }
+.example { font: 500 14px var(--mono); background: var(--bg); border-radius: 10px; padding: 10px 12px; white-space: pre-line; overflow-x: auto; }
+.play { align-self: flex-start; background: var(--accent); color: var(--accent-ink); font: 600 15px var(--body); padding: 10px 18px; border-radius: 10px; text-decoration: none; margin-top: 4px; }
+.play:focus-visible, nav a:focus-visible, .text a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.text { display: flex; flex-direction: column; gap: 10px; }
+.text p, .text ul { margin: 0; }
+.text ul { padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+.text a { color: var(--accent); }
+.text strong { color: var(--ink); }
+.who { border-top: 1px solid var(--line); padding-top: 20px; }
+footer { color: var(--muted); font-size: 13px; display: flex; gap: 8px 18px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 16px; }
+footer a { color: inherit; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav aria-label="Terrago">
+    <a class="brand" href="/">terra<i>go</i></a>
+    <a href="/capitalo/">Capitalo</a>
+    <a href="/polygo/">Polygo</a>
+    <a href="/about/" aria-current="page">About</a>
+  </nav>
+
+  <header>
+    <h1>Small daily games about the world.</h1>
+    <p class="lede">Terrago makes two short geography puzzles every day. Everyone gets the same ones, each takes a few minutes, and they work on any phone or laptop. No app, no sign-up.</p>
+  </header>
+
+  <h2>The games</h2>
+
+  <section class="game" aria-labelledby="capitalo">
+    <h3 id="capitalo">Capital<span>o</span></h3>
+    <p>Find the hidden capital city in six turns.</p>
+    <ol>
+      <li><span>Each turn, choose: <strong>guess a capital</strong>, or <strong>take a clue</strong>.</span></li>
+      <li><span>A guess tells you how far you are from the answer, which direction to head, and how close you are as a percentage.</span></li>
+      <li><span>Clues unlock in order: continent, population, number of land neighbours, the shape of the capital's name, then the country.</span></li>
+      <li><span>Your last turn has to be a guess. The fewer turns you use, the better.</span></li>
+    </ol>
+    <div class="example" aria-label="Example shared result">Capitalo #12 3/6
+💡🟧🟩
+Solved on turn 3 · 1 clue</div>
+    <a class="play" href="/capitalo/">Play Capitalo</a>
+  </section>
+
+  <section class="game" aria-labelledby="polygo">
+    <h3 id="polygo">Poly<span>go</span></h3>
+    <p>Name the country from its outline.</p>
+    <ol>
+      <li><span>The outline starts as just <strong>2 edges</strong>: a single line showing how long the country is and which way it lies.</span></li>
+      <li><span>Every wrong guess doubles the detail: 4, 8, 16, 32, 64, then 128 edges.</span></li>
+      <li><span>There are no other hints. The shape is the only clue.</span></li>
+      <li><span>You have seven guesses. Solve it with as few edges as you can.</span></li>
+    </ol>
+    <div class="example" aria-label="Example shared result">Polygo #12 4/7
+⬛⬛⬛🟩⬜⬜⬜
+Got it at 16 edges</div>
+    <a class="play" href="/polygo/">Play Polygo</a>
+  </section>
+
+  <h2>How it works</h2>
+  <section class="text">
+    <ul>
+      <li><strong>New puzzles at midnight</strong>, your local time. Everyone in the world plays the same capital and the same outline that day.</li>
+      <li><strong>Streaks and stats</strong> are saved in your browser, so there's nothing to sign up for. They stay on the device you play on.</li>
+      <li><strong>Share your result</strong> with the button at the end. It copies an emoji grid that shows how you did without spoiling the answer.</li>
+      <li><strong>Practice rounds</strong> unlock once you've finished the day's puzzle, and never touch your streak.</li>
+    </ul>
+  </section>
+
+  <section class="text who">
+    <h2 style="margin:0">Who makes it</h2>
+    <p>Terrago is made in Montreal by Henry Jagger. It started as a way to learn world capitals and turned into a small games studio. More puzzles are on the way, starting with <strong>Compass</strong>: head due east from a capital and name the first one you reach.</p>
+    <p>Ideas, bugs or a country that looks wrong? Email <strong>playterrago@gmail.com</strong>.</p>
+  </section>
+
+  <section class="text">
+    <h2 style="margin:0">Credits</h2>
+    <p>Country shapes come from <a href="https://www.naturalearthdata.com" rel="noopener">Natural Earth</a> (public domain). Populations are rounded recent estimates. Fonts are Bricolage Grotesque and IBM Plex, from Google Fonts.</p>
+  </section>
+
+  <footer>
+    <span>© 2026 Terrago</span>
+    <a href="/">Home</a>
+    <a href="/privacy/">Privacy</a>
+  </footer>
+</div>
+</body>
+</html>
