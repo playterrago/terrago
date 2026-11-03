@@ -113,7 +113,7 @@ window.tgTrack = function (name) {
   <header class="mast">
     <div>
       <h1 class="logo">terra<i>go</i></h1>
-      <p class="tag">Small daily games about the world. Three new puzzles every day.</p>
+      <p class="tag">Small daily games about the world. Four new puzzles every day.</p>
     </div>
     <div class="mast-right"><a class="about-link" href="/about/">About</a><div class="date" id="date"></div></div>
   </header>
@@ -149,6 +149,17 @@ window.tgTrack = function (name) {
       <div class="status" id="eqStatus"></div>
     </div>
     <a class="play" id="eqBtn" href="/equalo/">Play today's Equalo</a>
+  </section>
+
+  <section class="daily" aria-labelledby="rtTitle">
+    <div>
+      <div class="eyebrow" id="rtNo">Today's puzzle</div>
+      <h2 id="rtTitle">Roadtrip<span>o</span></h2>
+      <p>Drive from one US state to another and stop at a famous landmark on the way. Name every state you pass through.</p>
+      <div class="turns" aria-hidden="true"><span>🟩</span><span>🟩</span><span>📍</span><span>🟧</span><span>🟩</span></div>
+      <div class="status" id="rtStatus"></div>
+    </div>
+    <a class="play" id="rtBtn" href="/roadtripo/">Play today's Roadtripo</a>
   </section>
 
   <p class="soon">More games are on the way. Next up: <strong>Compass</strong>, where you head due east from a capital and name the first one you hit.</p>
@@ -198,6 +209,15 @@ if (stats.played) add("Played", stats.played);
   else if (ed && ed.day === DAY && ed.results && ed.results.length) { eb.textContent = "Finish today's puzzle"; put("Round", `${ed.results.length + 1} of 3`); }
   if (es.played) put("Played", es.played);
   if (es.greens) put("Green rounds", es.greens);
+}
+{
+  const rd = read("roadtripo-v1:day"), rs = read("roadtripo-v1:stats") || {}, st = document.getElementById("rtStatus"), rb = document.getElementById("rtBtn");
+  const put = (label, val) => { const s = document.createElement("span"); s.append(label + " "); const b = document.createElement("b"); b.textContent = val; s.append(b); st.append(s); };
+  document.getElementById("rtNo").textContent = `Today's puzzle · No. ${DAY}`;
+  if (rd && rd.day === DAY && rd.done) { rb.textContent = "See today's result"; rb.classList.add("done"); put("Today:", rd.won ? `arrived in ${rd.guesses.length}` : "ran out of gas"); }
+  else if (rd && rd.day === DAY && rd.guesses && rd.guesses.length) { rb.textContent = "Finish today's trip"; put("States named:", rd.guesses.length); }
+  if (rs.streak) put("Streak", rs.streak);
+  if (rs.played) put("Played", rs.played);
 }
 </script>
 </body>
