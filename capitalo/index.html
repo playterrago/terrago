@@ -15,6 +15,25 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<script>
+/* Terrago analytics: GoatCounter visit counting (no cookies) + anonymous game and return events */
+window.tgTrack = function (name) {
+  var ready = function () { return window.goatcounter && window.goatcounter.count; };
+  var send = function () { try { window.goatcounter.count({ path: name, title: name, event: true }); } catch (e) {} };
+  if (ready()) { send(); return; }
+  var tries = 0, t = setInterval(function () { if (ready() || ++tries > 20) { clearInterval(t); if (ready()) send(); } }, 500);
+};
+(function () {
+  try {
+    var n = new Date(), day = Math.floor((Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()) - Date.UTC(2026, 10, 2)) / 864e5) + 1;
+    var first = parseInt(localStorage.getItem("terrago-first-day") || "0", 10);
+    if (!first) { localStorage.setItem("terrago-first-day", String(day)); window.tgTrack("first-visit"); return; }
+    var d = day - first, sent = JSON.parse(localStorage.getItem("terrago-returns") || "[]");
+    if ([1, 3, 7, 14, 30].indexOf(d) >= 0 && sent.indexOf(d) < 0) { sent.push(d); localStorage.setItem("terrago-returns", JSON.stringify(sent)); window.tgTrack("return-day-" + d); }
+  } catch (e) {}
+})();
+</script>
+<script data-goatcounter="https://terrago.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 <title>Capitalo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
@@ -401,6 +420,7 @@ function renderEnd() {
   if (!practice) box.append(statsBlock());
   end.append(box);
   share.onclick = () => {
+    track(practice ? "capitalo-share-practice" : "capitalo-share");
     const text = shareText();
     const fallback = () => {
       let ta = box.querySelector("textarea");
@@ -489,9 +509,11 @@ function moveSel(d) {
   if (!opts.length) return; sel = (sel + d + opts.length) % opts.length;
   [...$("sugg").children].forEach((b, k) => b.setAttribute("aria-selected", k === sel));
 }
+const track = n => { try { window.tgTrack && window.tgTrack(n); } catch (e) {} };
 function endTurn() {
   if (!won && turns.length >= MAXT) done = true;
-  if (done) recordResult();
+  if (!practice && turns.length === 1) track("capitalo-start");
+  if (done) { recordResult(); if (!practice) track(won ? "capitalo-solved-turn-" + turns.length : "capitalo-missed"); }
   persist(); renderAll();
 }
 function submit(text) {
@@ -528,6 +550,7 @@ $("clueBtn").onclick = takeClue;
 
 function startPractice() {
   practice = true;
+  track("capitalo-practice");
   let c; do { c = CAPS[POOL[Math.floor(Math.random() * POOL.length)]]; } while (c.i === answerForDay(DAY).i || c.i === answer.i);
   answer = c; turns = []; done = false; won = false;
   $("msg").textContent = ""; renderAll(); window.scrollTo({ top: 0, behavior: "smooth" }); $("guess").focus({ preventScroll: true });
