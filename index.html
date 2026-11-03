@@ -201,8 +201,8 @@ const now = new Date();
 const DAY = Math.floor((Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - EPOCH) / 864e5) + 1;
 const read = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
 document.getElementById("date").textContent = now.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
-document.getElementById("dailyNo").textContent = `Today's puzzle · No. ${DAY}`;
-document.getElementById("polyNo").textContent = `Today's puzzle · No. ${DAY}`;
+document.getElementById("dailyNo").textContent = `Today's puzzle · No. ${DAY + 27}`;
+document.getElementById("polyNo").textContent = `Today's puzzle · No. ${DAY + 41}`;
 const day = read("capital-clues-v3:day"), stats = read("capital-clues-v3:stats") || {};
 const status = document.getElementById("status"), btn = document.getElementById("playBtn");
 const add = (label, val) => { const s = document.createElement("span"); s.append(label + " "); const b = document.createElement("b"); b.textContent = val; s.append(b); status.append(s); };
@@ -227,7 +227,7 @@ if (stats.played) add("Played", stats.played);
 {
   const ed = read("equalo-v1:day"), es = read("equalo-v1:stats") || {}, st = document.getElementById("eqStatus"), eb = document.getElementById("eqBtn");
   const put = (label, val) => { const s = document.createElement("span"); s.append(label + " "); const b = document.createElement("b"); b.textContent = val; s.append(b); st.append(s); };
-  document.getElementById("eqNo").textContent = `Today's puzzle · No. ${DAY}`;
+  document.getElementById("eqNo").textContent = `Today's puzzle · No. ${DAY + 53}`;
   if (ed && ed.day === DAY && ed.results && ed.results.length >= 3) { eb.textContent = "See today's result"; eb.classList.add("done"); put("Today:", ed.results.map(r => ({ g: "🟩", y: "🟨", x: "🟥" })[r.g]).join("")); }
   else if (ed && ed.day === DAY && ed.results && ed.results.length) { eb.textContent = "Finish today's puzzle"; put("Round", `${ed.results.length + 1} of 3`); }
   if (es.played) put("Played", es.played);
