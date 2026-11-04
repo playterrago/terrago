@@ -208,7 +208,7 @@ h3 { font: 700 17px var(--display); margin: 4px 0 -4px; }
       <li>Every day: <b>5 to 10 countries</b> and one statistic, like coastline or population.</li>
       <li>Drag every flag onto the left or right pan. Or tap a flag, then tap a pan.</li>
       <li>Press <b>Weigh</b>. The heavier side drops and you see how far apart the sides are. You get <b>3 weighs</b>.</li>
-      <li>There is always a split that balances <b>exactly</b>. Find it on weigh 1, 2 or 3 for <b>1,000, 850 or 700</b> points. Otherwise your closest weigh scores up to 600: you lose 30 points for every 1% the sides are apart.</li>
+      <li>There is always a split that balances <b>exactly</b>. Each weigh scores <b>1,000</b>, minus 10 points for every 1% the sides are apart, minus <b>100</b> for each earlier weigh. So an exact balance is worth 1,000, 900 or 800. Your best weigh counts.</li>
     </ol>
     <button type="button" class="btn ghost" id="helpClose">Let's weigh</button>
   </div>
@@ -242,15 +242,14 @@ function weighOf(P, place) {
 /* share of the total weight by which the sides differ, in hundredths of a percent (integer, rounded half up) */
 const offBp = w => w.d === 0 ? 0 : Math.max(1, Math.floor((w.d * 10000 * 2 + (w.L + w.R)) / (2 * (w.L + w.R))));
 const pctTxt = bp => (bp / 100).toFixed(bp < 1000 ? 2 : 1) + "%";
-/* Score out of 1,000. Exact balance: 1,000 / 850 / 700 on weigh 1 / 2 / 3. Otherwise the closest weigh:
-   600 x (1 - off% / 20%), so 30 points per 1% apart, and 0 from 20% apart. */
+/* Score out of 1,000. Each weigh k (1, 2, 3) scores 1000 x (1 - gap) - 100 x (k - 1), where gap = |left - right| / total
+   (gap% in hundredths of a percent, so 1000 x gap = bp / 10). Your best-scoring weigh counts; minimum 0. */
+const weighPts = (w, k) => Math.max(0, 1000 - 100 * k - Math.round(offBp(w) / 10));
 function scoreOf(weighs, P) {
   const ws = weighs.map(x => weighOf(P, x.p));
+  let best = 0; ws.forEach((w, k) => { if (weighPts(w, k) > weighPts(ws[best], best)) best = k; });
   const ex = ws.findIndex(w => w.d === 0);
-  if (ex >= 0) return { pts: 1000 - 150 * ex, won: true, at: ex + 1, best: ex, bp: 0 };
-  let best = 0; ws.forEach((w, k) => { if (offBp(w) < offBp(ws[best])) best = k; });
-  const bp = offBp(ws[best]);
-  return { pts: Math.max(0, Math.round(600 * (2000 - bp) / 2000)), won: false, at: 0, best, bp };
+  return { pts: ws.length ? weighPts(ws[best], best) : 0, won: ex >= 0, at: ex + 1, best, bp: ws.length ? offBp(ws[best]) : 0 };
 }
 const grade = w => w.d === 0 ? "🟩" : offBp(w) <= 500 ? "🟨" : "🟥";
 
@@ -387,7 +386,7 @@ function renderHead() {
 let scaleEl = null;
 function renderPlay() {
   const play = $("play");
-  if (done) { play.hidden = true; return; }
+  if (done && !$("end").hidden) { play.hidden = true; return; }
   play.hidden = false;
   if (!scaleEl || !play.contains(scaleEl)) {
     play.innerHTML = `<div id="scaleBox"></div><p class="verdict idle" id="verdict" aria-live="polite"></p>
@@ -427,8 +426,8 @@ function renderPlay() {
   const left = MAXW - weighs.length, w = $("weigh");
   const again = weighs.some(x => x.p === place.join(""));
   const ready = nB === 0 && nL > 0 && nR > 0 && !again;
-  w.disabled = !ready;
-  w.textContent = again && !nB ? "Already weighed. Move a flag to try a new split" : nB ? `Place ${nB} more flag${nB === 1 ? "" : "s"}` : !nL || !nR ? "Put at least one flag on each pan" : `Weigh it · ${left} weigh${left === 1 ? "" : "s"} left`;
+  w.disabled = !ready || done;
+  w.textContent = done ? (weighOf(P, place).d === 0 ? "Balanced! Scoring…" : "Out of weighs. Scoring…") : again && !nB ? "Already weighed. Move a flag to try a new split" : nB ? `Place ${nB} more flag${nB === 1 ? "" : "s"}` : !nL || !nR ? "Put at least one flag on each pan" : `Weigh it · ${left} weigh${left === 1 ? "" : "s"} left`;
   /* scale tilt: shows the last weigh only while the arrangement is unchanged */
   const cur = place.join(""), v = $("verdict");
   if (tiltFor && tiltFor === cur) {
@@ -477,7 +476,7 @@ function bindChip(ch) {
   /* touch: stop the browser from turning a flag drag into a scroll (which would cancel the pointer) */
   ch.addEventListener("touchstart", e => { if (!done) e.preventDefault(); }, { passive: false });
   ch.addEventListener("pointerdown", e => {
-    if (e.button !== 0) return;
+    if (e.button !== 0 || done) return;
     const sx = e.clientX, sy = e.clientY; let ghost = null, hot = null;
     ch.setPointerCapture(e.pointerId);
     const mv = ev => {
@@ -539,10 +538,10 @@ function renderEnd(fresh) {
   const best = weighs[sc.best].p, bw = weighOf(P, best.split(""));
   const box = document.createElement("div"); box.style.cssText = "display:flex;flex-direction:column;gap:14px";
   const h = document.createElement("h2");
-  h.textContent = sc.won ? (sc.at === 1 ? "Perfect balance, first weigh!" : `Perfect balance on weigh ${sc.at}.`) : `So close: ${pctTxt(sc.bp)} apart.`;
+  h.textContent = sc.won ? (sc.at === 1 ? "Perfect balance, first weigh!" : `Perfect balance on weigh ${sc.at}.`) : `Closest: ${pctTxt(offBp(bw))} apart.`;
   const score = document.createElement("div"); score.className = "score"; score.innerHTML = `<b></b><span>/ 1,000 points</span>`; score.querySelector("b").textContent = group(sc.pts);
   const how = document.createElement("p"); how.className = "how";
-  how.textContent = sc.won ? `Exact balance on weigh ${sc.at} of 3 scores ${group(sc.pts)}.` : `No exact balance. Closest weigh was ${pctTxt(sc.bp)} apart: 600 × (1 − ${(sc.bp / 100).toFixed(2)}% ÷ 20%) = ${sc.pts}.`;
+  how.textContent = `Best weigh: weigh ${sc.best + 1}, ${sc.bp ? pctTxt(sc.bp) + " apart" : "exactly balanced"}. 1,000 × (1 − ${(sc.bp / 100).toFixed(2)}%) − 100 × ${sc.best} = ${group(sc.pts)}.`;
   box.append(h, score, how);
   /* the exact balance, animated from the player's best tilt to level */
   const h3a = document.createElement("h3"); h3a.textContent = sc.won ? "Your exact balance" : "The exact balance";
@@ -605,7 +604,7 @@ window.addEventListener("resize", () => { if (scaleEl && scaleEl.isConnected) la
 document.addEventListener("keydown", e => { if (e.key === "Escape" && sel >= 0) { sel = -1; renderPlay(); } });
 
 renderHead();
-if (done) renderEnd(false); else renderPlay();
+if (done) { persist(); renderEnd(false); } else renderPlay();
 </script>
 
 <footer class="tg-foot">A <a href="/">Terrago</a> game · <a href="/about/">About</a> · <a href="/privacy/">Privacy</a> · Feedback: playterrago@gmail.com</footer>

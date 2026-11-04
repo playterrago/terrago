@@ -77,7 +77,8 @@ async function placeAll(page, str) { await page.evaluate(s => { s.split("").forE
     await page.waitForTimeout(1200);
     ok(await page.isVisible("#end"), "game ends after 3 weighs");
     const sc = await page.evaluate(() => scoreOf(weighs, P));
-    ok(!sc.won && sc.pts === Math.max(0, Math.round(600 * (2000 - sc.bp) / 2000)), `missed score follows the formula: ${sc.pts} at ${sc.bp / 100}% apart`);
+    const want = await page.evaluate(() => Math.max(...weighs.map((x, k) => Math.max(0, 1000 - 100 * k - Math.round(offBp(weighOf(P, x.p.split(""))) / 10)))));
+    ok(!sc.won && sc.pts === want, `missed score = best of 1000×(1−gap) − 100×(weigh−1): ${sc.pts} (best weigh ${sc.best + 1}, ${sc.bp / 100}% apart)`);
     ok((await page.textContent(".score b")).replace(",", "") === String(sc.pts), "score shown on the results screen");
     ok((await page.textContent("#end")).includes("The exact balance"), "results show the exact balance");
     ok((await page.textContent("#end")).includes("Your closest weigh"), "results show the player's closest weigh");
@@ -126,7 +127,8 @@ async function placeAll(page, str) { await page.evaluate(s => { s.split("").forE
     if (!first) { await placeAll(page, sol); await page.tap("#weigh"); }
     await page.waitForTimeout(1600);
     const sc = await page.evaluate(() => scoreOf(weighs, P));
-    ok(sc.won && sc.pts === (first ? 1000 : 850), `exact balance on weigh ${sc.at} scores ${sc.pts}`);
+    const w1 = await page.evaluate(() => Math.max(0, 1000 - Math.round(offBp(weighOf(P, weighs[0].p.split(""))) / 10)));
+    ok(sc.won && sc.pts === (first ? 1000 : Math.max(900, w1)), `exact balance on weigh ${sc.at}: score ${sc.pts} = best of weigh 1 (${w1}) and exact on weigh 2 (900)`);
     ok(await page.evaluate(() => done) && (await page.textContent("#end h2")).includes("Perfect balance"), "perfect balance ends the game immediately");
     ok(!(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)), "no horizontal scroll on phone");
     if (OUT) { await page.evaluate(() => document.querySelector("#end h3").scrollIntoView()); await page.waitForTimeout(1200); await page.screenshot({ path: OUT + "/eq-phone-end.png", fullPage: true }); }
