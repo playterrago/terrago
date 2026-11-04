@@ -1,0 +1,520 @@
+<title>Capital Clues</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: a single narrow column like a daily puzzle: case header, the six clue cards in unlock order, the guess box, the guess log, then the map of where you've guessed. */
+:root {
+  --bg: #e9edf1;
+  --surface: #ffffff;
+  --ink: #111a24;
+  --muted: #5d6a78;
+  --line: #d3dae2;
+  --locked: #f3f5f8;
+  --accent: #d9590b;
+  --accent-ink: #ffffff;
+  --accent-soft: #fde9da;
+  --sea: #d6e3ec;
+  --land: #f7f8f9;
+  --border: #a5b1bc;
+  --sil: #1f2b38;
+  --hot: #1e8a4c;
+  --warm: #d6a10f;
+  --mild: #e07a1f;
+  --cool: #c9432f;
+  --cold: #8c98a5;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d131a; --surface: #151e28; --ink: #e5ebf1; --muted: #93a1af; --line: #263342; --locked: #111922;
+    --accent: #ff8a3d; --accent-ink: #1c0c02; --accent-soft: #3a2212; --sea: #0f1f2b; --land: #263341; --border: #4b5a69;
+    --sil: #dfe7ee; --hot: #4fcb83; --warm: #f0c040; --mild: #f39a4a; --cool: #ef7461; --cold: #6b7988;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d131a; --surface: #151e28; --ink: #e5ebf1; --muted: #93a1af; --line: #263342; --locked: #111922;
+  --accent: #ff8a3d; --accent-ink: #1c0c02; --accent-soft: #3a2212; --sea: #0f1f2b; --land: #263341; --border: #4b5a69;
+  --sil: #dfe7ee; --hot: #4fcb83; --warm: #f0c040; --mild: #f39a4a; --cool: #ef7461; --cold: #6b7988;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+.subnote { font: 500 13px var(--body); color: var(--muted); margin-top: 2px; }
+body {
+  background: var(--bg); color: var(--ink); font: 15px/1.5 var(--body); margin: 0;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 22px 48px;
+}
+.wrap { max-width: 540px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+h1 { font: 800 30px/1 var(--display); letter-spacing: -0.03em; margin: 0; }
+h1 span { color: var(--accent); }
+.meta { font: 500 13px var(--mono); color: var(--muted); margin-top: 6px; }
+.meta .tag { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; margin-left: 6px; }
+.icon-btn { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 10px; padding: 8px 12px; font: 600 13px var(--body); cursor: pointer; }
+
+.clues { display: flex; flex-direction: column; gap: 8px; }
+.clue { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 12px; align-items: start; }
+.clue .num { width: 26px; height: 26px; border-radius: 50%; background: var(--ink); color: var(--surface); font: 600 13px var(--mono); display: grid; place-items: center; }
+.clue .label { font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+.clue .val { font: 600 19px/1.3 var(--body); overflow-wrap: anywhere; }
+.clue .val.mono { font-family: var(--mono); letter-spacing: .02em; }
+.clue.new { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.clue.locked { background: var(--locked); border-style: dashed; }
+.clue.locked .num { background: transparent; color: var(--muted); border: 1.5px dashed var(--border); }
+.clue.locked .val { font: 500 14px var(--body); color: var(--muted); }
+.blocks { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 4px; }
+.word { display: flex; gap: 3px; }
+.word i { width: 18px; height: 24px; border-radius: 4px; background: var(--line); font: 600 14px/24px var(--mono); text-align: center; font-style: normal; color: var(--ink); }
+.word i.punct { background: transparent; width: 8px; }
+
+.turnbar { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.turninfo { display: flex; flex-direction: column; }
+.turninfo b { font: 600 15px var(--body); }
+.turninfo span { font-size: 13px; color: var(--muted); }
+.btn.clue-btn { background: var(--accent-soft); color: var(--accent); border-color: transparent; padding: 10px 14px; font-size: 14px; }
+.btn.clue-btn:disabled { opacity: .55; cursor: not-allowed; }
+.clue.next { border-color: var(--accent); border-style: dashed; }
+.clue.next .val { color: var(--accent); }
+.row.cluerow { background: var(--accent-soft); border-color: transparent; grid-template-columns: minmax(0, 1fr); }
+.row.cluerow .city { color: var(--accent); font-weight: 600; }
+.row.empty { display: flex; align-items: center; }
+.row.empty .slot { font: 500 12px var(--mono); color: var(--muted); opacity: .6; }
+.guessbox { position: relative; display: flex; gap: 8px; }
+#guess { flex: 1; min-width: 0; font: 500 18px var(--body); color: var(--ink); background: var(--surface); border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 14px; outline: none; }
+#guess:focus { border-color: var(--accent); }
+.btn { font: 600 15px var(--body); border-radius: 12px; padding: 12px 18px; cursor: pointer; border: 1.5px solid transparent; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); }
+.btn.ghost { background: transparent; border-color: var(--line); color: var(--ink); }
+.btn:focus-visible, .icon-btn:focus-visible, .sugg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sugg { position: absolute; left: 0; right: 0; top: calc(100% + 4px); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; z-index: 4; box-shadow: 0 10px 30px -12px rgba(0,0,0,.35); }
+.sugg button { display: block; width: 100%; text-align: left; border: 0; background: transparent; color: var(--ink); font: 500 15px var(--body); padding: 10px 14px; cursor: pointer; }
+.sugg button[aria-selected="true"] { background: var(--accent-soft); }
+.msg { min-height: 20px; font-size: 13px; color: var(--cool); margin-top: -8px; }
+
+.log { display: flex; flex-direction: column; gap: 6px; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) 84px 34px 52px; gap: 8px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; font-variant-numeric: tabular-nums; }
+.row .city { font-weight: 600; overflow-wrap: anywhere; }
+.row .km { font: 500 14px var(--mono); text-align: right; }
+.row .arrow { font-size: 20px; text-align: center; line-height: 1; }
+.row .pct { font: 600 13px var(--mono); text-align: center; border-radius: 6px; padding: 3px 0; color: #fff; }
+.row.empty { background: transparent; border-style: dashed; height: 42px; }
+.row.win { border-color: var(--hot); }
+
+.mapcard { background: var(--sea); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; position: relative; }
+.mapcard svg { display: block; width: 100%; height: auto; }
+.mapcard .land { fill: var(--land); stroke: var(--border); stroke-width: .5; }
+.mapcard .note { position: absolute; left: 12px; bottom: 8px; font-size: 12px; color: var(--muted); }
+
+.end { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.end h2 { font: 800 24px/1.15 var(--display); margin: 0; letter-spacing: -0.02em; text-wrap: balance; }
+.end p { margin: 0; color: var(--muted); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.copied { font-size: 13px; color: var(--hot); align-self: center; }
+.sharebox { width: 100%; font: 500 13px var(--mono); padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); resize: none; }
+
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; text-align: center; }
+.stats b { display: block; font: 600 24px/1.1 var(--mono); }
+.stats span { font-size: 11px; color: var(--muted); letter-spacing: .04em; }
+.dist { display: flex; flex-direction: column; gap: 4px; }
+.dist div { display: grid; grid-template-columns: 14px minmax(0, 1fr); gap: 8px; align-items: center; font: 500 12px var(--mono); }
+.dist em { font-style: normal; background: var(--cold); color: #fff; padding: 1px 6px; border-radius: 4px; text-align: right; min-width: 22px; justify-self: start; }
+.dist em.today { background: var(--accent); }
+.howto { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+.howto h2 { font: 700 18px var(--display); margin: 0; }
+.howto ol { margin: 0; padding-left: 20px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+@media (max-width: 420px) { .row { grid-template-columns: minmax(0, 1fr) 70px 28px 46px; padding: 8px 10px; } }
+@media (prefers-reduced-motion: no-preference) { .clue.new { animation: rise .35s ease-out; } @keyframes rise { from { transform: translateY(6px); opacity: .4; } } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Capital<span>.</span>Clues</h1>
+      <div class="meta" id="meta"></div>
+    </div>
+    <button type="button" class="icon-btn" id="statsBtn">Stats</button>
+  </header>
+
+  <div class="howto" id="howto" hidden>
+    <h2>Stats</h2>
+    <div id="statsBody"></div>
+    <button type="button" class="btn ghost" id="closeStats">Close</button>
+  </div>
+
+  <div class="clues" id="clues"></div>
+
+  <div id="play">
+    <div class="turnbar">
+      <div class="turninfo" id="turnInfo"></div>
+      <button type="button" class="btn clue-btn" id="clueBtn">Reveal clue 1</button>
+    </div>
+    <div class="guessbox">
+      <input id="guess" type="text" autocomplete="off" spellcheck="false" placeholder="Guess a capital city" aria-label="Guess a capital city" role="combobox" aria-expanded="false" aria-controls="sugg">
+      <button type="button" class="btn primary" id="go">Guess</button>
+      <div class="sugg" id="sugg" role="listbox" hidden></div>
+    </div>
+  </div>
+  <div class="msg" id="msg" aria-live="polite"></div>
+
+  <div class="log" id="log"></div>
+  <div id="end"></div>
+
+  <div class="mapcard">
+    <svg id="map" role="img" aria-label="World map showing your guesses"></svg>
+    <div class="note" id="mapnote">Your guesses land here, coloured by how close they are</div>
+  </div>
+  <div class="legend">
+    <span><i style="background:var(--hot)"></i>Correct</span>
+    <span><i style="background:var(--warm)"></i>Under 750 km</span>
+    <span><i style="background:var(--mild)"></i>Under 2,000 km</span>
+    <span><i style="background:var(--cool)"></i>Under 5,000 km</span>
+    <span><i style="background:var(--cold)"></i>Farther</span>
+  </div>
+</div>
+
+<script>
+const D = /*DATA*/;
+const CAPS = D.caps;
+CAPS.forEach((c, i) => { c.i = i; });
+
+const norm = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
+  .replace(/[ʻ'’`.]/g, "").replace(/\bst\s/g, "saint ").replace(/[^a-z0-9]+/g, " ").trim();
+const LOOKUP = new Map();
+CAPS.forEach(c => [c.capital, ...(c.alt || [])].forEach(n => { const k = norm(n); if (!LOOKUP.has(k)) LOOKUP.set(k, c); }));
+const LATE = ["Kosovo"]; /* added after launch: slotted in later so earlier days keep their answers */
+const ENTRIES = CAPS.map(c => ({ label: c.capital, names: [c.capital, ...(c.alt || [])] }));
+
+/* ---------- the daily answer: same for everyone, chosen by date ---------- */
+const EPOCH = Date.UTC(2026, 10, 2);
+const todayUTC = () => { const d = new Date(); return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()); };
+const DAY = Math.floor((todayUTC() - EPOCH) / 864e5) + 1;
+/* The number players see: puzzle numbering starts at 28 */
+const SHOWN = DAY + 27;
+function mulberry32(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const POOL = CAPS.filter(c => c.country !== "Vatican City" && !LATE.includes(c.country)).map(c => c.i);
+{ const r = mulberry32(20261102); for (let i = POOL.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [POOL[i], POOL[j]] = [POOL[j], POOL[i]]; } }
+LATE.forEach((n, k) => { const c = CAPS.find(x => x.country === n); if (c) POOL.splice(30 + k * 40, 0, c.i); });
+const answerForDay = n => CAPS[POOL[((n - 1) % POOL.length + POOL.length) % POOL.length]];
+
+/* ---------- geometry ---------- */
+const rad = d => d * Math.PI / 180;
+function distKm(a, b) {
+  const dLat = rad(b.lat - a.lat), dLon = rad(b.lon - a.lon);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLon / 2) ** 2;
+  return 2 * 6371 * Math.asin(Math.sqrt(h));
+}
+function arrow(a, b) {
+  const y = Math.sin(rad(b.lon - a.lon)) * Math.cos(rad(b.lat));
+  const x = Math.cos(rad(a.lat)) * Math.sin(rad(b.lat)) - Math.sin(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.cos(rad(b.lon - a.lon));
+  const brg = (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+  return ["⬆️", "↗️", "➡️", "↘️", "⬇️", "↙️", "⬅️", "↖️"][Math.round(brg / 45) % 8];
+}
+const band = km => km === 0 ? "hot" : km < 750 ? "warm" : km < 2000 ? "mild" : km < 5000 ? "cool" : "cold";
+const EMOJI = { hot: "🟩", warm: "🟨", mild: "🟧", cool: "🟥", cold: "⬜" };
+const pct = km => Math.max(0, Math.round(100 - km / 200));
+
+/* ---------- clues, broadest first ---------- */
+function blocks(name) {
+  const wrap = document.createElement("div"); wrap.className = "blocks";
+  for (const w of name.split(" ")) {
+    const wd = document.createElement("span"); wd.className = "word";
+    for (const ch of w) {
+      const i = document.createElement("i");
+      if (/[-'\u2019\u02bb,.]/.test(ch)) { i.className = "punct"; i.textContent = ch; }
+      wd.append(i);
+    }
+    wrap.append(wd);
+  }
+  return wrap;
+}
+const letterCount = name => { const words = name.split(" "); const n = name.replace(/[^\p{L}]/gu, "").length; return `${n} letters${words.length > 1 ? `, ${words.length} words` : ""}`; };
+function fmtPop(m) {
+  if (m >= 1000) return `about ${(m / 1000).toFixed(1).replace(/\.0$/, "")} billion`;
+  if (m >= 10) return `about ${Math.round(m)} million`;
+  if (m >= 1) return `about ${m.toFixed(1).replace(/\.0$/, "")} million`;
+  const n = m * 1e6, mag = n >= 100000 ? 10000 : n >= 10000 ? 1000 : 100;
+  return `about ${(Math.round(n / mag) * mag).toLocaleString("en-US")}`;
+}
+const text = (t, sub) => { const v = document.createElement("div"); v.className = "val"; v.textContent = t; if (sub) { const s = document.createElement("div"); s.className = "subnote"; s.textContent = sub; v.append(s); } return v; };
+const CLUES = [
+  { label: "Continent", render: c => text(c.r) },
+  { label: "Country population", render: c => text(fmtPop(c.pop) + " people") },
+  { label: "Land neighbours", render: c => text(c.nb === 0 ? "None" : `${c.nb} ${c.nb === 1 ? "country" : "countries"}`, c.nb === 0 ? "No land borders with another country" : "Countries it shares a land border with") },
+  { label: "Capital name shape", render: c => { const v = document.createElement("div"); v.className = "val"; v.append(blocks(c.capital)); const s = document.createElement("div"); s.className = "subnote"; s.textContent = letterCount(c.capital); v.append(s); return v; } },
+  { label: "Country", render: c => text(c.country) },
+];
+
+/* ---------- state: each turn is either a guess {g: index} or a clue {c: 1} ---------- */
+const MAXT = CLUES.length + 1;
+const LS = "capital-clues-v3";
+const store = { get(k, d) { try { const v = JSON.parse(localStorage.getItem(LS + k)); return v ?? d; } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem(LS + k, JSON.stringify(v)); } catch (e) {} } };
+let practice = false, answer = answerForDay(DAY), turns = [], done = false, won = false, justRevealed = -1;
+{
+  const s = store.get(":day", null);
+  if (s && s.day === DAY && Array.isArray(s.turns)) { turns = s.turns.filter(t => t.c || CAPS[t.g]); done = s.done; won = s.won; }
+}
+const guesses = () => turns.filter(t => t.g !== undefined).map(t => t.g);
+const cluesUsed = () => turns.filter(t => t.c).length;
+const turnsLeft = () => MAXT - turns.length;
+function persist() { if (!practice) store.set(":day", { day: DAY, turns, done, won }); }
+
+const $ = id => document.getElementById(id);
+const dateStr = new Date().toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+
+function renderMeta() {
+  $("meta").innerHTML = "";
+  $("meta").append(practice ? "Practice round" : `No. ${SHOWN} · ${dateStr}`);
+  if (practice) { const t = document.createElement("span"); t.className = "tag"; t.textContent = "doesn't count"; $("meta").append(t); }
+}
+
+function renderClues() {
+  const box = $("clues"); box.replaceChildren();
+  const shown = done ? CLUES.length : cluesUsed();
+  CLUES.forEach((cl, k) => {
+    const el = document.createElement("div");
+    const open = k < shown;
+    el.className = "clue" + (open ? "" : " locked") + (k === justRevealed ? " new" : "") + (!open && k === shown && !done ? " next" : "");
+    const n = document.createElement("div"); n.className = "num"; n.textContent = k + 1;
+    const body = document.createElement("div");
+    const lab = document.createElement("div"); lab.className = "label"; lab.textContent = cl.label;
+    body.append(lab);
+    if (open) body.append(cl.render(answer));
+    else { const v = document.createElement("div"); v.className = "val"; v.textContent = k === shown ? "Next clue. Costs one turn." : "Hidden"; body.append(v); }
+    el.append(n, body); box.append(el);
+  });
+  justRevealed = -1;
+}
+
+function renderTurnbar() {
+  const left = turnsLeft(), next = cluesUsed();
+  $("turnInfo").innerHTML = "";
+  const b = document.createElement("b"); b.textContent = `Turn ${Math.min(MAXT, turns.length + 1)} of ${MAXT}`;
+  const sp = document.createElement("span");
+  sp.textContent = left === 1 ? "Last turn: you have to guess" : `${left} turns left · guess or take a clue`;
+  $("turnInfo").append(b, sp);
+  const btn = $("clueBtn");
+  const canClue = left > 1 && next < CLUES.length;
+  btn.disabled = !canClue;
+  btn.textContent = next >= CLUES.length ? "All clues revealed" : left <= 1 ? "No clue on the last turn" : `Reveal clue ${next + 1}: ${CLUES[next].label}`;
+}
+
+function renderLog() {
+  const log = $("log"); log.replaceChildren();
+  let gNum = 0;
+  for (let k = 0; k < MAXT; k++) {
+    const r = document.createElement("div");
+    const t = turns[k];
+    if (!t) { r.className = "row empty"; const s = document.createElement("span"); s.className = "slot"; s.textContent = k + 1; r.append(s); log.append(r); continue; }
+    if (t.c) {
+      const ci = turns.slice(0, k + 1).filter(x => x.c).length - 1;
+      r.className = "row cluerow";
+      const a = document.createElement("span"); a.className = "city"; a.textContent = `💡 Clue: ${CLUES[ci].label}`;
+      r.append(a); log.append(r); continue;
+    }
+    gNum++;
+    const g = CAPS[t.g], km = Math.round(distKm(g, answer)), b = band(km);
+    r.className = "row" + (km === 0 ? " win" : "");
+    const city = document.createElement("span"); city.className = "city"; city.textContent = g.capital;
+    const d = document.createElement("span"); d.className = "km"; d.textContent = km === 0 ? "—" : km.toLocaleString() + " km";
+    const a = document.createElement("span"); a.className = "arrow"; a.textContent = km === 0 ? "🎯" : arrow(g, answer);
+    const p = document.createElement("span"); p.className = "pct"; p.style.background = `var(--${b})`; p.textContent = pct(km) + "%";
+    r.append(city, d, a, p); log.append(r);
+  }
+}
+
+function renderMap() {
+  const svg = $("map");
+  svg.setAttribute("viewBox", `0 0 ${D.W} ${D.H}`);
+  let html = `<path class="land" d="${D.world}"/>`;
+  const pts = guesses().map(i => CAPS[i]);
+  if (done) pts.forEach(g => { html += `<line x1="${g.x}" y1="${g.y}" x2="${answer.x}" y2="${answer.y}" stroke="var(--border)" stroke-width="1" stroke-dasharray="3 3"/>`; });
+  pts.forEach((g, k) => {
+    const km = Math.round(distKm(g, answer)), b = band(km);
+    html += `<circle cx="${g.x}" cy="${g.y}" r="10" fill="var(--${b})" stroke="var(--surface)" stroke-width="2"/><text x="${g.x}" y="${g.y}" text-anchor="middle" dominant-baseline="central" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="#fff">${k + 1}</text>`;
+  });
+  if (done && !won) html += `<circle cx="${answer.x}" cy="${answer.y}" r="11" fill="var(--hot)" stroke="var(--surface)" stroke-width="2"/>`;
+  svg.innerHTML = html;
+  $("mapnote").textContent = done ? `${answer.capital}, ${answer.country}` : pts.length ? "Numbers show the order you guessed in" : "Your guesses land here, coloured by how close they are";
+}
+
+function shareText() {
+  const row = turns.map(t => t.c ? "💡" : EMOJI[band(Math.round(distKm(CAPS[t.g], answer)))]).join("");
+  const c = cluesUsed();
+  const tail = won ? `Solved on turn ${turns.length} · ${c === 0 ? "no clues" : c + " clue" + (c > 1 ? "s" : "")}` : "Stumped";
+  return `Capital Clues ${practice ? "(practice)" : "#" + SHOWN} ${won ? turns.length : "X"}/${MAXT}\n${row}\n${tail}`;
+}
+
+function renderEnd() {
+  const end = $("end"); end.replaceChildren();
+  $("play").hidden = done;
+  if (!done) return;
+  const box = document.createElement("div"); box.className = "end";
+  const h = document.createElement("h2");
+  const c = cluesUsed();
+  h.textContent = won
+    ? (turns.length === 1 ? `First turn, no clues. It's ${answer.capital}.` : `${answer.capital}, ${answer.country}. Solved on turn ${turns.length}${c === 0 ? " with no clues" : ` using ${c} clue${c > 1 ? "s" : ""}`}.`)
+    : `It was ${answer.capital}, ${answer.country}`;
+  const p = document.createElement("p");
+  p.textContent = practice ? "Practice rounds don't touch your streak." : `Next capital in `;
+  if (!practice) { const t = document.createElement("strong"); t.id = "countdown"; p.append(t); }
+  const actions = document.createElement("div"); actions.className = "actions";
+  const share = document.createElement("button"); share.type = "button"; share.className = "btn primary"; share.textContent = "Copy result";
+  const again = document.createElement("button"); again.type = "button"; again.className = "btn ghost"; again.textContent = practice ? "Another practice round" : "Practice a random capital";
+  const note = document.createElement("span"); note.className = "copied";
+  actions.append(share, again, note);
+  box.append(h, p, actions);
+  if (!practice) box.append(statsBlock());
+  end.append(box);
+  share.onclick = () => {
+    track(practice ? "capitalo-share-practice" : "capitalo-share");
+    const text = shareText();
+    const fallback = () => {
+      let ta = box.querySelector("textarea");
+      if (!ta) { ta = document.createElement("textarea"); ta.className = "sharebox"; ta.rows = 3; ta.readOnly = true; box.append(ta); }
+      ta.value = text; ta.focus(); ta.select(); note.textContent = "Select and copy the text below";
+    };
+    try { navigator.clipboard.writeText(text).then(() => { note.textContent = "Copied. Paste it anywhere."; }, fallback); } catch (e) { fallback(); }
+  };
+  again.onclick = startPractice;
+  tick();
+}
+
+const blankStats = () => ({ played: 0, wins: 0, streak: 0, max: 0, dist: Array(MAXT).fill(0), noClue: 0 });
+function statsBlock() {
+  const s = { ...blankStats(), ...store.get(":stats", {}) };
+  const wrap = document.createElement("div"); wrap.style.cssText = "display:flex;flex-direction:column;gap:12px";
+  const g = document.createElement("div"); g.className = "stats";
+  [[s.played, "Played"], [s.played ? Math.round(s.wins / s.played * 100) + "%" : "–", "Solved"], [s.streak, "Streak"], [s.noClue, "No-clue wins"]].forEach(([v, l]) => {
+    const d = document.createElement("div"); const b = document.createElement("b"); b.textContent = v; const sp = document.createElement("span"); sp.textContent = l; d.append(b, sp); g.append(d);
+  });
+  const cap = document.createElement("div"); cap.className = "subnote"; cap.textContent = `Solved on turn… · best streak ${s.max}`;
+  const dist = document.createElement("div"); dist.className = "dist";
+  const mx = Math.max(1, ...s.dist);
+  s.dist.forEach((n, k) => {
+    const row = document.createElement("div"); const lab = document.createElement("span"); lab.textContent = k + 1;
+    const bar = document.createElement("em"); bar.textContent = n; bar.style.width = Math.max(8, n / mx * 100) + "%";
+    if (done && won && !practice && turns.length === k + 1) bar.className = "today";
+    row.append(lab, bar); dist.append(row);
+  });
+  wrap.append(g, cap, dist);
+  return wrap;
+}
+
+function recordResult() {
+  if (practice) return;
+  const s = { ...blankStats(), ...store.get(":stats", {}) };
+  if (s.lastDay === DAY) return;
+  s.played++;
+  if (won) {
+    s.wins++; s.streak = s.lastWonDay === DAY - 1 ? s.streak + 1 : 1; s.max = Math.max(s.max, s.streak);
+    s.dist[turns.length - 1]++; s.lastWonDay = DAY; if (cluesUsed() === 0) s.noClue++;
+  } else s.streak = 0;
+  s.lastDay = DAY;
+  store.set(":stats", s);
+}
+
+function tick() {
+  const el = document.getElementById("countdown"); if (!el) return;
+  const now = new Date(), next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  const s = Math.max(0, Math.floor((next - now) / 1000));
+  el.textContent = `${String(Math.floor(s / 3600)).padStart(2, "0")}:${String(Math.floor(s / 60) % 60).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+}
+setInterval(tick, 1000);
+
+function renderAll() { renderMeta(); renderClues(); renderTurnbar(); renderLog(); renderMap(); renderEnd(); }
+
+/* ---------- a turn: guess or clue ---------- */
+let sel = 0, opts = [];
+function suggest() {
+  const q = norm($("guess").value), box = $("sugg");
+  if (!q) { box.hidden = true; $("guess").setAttribute("aria-expanded", "false"); opts = []; return; }
+  const hits = [];
+  for (const e of ENTRIES) {
+    let best = null;
+    for (const n of e.names) {
+      const k = norm(n), rank = k.startsWith(q) ? 0 : k.split(" ").some(w => w.startsWith(q)) ? 1 : -1;
+      if (rank >= 0 && (!best || rank < best.rank)) best = { rank, n };
+    }
+    if (best) hits.push({ e, best });
+  }
+  hits.sort((a, b) => a.best.rank - b.best.rank || a.e.label.localeCompare(b.e.label));
+  const top = hits.slice(0, 6);
+  opts = top.map(h => h.e.label); sel = 0;
+  box.replaceChildren();
+  top.forEach((h, k) => {
+    const b = document.createElement("button"); b.type = "button"; b.setAttribute("role", "option");
+    const via = norm(h.best.n), lab = norm(h.e.label);
+    b.textContent = h.e.label + (via !== lab && !lab.includes(via) ? ` (${h.best.n})` : "");
+    b.setAttribute("aria-selected", k === sel);
+    b.addEventListener("pointerdown", ev => { ev.preventDefault(); submit(h.e.label); });
+    box.append(b);
+  });
+  box.hidden = !opts.length; $("guess").setAttribute("aria-expanded", String(!!opts.length));
+}
+function moveSel(d) {
+  if (!opts.length) return; sel = (sel + d + opts.length) % opts.length;
+  [...$("sugg").children].forEach((b, k) => b.setAttribute("aria-selected", k === sel));
+}
+const track = n => { try { window.tgTrack && window.tgTrack(n); } catch (e) {} };
+function endTurn() {
+  if (!won && turns.length >= MAXT) done = true;
+  if (!practice && turns.length === 1) track("capitalo-start");
+  if (done) { recordResult(); if (!practice) track(won ? "capitalo-solved-turn-" + turns.length : "capitalo-missed"); }
+  persist(); renderAll();
+}
+function submit(text) {
+  if (done) return;
+  const c = LOOKUP.get(norm(text));
+  const msg = $("msg");
+  if (!c) { msg.textContent = text.trim() ? `"${text.trim()}" isn't on the list of capitals. Pick one from the suggestions.` : ""; return; }
+  if (guesses().includes(c.i)) { msg.textContent = `You already guessed ${c.capital}.`; return; }
+  msg.textContent = "";
+  turns.push({ g: c.i });
+  if (c.i === answer.i) { done = true; won = true; }
+  $("guess").value = ""; $("sugg").hidden = true; opts = [];
+  endTurn();
+  if (!done) $("guess").focus({ preventScroll: true });
+}
+function takeClue() {
+  if (done || turnsLeft() <= 1 || cluesUsed() >= CLUES.length) return;
+  justRevealed = cluesUsed();
+  turns.push({ c: 1 });
+  $("msg").textContent = "";
+  endTurn();
+  document.querySelector(".clue.new")?.scrollIntoView({ block: "nearest", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+}
+$("guess").addEventListener("input", suggest);
+$("guess").addEventListener("keydown", e => {
+  if (e.key === "ArrowDown") { e.preventDefault(); moveSel(1); }
+  else if (e.key === "ArrowUp") { e.preventDefault(); moveSel(-1); }
+  else if (e.key === "Enter") { e.preventDefault(); submit(opts.length && !LOOKUP.has(norm($("guess").value)) ? opts[sel] : $("guess").value); }
+  else if (e.key === "Escape") { $("sugg").hidden = true; }
+});
+$("guess").addEventListener("blur", () => setTimeout(() => { $("sugg").hidden = true; }, 120));
+$("go").onclick = () => submit(opts.length && !LOOKUP.has(norm($("guess").value)) ? opts[sel] : $("guess").value);
+$("clueBtn").onclick = takeClue;
+
+function startPractice() {
+  practice = true;
+  track("capitalo-practice");
+  let c; do { c = CAPS[POOL[Math.floor(Math.random() * POOL.length)]]; } while (c.i === answerForDay(DAY).i || c.i === answer.i);
+  answer = c; turns = []; done = false; won = false;
+  $("msg").textContent = ""; renderAll(); window.scrollTo({ top: 0, behavior: "smooth" }); $("guess").focus({ preventScroll: true });
+}
+
+$("statsBtn").onclick = () => {
+  const h = $("howto"); h.hidden = !h.hidden;
+  if (!h.hidden) { $("statsBody").replaceChildren(statsBlock()); }
+};
+$("closeStats").onclick = () => { $("howto").hidden = true; };
+
+renderAll();
+</script>

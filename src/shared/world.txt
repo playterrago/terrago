@@ -1,0 +1,201 @@
+Africa
+Algeria|Algiers||36.75|3.06
+Angola|Luanda||-8.84|13.23
+Benin|Porto-Novo|Cotonou|6.50|2.60
+Botswana|Gaborone||-24.65|25.91
+Burkina Faso|Ouagadougou||12.37|-1.53
+Burundi|Gitega||-3.43|29.92
+Cabo Verde|Praia||14.93|-23.51
+Cameroon|Yaoundé||3.87|11.52
+Central African Republic|Bangui||4.39|18.56
+Chad|N'Djamena||12.13|15.06
+Comoros|Moroni||-11.70|43.26
+DR Congo|Kinshasa||-4.50|15.45
+Republic of the Congo|Brazzaville||-4.10|15.10
+Djibouti|Djibouti||11.59|43.15
+Egypt|Cairo||30.04|31.24
+Equatorial Guinea|Malabo|Ciudad de la Paz|3.75|8.78
+Eritrea|Asmara||15.32|38.93
+Eswatini|Mbabane|Lobamba|-26.31|31.14
+Ethiopia|Addis Ababa||9.03|38.74
+Gabon|Libreville||0.39|9.45
+Gambia|Banjul||13.45|-16.58
+Ghana|Accra||5.60|-0.19
+Guinea|Conakry||9.64|-13.58
+Guinea-Bissau|Bissau||11.86|-15.60
+Ivory Coast|Yamoussoukro|Abidjan|6.83|-5.29
+Kenya|Nairobi||-1.29|36.82
+Lesotho|Maseru||-29.31|27.48
+Liberia|Monrovia||6.30|-10.80
+Libya|Tripoli||32.89|13.19
+Madagascar|Antananarivo||-18.88|47.51
+Malawi|Lilongwe||-13.96|33.79
+Mali|Bamako||12.64|-8.00
+Mauritania|Nouakchott||18.08|-15.98
+Mauritius|Port Louis||-20.16|57.50
+Morocco|Rabat||34.02|-6.84
+Mozambique|Maputo||-25.97|32.57
+Namibia|Windhoek||-22.56|17.08
+Niger|Niamey||13.51|2.11
+Nigeria|Abuja||9.08|7.40
+Rwanda|Kigali||-1.95|30.06
+São Tomé and Príncipe|São Tomé||0.34|6.73
+Senegal|Dakar||14.72|-17.47
+Seychelles|Victoria||-4.62|55.45
+Sierra Leone|Freetown||8.48|-13.23
+Somalia|Mogadishu||2.05|45.32
+South Africa|Pretoria|Cape Town;Bloemfontein|-25.75|28.19
+South Sudan|Juba||4.85|31.58
+Sudan|Khartoum||15.50|32.56
+Tanzania|Dodoma||-6.16|35.75
+Togo|Lomé||6.13|1.22
+Tunisia|Tunis||36.81|10.18
+Uganda|Kampala||0.35|32.58
+Zambia|Lusaka||-15.39|28.32
+Zimbabwe|Harare||-17.83|31.05
+Asia
+Afghanistan|Kabul||34.53|69.17
+Armenia|Yerevan||40.18|44.51
+Azerbaijan|Baku||40.41|49.87
+Bahrain|Manama||26.23|50.59
+Bangladesh|Dhaka||23.81|90.41
+Bhutan|Thimphu||27.47|89.64
+Brunei|Bandar Seri Begawan||4.90|114.94
+Cambodia|Phnom Penh||11.56|104.92
+China|Beijing||39.90|116.41
+Georgia|Tbilisi||41.72|44.79
+India|New Delhi|Delhi|28.61|77.21
+Indonesia|Jakarta|Nusantara|-6.21|106.85
+Iran|Tehran||35.69|51.39
+Iraq|Baghdad||33.31|44.36
+Israel|Jerusalem|Tel Aviv|31.77|35.21
+Japan|Tokyo||35.68|139.69
+Jordan|Amman||31.95|35.93
+Kazakhstan|Astana||51.17|71.45
+Kuwait|Kuwait City||29.38|47.99
+Kyrgyzstan|Bishkek||42.87|74.59
+Laos|Vientiane||17.98|102.63
+Lebanon|Beirut||33.89|35.50
+Malaysia|Kuala Lumpur|Putrajaya|3.14|101.69
+Maldives|Malé||4.18|73.51
+Mongolia|Ulaanbaatar|Ulan Bator|47.89|106.91
+Myanmar|Naypyidaw|Nay Pyi Taw|19.76|96.08
+Nepal|Kathmandu||27.72|85.32
+North Korea|Pyongyang||39.04|125.76
+Oman|Muscat||23.59|58.41
+Pakistan|Islamabad||33.68|73.05
+Philippines|Manila||14.60|120.98
+Qatar|Doha||25.29|51.53
+Saudi Arabia|Riyadh||24.71|46.68
+Singapore|Singapore||1.35|103.82
+South Korea|Seoul||37.57|126.98
+Sri Lanka|Sri Jayawardenepura Kotte|Kotte;Colombo|6.89|79.92
+Syria|Damascus||33.51|36.29
+Tajikistan|Dushanbe||38.56|68.79
+Thailand|Bangkok||13.76|100.50
+Timor-Leste|Dili||-8.56|125.57
+Turkey|Ankara||39.93|32.86
+Turkmenistan|Ashgabat||37.96|58.33
+United Arab Emirates|Abu Dhabi||24.45|54.38
+Uzbekistan|Tashkent||41.30|69.24
+Vietnam|Hanoi||21.03|105.85
+Yemen|Sanaa|Sana'a|15.37|44.19
+Europe
+Albania|Tirana||41.33|19.82
+Andorra|Andorra la Vella||42.51|1.52
+Austria|Vienna||48.21|16.37
+Belarus|Minsk||53.90|27.57
+Belgium|Brussels||50.85|4.35
+Bosnia and Herzegovina|Sarajevo||43.86|18.41
+Bulgaria|Sofia||42.70|23.32
+Croatia|Zagreb||45.81|15.98
+Cyprus|Nicosia||35.19|33.38
+Czechia|Prague||50.08|14.44
+Denmark|Copenhagen||55.68|12.57
+Estonia|Tallinn||59.44|24.75
+Finland|Helsinki||60.17|24.94
+France|Paris||48.86|2.35
+Germany|Berlin||52.52|13.40
+Greece|Athens||37.98|23.73
+Hungary|Budapest||47.50|19.04
+Iceland|Reykjavík||64.15|-21.94
+Ireland|Dublin||53.35|-6.26
+Italy|Rome||41.75|12.70
+Kosovo|Pristina|Prishtina|42.66|21.17
+Latvia|Riga||56.95|24.11
+Liechtenstein|Vaduz||47.14|9.52
+Lithuania|Vilnius||54.69|25.28
+Luxembourg|Luxembourg||49.61|6.13
+Malta|Valletta||35.90|14.51
+Moldova|Chișinău||47.01|28.86
+Monaco|Monaco||43.74|7.42
+Montenegro|Podgorica||42.43|19.26
+Netherlands|Amsterdam||52.37|4.90
+North Macedonia|Skopje||42.00|21.43
+Norway|Oslo||59.91|10.75
+Poland|Warsaw||52.23|21.01
+Portugal|Lisbon||38.72|-9.14
+Romania|Bucharest||44.43|26.10
+Russia|Moscow||55.76|37.62
+San Marino|San Marino||43.94|12.46
+Serbia|Belgrade||44.79|20.45
+Slovakia|Bratislava||48.15|17.11
+Slovenia|Ljubljana||46.06|14.51
+Spain|Madrid||40.42|-3.70
+Sweden|Stockholm||59.33|18.07
+Switzerland|Bern|Berne|46.95|7.45
+Ukraine|Kyiv|Kiev|50.45|30.52
+United Kingdom|London||51.51|-0.13
+Vatican City|Vatican City|Vatican|42.15|12.25
+North America
+Antigua and Barbuda|St. John's||17.12|-61.85
+Bahamas|Nassau||25.05|-77.35
+Barbados|Bridgetown||13.10|-59.62
+Belize|Belmopan||17.25|-88.76
+Canada|Ottawa||45.42|-75.70
+Costa Rica|San José||9.93|-84.08
+Cuba|Havana||23.11|-82.37
+Dominica|Roseau||15.30|-61.39
+Dominican Republic|Santo Domingo||18.47|-69.90
+El Salvador|San Salvador||13.69|-89.22
+Grenada|St. George's||12.06|-61.75
+Guatemala|Guatemala City||14.63|-90.51
+Haiti|Port-au-Prince||18.54|-72.34
+Honduras|Tegucigalpa||14.07|-87.19
+Jamaica|Kingston||17.97|-76.79
+Mexico|Mexico City||19.43|-99.13
+Nicaragua|Managua||12.11|-86.24
+Panama|Panama City||8.98|-79.52
+Saint Kitts and Nevis|Basseterre||17.30|-62.72
+Saint Lucia|Castries||14.01|-60.99
+Saint Vincent and the Grenadines|Kingstown||13.16|-61.22
+Trinidad and Tobago|Port of Spain||10.66|-61.51
+United States|Washington, D.C.|Washington;Washington DC;DC|38.90|-77.04
+South America
+Argentina|Buenos Aires||-34.60|-58.38
+Bolivia|Sucre|La Paz|-19.05|-65.26
+Brazil|Brasília||-15.79|-47.88
+Chile|Santiago||-33.45|-70.67
+Colombia|Bogotá||4.71|-74.07
+Ecuador|Quito||-0.18|-78.47
+Guyana|Georgetown||6.80|-58.16
+Paraguay|Asunción||-25.26|-57.58
+Peru|Lima||-12.05|-77.04
+Suriname|Paramaribo||5.85|-55.20
+Uruguay|Montevideo||-34.90|-56.16
+Venezuela|Caracas||10.48|-66.90
+Oceania
+Australia|Canberra||-35.28|149.13
+Fiji|Suva||-18.14|178.44
+Kiribati|South Tarawa|Tarawa|1.33|172.98
+Marshall Islands|Majuro||7.09|171.38
+Micronesia|Palikir||6.92|158.16
+Nauru|Yaren||-0.55|166.92
+New Zealand|Wellington||-41.29|174.78
+Palau|Ngerulmud||7.50|134.62
+Papua New Guinea|Port Moresby||-9.44|147.18
+Samoa|Apia||-13.83|-171.76
+Solomon Islands|Honiara||-9.43|159.95
+Tonga|Nukuʻalofa||-21.14|-175.20
+Tuvalu|Funafuti||-8.52|179.20
+Vanuatu|Port Vila||-17.73|168.32

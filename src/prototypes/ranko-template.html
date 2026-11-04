@@ -1,0 +1,370 @@
+<title>Ranko</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: one puzzle column. Header and round dots, then the round card holding the sortable list; after five rounds the card becomes the result. */
+:root {
+  --bg: #e9edf1;
+  --surface: #ffffff;
+  --ink: #111a24;
+  --muted: #5d6a78;
+  --line: #d3dae2;
+  --accent: #d9590b;
+  --accent-ink: #ffffff;
+  --accent-soft: #fde9da;
+  --hot: #1e8a4c;
+  --hot-bg: #e2f3e8;
+  --warm: #c08a06;
+  --warm-bg: #fbf1d4;
+  --miss: #8c98a5;
+  --miss-bg: #eef1f4;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d131a; --surface: #151e28; --ink: #e5ebf1; --muted: #93a1af; --line: #263342;
+    --accent: #ff8a3d; --accent-ink: #1c0c02; --accent-soft: #3a2212;
+    --hot: #4fcb83; --hot-bg: #123222; --warm: #f0c040; --warm-bg: #352c10; --miss: #7d8b99; --miss-bg: #1b2530;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d131a; --surface: #151e28; --ink: #e5ebf1; --muted: #93a1af; --line: #263342;
+  --accent: #ff8a3d; --accent-ink: #1c0c02; --accent-soft: #3a2212;
+  --hot: #4fcb83; --hot-bg: #123222; --warm: #f0c040; --warm-bg: #352c10; --miss: #7d8b99; --miss-bg: #1b2530;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--ink); font: 15px/1.5 var(--body); margin: 0;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 22px 48px;
+}
+.wrap { max-width: 540px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+h1 { font: 800 30px/1 var(--display); letter-spacing: -0.03em; margin: 0; }
+h1 span { color: var(--accent); }
+.meta { font: 500 13px var(--mono); color: var(--muted); margin-top: 6px; }
+.meta .tag { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; margin-left: 6px; }
+.icon-btn { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 10px; padding: 8px 12px; font: 600 13px var(--body); cursor: pointer; }
+
+.lineup { display: flex; flex-wrap: wrap; gap: 6px; }
+.lineup span { background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; font: 500 13px var(--body); }
+.dots { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.dots div { height: 6px; border-radius: 3px; background: var(--line); }
+.dots div.now { background: var(--accent); }
+.dots div.done { background: var(--ink); }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.round-no { font: 600 12px var(--body); letter-spacing: .09em; text-transform: uppercase; color: var(--accent); }
+.q { font: 800 24px/1.15 var(--display); letter-spacing: -0.02em; margin: 2px 0 0; text-wrap: balance; }
+.q-sub { color: var(--muted); font-size: 13px; margin: 4px 0 0; }
+.ends { display: flex; justify-content: space-between; font: 600 11px var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+
+.list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; position: relative; }
+.item { display: grid; grid-template-columns: 26px 28px minmax(0, 1fr) auto; gap: 10px; align-items: center; background: var(--bg); border: 1.5px solid var(--line); border-radius: 12px; padding: 10px 10px 10px 12px; touch-action: none; user-select: none; cursor: grab; transition: background .2s, border-color .2s; }
+.item.drag { cursor: grabbing; box-shadow: 0 12px 28px -12px rgba(0,0,0,.45); position: relative; z-index: 3; background: var(--surface); border-color: var(--accent); transition: none; }
+.item .pos { font: 600 14px var(--mono); color: var(--muted); text-align: center; }
+.item .flag { font-size: 22px; line-height: 1; text-align: center; }
+.item .name { font-weight: 600; overflow-wrap: anywhere; }
+.item .val { display: block; font: 500 13px var(--mono); color: var(--muted); font-weight: 500; margin-top: 1px; }
+.item .moves { display: flex; gap: 4px; }
+.item .moves button { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 14px; cursor: pointer; }
+.item .moves button:disabled { opacity: .3; cursor: default; }
+.item.locked { cursor: default; }
+.item.g { background: var(--hot-bg); border-color: var(--hot); }
+.item.y { background: var(--warm-bg); border-color: var(--warm); }
+.item.x { background: var(--miss-bg); border-color: var(--line); }
+.item .mark { font: 600 12px var(--mono); padding: 3px 8px; border-radius: 6px; white-space: nowrap; }
+.item.g .mark { color: var(--hot); }
+.item.y .mark { color: var(--warm); }
+.item.x .mark { color: var(--miss); }
+
+.btn { font: 600 15px var(--body); border-radius: 12px; padding: 13px 18px; cursor: pointer; border: 1.5px solid transparent; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); width: 100%; }
+.btn.ghost { background: transparent; border-color: var(--line); color: var(--ink); }
+.btn:focus-visible, .icon-btn:focus-visible, .item .moves button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.source { font-size: 12px; color: var(--muted); margin: -4px 0 0; }
+.roundscore { font: 600 14px var(--body); }
+
+.result h2 { font: 800 28px/1.1 var(--display); margin: 0; letter-spacing: -0.02em; }
+.result p { margin: 0; color: var(--muted); }
+.grid { font: 500 13px var(--mono); line-height: 1.6; background: var(--bg); border-radius: 10px; padding: 10px 12px; white-space: pre; overflow-x: auto; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.actions .btn { flex: 1 1 180px; }
+.copied { font-size: 13px; color: var(--hot); min-height: 18px; }
+.sharebox { width: 100%; font: 500 13px var(--mono); padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); resize: none; }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; text-align: center; }
+.stats b { display: block; font: 600 22px/1.1 var(--mono); }
+.stats span { font-size: 11px; color: var(--muted); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+.panel h2 { font: 700 18px var(--display); margin: 0; }
+.panel ol { margin: 0; padding-left: 20px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+@media (max-width: 400px) { .item { grid-template-columns: 20px 24px minmax(0, 1fr) auto; gap: 8px; } .item .moves button { width: 30px; height: 30px; } }
+@media (prefers-reduced-motion: reduce) { .item { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Rank<span>o</span></h1>
+      <div class="meta" id="meta"></div>
+    </div>
+    <button type="button" class="icon-btn" id="helpBtn">How to play</button>
+  </header>
+
+  <div class="panel" id="help" hidden>
+    <h2>How to play</h2>
+    <ol>
+      <li>The same five countries appear in all five rounds.</li>
+      <li>Each round asks you to rank them by a different stat. Drag the rows, or use the arrows.</li>
+      <li>Lock it in to see the real values. A country in exactly the right spot is green; one spot off is yellow.</li>
+      <li>25 spots in total. New countries every midnight.</li>
+    </ol>
+    <button type="button" class="btn ghost" id="helpClose">Got it</button>
+  </div>
+
+  <div class="lineup" id="lineup" aria-label="Today's countries"></div>
+  <div class="dots" id="dots" aria-hidden="true"></div>
+  <section class="card" id="card" aria-live="polite"></section>
+  <div class="legend"><span>🟩 exact spot</span><span>🟨 one spot off</span><span>⬜ further off</span></div>
+</div>
+
+<script>
+const DATA = /*DATA*/;
+const STATS = {
+  pop:    { q: "Most people to fewest", hi: "Most people", lo: "Fewest", sub: "Total population", fmt: v => v >= 1 ? `${v >= 100 ? Math.round(v) : v.toFixed(1).replace(/\.0$/, "")} million` : `${Math.round(v * 1000).toLocaleString("en-US")} thousand`, gap: (a, b) => a / b >= 1.15, src: "Rounded recent population estimates" },
+  area:   { q: "Largest to smallest", hi: "Largest", lo: "Smallest", sub: "Total area, including lakes", fmt: v => `${Math.round(v).toLocaleString("en-US")} km²`, gap: (a, b) => a / b >= 1.15, src: "world-countries dataset" },
+  forest: { q: "Most forest to least", hi: "Most forest", lo: "Least", sub: "Share of land covered by forest", fmt: v => `${v}%`, gap: (a, b) => a - b >= 4, src: "World Bank, forest area (% of land), 2023–24" },
+  gdp:    { q: "Richest to poorest", hi: "Richest", lo: "Poorest", sub: "GDP per person, US dollars", fmt: v => `$${Math.round(v).toLocaleString("en-US")}`, gap: (a, b) => a / b >= 1.2, src: "World Bank, GDP per capita, latest year (mostly 2025)" },
+  temp:   { q: "Hottest to coldest", hi: "Hottest", lo: "Coldest", sub: "Average yearly temperature across the country", fmt: v => `${v.toFixed(1)}°C`, gap: (a, b) => a - b >= 1.5, src: "Long-term national averages, country-json dataset" },
+  lat:    { q: "Capital furthest north to furthest south", hi: "Furthest north", lo: "Furthest south", sub: "Latitude of the capital city", fmt: v => `${Math.abs(v).toFixed(1)}° ${v >= 0 ? "N" : "S"}`, gap: (a, b) => a - b >= 2.5, src: "Capital city coordinates" },
+  nb:     { q: "Most land neighbours to fewest", hi: "Most neighbours", lo: "Fewest", sub: "Countries it shares a land border with", fmt: v => `${v} ${v === 1 ? "neighbour" : "neighbours"}`, gap: (a, b) => a - b >= 1, src: "Terrago border data" },
+};
+const KEYS = Object.keys(STATS);
+const ROUNDS = 5, PICK = 5;
+
+/* ---------- daily set: same for everyone, picked by date ---------- */
+const EPOCH = Date.UTC(2026, 10, 2);
+const todayUTC = () => { const d = new Date(); return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()); };
+const DAY = Math.floor((todayUTC() - EPOCH) / 864e5) + 1;
+function mulberry32(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const POOL = DATA.filter(c => c.pop >= 0.3);
+function validStats(set) {
+  return KEYS.filter(k => {
+    if (set.some(c => c[k] == null)) return false;
+    const vals = set.map(c => c[k]).sort((a, b) => b - a);
+    for (let i = 0; i < vals.length - 1; i++) if (!STATS[k].gap(vals[i], vals[i + 1])) return false;
+    return true;
+  });
+}
+function makePuzzle(seed) {
+  const r = mulberry32(seed);
+  for (let attempt = 0; attempt < 4000; attempt++) {
+    const idx = new Set(); while (idx.size < PICK) idx.add(Math.floor(r() * POOL.length));
+    const set = [...idx].map(i => POOL[i]);
+    if (new Set(set.map(c => c.r)).size < 3) continue; /* at least three continents */
+    const ok = validStats(set);
+    if (ok.length < ROUNDS) continue;
+    for (let i = ok.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [ok[i], ok[j]] = [ok[j], ok[i]]; }
+    return { countries: set.map(c => c.c), stats: ok.slice(0, ROUNDS) };
+  }
+  return null;
+}
+const byName = Object.fromEntries(DATA.map(c => [c.c, c]));
+
+/* ---------- state ---------- */
+const LS = "ranko-v1";
+const store = { get(k, d) { try { const v = JSON.parse(localStorage.getItem(LS + k)); return v ?? d; } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem(LS + k, JSON.stringify(v)); } catch (e) {} } };
+let practice = false, puzzle = makePuzzle(20261104 + DAY * 7919);
+let round = 0, order = [], answers = [], revealed = false;
+function freshOrder() { const r = mulberry32((practice ? Date.now() : DAY * 31 + round) | 0); const o = [...puzzle.countries]; for (let i = o.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [o[i], o[j]] = [o[j], o[i]]; } return o; }
+{
+  const s = store.get(":day", null);
+  if (s && s.day === DAY && Array.isArray(s.answers)) { answers = s.answers; round = Math.min(answers.length, ROUNDS); }
+}
+order = round < ROUNDS ? freshOrder() : [];
+function persist() { if (!practice) store.set(":day", { day: DAY, answers }); }
+
+const $ = id => document.getElementById(id);
+const truth = k => [...puzzle.countries].sort((a, b) => byName[b][k] - byName[a][k]);
+function marks(k, ord) { const t = truth(k); return ord.map((c, i) => { const d = Math.abs(t.indexOf(c) - i); return d === 0 ? "g" : d === 1 ? "y" : "x"; }); }
+const EMO = { g: "🟩", y: "🟨", x: "⬜" };
+
+/* ---------- render ---------- */
+function renderTop() {
+  const dateStr = new Date().toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+  $("meta").textContent = practice ? "Practice round" : `No. ${DAY} · ${dateStr}`;
+  if (practice) { const t = document.createElement("span"); t.className = "tag"; t.textContent = "doesn't count"; $("meta").append(t); }
+  $("lineup").replaceChildren(...puzzle.countries.map(n => { const s = document.createElement("span"); s.textContent = `${byName[n].f || ""} ${n}`; return s; }));
+  $("dots").replaceChildren(...Array.from({ length: ROUNDS }, (_, i) => { const d = document.createElement("div"); d.className = i < answers.length ? "done" : i === round ? "now" : ""; return d; }));
+}
+
+function renderRound() {
+  const k = puzzle.stats[round], S = STATS[k], card = $("card");
+  card.className = "card";
+  card.innerHTML = `<div><div class="round-no">Round ${round + 1} of ${ROUNDS}</div><h2 class="q"></h2><p class="q-sub"></p></div>
+    <div class="ends"><span></span></div><ol class="list" id="list"></ol><div class="ends"><span></span></div>
+    <button type="button" class="btn primary" id="lock">Lock it in</button>`;
+  card.querySelector(".q").textContent = S.q;
+  card.querySelector(".q-sub").textContent = S.sub;
+  const ends = card.querySelectorAll(".ends span"); ends[0].textContent = `↑ ${S.hi}`; ends[1].textContent = `↓ ${S.lo}`;
+  drawList();
+  $("lock").onclick = lockIn;
+}
+
+function drawList() {
+  const list = $("list"); list.replaceChildren();
+  const k = puzzle.stats[round], m = revealed ? marks(k, order) : null, t = revealed ? truth(k) : null;
+  order.forEach((n, i) => {
+    const c = byName[n], li = document.createElement("li");
+    li.className = "item" + (revealed ? " locked " + m[i] : "");
+    li.dataset.name = n;
+    const pos = document.createElement("span"); pos.className = "pos"; pos.textContent = i + 1;
+    const flag = document.createElement("span"); flag.className = "flag"; flag.textContent = c.f || "";
+    const name = document.createElement("span"); name.className = "name"; name.textContent = n;
+    if (revealed) { const v = document.createElement("span"); v.className = "val"; v.textContent = STATS[k].fmt(c[k]); name.append(v); }
+    li.append(pos, flag, name);
+    if (revealed) {
+      const mk = document.createElement("span"); mk.className = "mark";
+      mk.textContent = m[i] === "g" ? "✓ spot on" : `belongs #${t.indexOf(n) + 1}`;
+      li.append(mk);
+    } else {
+      const mv = document.createElement("span"); mv.className = "moves";
+      const up = document.createElement("button"); up.type = "button"; up.textContent = "▲"; up.setAttribute("aria-label", `Move ${n} up`); up.disabled = i === 0;
+      const dn = document.createElement("button"); dn.type = "button"; dn.textContent = "▼"; dn.setAttribute("aria-label", `Move ${n} down`); dn.disabled = i === order.length - 1;
+      up.onclick = e => { e.stopPropagation(); swap(i, i - 1, n); };
+      dn.onclick = e => { e.stopPropagation(); swap(i, i + 1, n); };
+      up.addEventListener("pointerdown", e => e.stopPropagation()); dn.addEventListener("pointerdown", e => e.stopPropagation());
+      mv.append(up, dn); li.append(mv);
+      li.addEventListener("pointerdown", startDrag);
+    }
+    list.append(li);
+  });
+}
+function swap(i, j, name) {
+  if (j < 0 || j >= order.length) return;
+  [order[i], order[j]] = [order[j], order[i]]; drawList();
+  const btn = document.querySelector(`.item[data-name="${CSS.escape(name)}"] .moves button:${j < i ? "first-child" : "last-child"}`);
+  (btn && !btn.disabled ? btn : document.querySelector(`.item[data-name="${CSS.escape(name)}"] .moves button:not(:disabled)`))?.focus();
+}
+
+/* drag to reorder */
+let drag = null;
+function startDrag(e) {
+  if (revealed || e.button > 0) return;
+  const li = e.currentTarget, items = [...$("list").children];
+  drag = { li, from: items.indexOf(li), startY: e.clientY, rects: items.map(x => x.getBoundingClientRect()), id: e.pointerId };
+  li.setPointerCapture(e.pointerId); li.classList.add("drag");
+  li.addEventListener("pointermove", moveDrag); li.addEventListener("pointerup", endDrag); li.addEventListener("pointercancel", endDrag);
+}
+function targetIndex(y) {
+  const r = drag.rects; let idx = 0;
+  for (let i = 0; i < r.length; i++) if (y > r[i].top + r[i].height / 2) idx = i;
+  return y < r[0].top + r[0].height / 2 ? 0 : idx;
+}
+function moveDrag(e) {
+  if (!drag) return;
+  const dy = e.clientY - drag.startY; drag.li.style.transform = `translateY(${dy}px)`;
+  const to = targetIndex(drag.rects[drag.from].top + drag.rects[drag.from].height / 2 + dy);
+  const items = [...$("list").children], h = drag.rects[drag.from].height + 8;
+  items.forEach((el, i) => {
+    if (el === drag.li) return;
+    let shift = 0;
+    if (drag.from < to && i > drag.from && i <= to) shift = -h;
+    if (drag.from > to && i < drag.from && i >= to) shift = h;
+    el.style.transform = shift ? `translateY(${shift}px)` : "";
+  });
+  drag.to = to;
+}
+function endDrag() {
+  if (!drag) return;
+  const { from, to } = drag; drag.li.classList.remove("drag");
+  [...$("list").children].forEach(el => el.style.transform = "");
+  drag = null;
+  if (to != null && to !== from) { const [n] = order.splice(from, 1); order.splice(to, 0, n); }
+  drawList();
+}
+
+function lockIn() {
+  const k = puzzle.stats[round];
+  revealed = true;
+  const m = marks(k, order);
+  answers.push(m.join(""));
+  persist();
+  drawList();
+  const g = m.filter(x => x === "g").length;
+  const btn = $("lock");
+  const info = document.createElement("div");
+  info.innerHTML = `<div class="roundscore"></div><p class="source"></p>`;
+  info.querySelector(".roundscore").textContent = g === 5 ? "Perfect round." : `${g} of 5 in exactly the right spot.`;
+  info.querySelector(".source").textContent = `Source: ${STATS[k].src}`;
+  btn.before(info);
+  btn.textContent = round + 1 < ROUNDS ? "Next round" : "See your score";
+  btn.onclick = nextRound;
+  btn.focus({ preventScroll: true });
+  renderTop();
+}
+function nextRound() {
+  round++; revealed = false;
+  if (round >= ROUNDS) { if (!practice) recordResult(); renderTop(); renderEnd(); return; }
+  order = freshOrder(); renderTop(); renderRound();
+  window.scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+}
+
+/* ---------- end ---------- */
+const greens = () => answers.join("").split("").filter(x => x === "g").length;
+function shareText() {
+  const lines = answers.map((a, i) => a.split("").map(x => EMO[x]).join("") + "  " + STATS[puzzle.stats[i]].hi);
+  return `Ranko ${practice ? "(practice)" : "#" + DAY} · ${greens()}/25\n${lines.join("\n")}\n${location.hostname.endsWith("claude.ai") ? "" : location.origin}`.trim();
+}
+function recordResult() {
+  const s = { played: 0, total: 0, best: 0, perfectRounds: 0, ...store.get(":stats", {}) };
+  if (s.lastDay === DAY) return;
+  const g = greens();
+  s.played++; s.total += g; s.best = Math.max(s.best, g); s.perfectRounds += answers.filter(a => a === "ggggg").length; s.lastDay = DAY;
+  store.set(":stats", s);
+}
+function renderEnd() {
+  const card = $("card"), g = greens(); card.className = "card result";
+  const verdict = g >= 22 ? "Cartographer level." : g >= 17 ? "Strong ranking." : g >= 12 ? "Solid. The world is tricky." : "The world surprised you today.";
+  card.innerHTML = `<div class="round-no">${practice ? "Practice" : "Today's score"}</div><h2></h2><p></p>
+    <div class="grid" id="grid"></div>
+    <div class="actions"><button type="button" class="btn primary" id="share">Copy result</button><button type="button" class="btn ghost" id="again"></button></div>
+    <div class="copied" id="copied"></div><div id="statsBox"></div>`;
+  card.querySelector("h2").textContent = `${g} / 25`;
+  card.querySelector("p").textContent = verdict + (practice ? " Practice rounds don't touch your stats." : " New countries at midnight.");
+  $("grid").textContent = shareText().split("\n").slice(1, 6).join("\n");
+  $("again").textContent = practice ? "Another practice set" : "Practice a random set";
+  $("share").onclick = () => {
+    const text = shareText();
+    const fallback = () => { let ta = card.querySelector("textarea"); if (!ta) { ta = document.createElement("textarea"); ta.className = "sharebox"; ta.rows = 7; ta.readOnly = true; card.append(ta); } ta.value = text; ta.focus(); ta.select(); $("copied").textContent = "Select and copy the text below"; };
+    try { navigator.clipboard.writeText(text).then(() => { $("copied").textContent = "Copied. Paste it anywhere."; }, fallback); } catch (e) { fallback(); }
+  };
+  $("again").onclick = startPractice;
+  if (!practice) {
+    const s = { played: 0, total: 0, best: 0, perfectRounds: 0, ...store.get(":stats", {}) };
+    const box = document.createElement("div"); box.className = "stats";
+    [[s.played, "Played"], [s.played ? (s.total / s.played).toFixed(1) : "–", "Avg score"], [s.best, "Best"], [s.perfectRounds, "Perfect rounds"]].forEach(([v, l]) => { const d = document.createElement("div"); const b = document.createElement("b"); b.textContent = v; const sp = document.createElement("span"); sp.textContent = l; d.append(b, sp); box.append(d); });
+    $("statsBox").append(box);
+  }
+}
+function startPractice() {
+  practice = true; puzzle = makePuzzle((Math.random() * 1e9) | 0);
+  round = 0; answers = []; revealed = false; order = freshOrder();
+  renderTop(); renderRound(); window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+$("helpBtn").onclick = () => { $("help").hidden = !$("help").hidden; };
+$("helpClose").onclick = () => { $("help").hidden = true; try { localStorage.setItem(LS + ":seenHelp", "1"); } catch (e) {} };
+try { if (!localStorage.getItem(LS + ":seenHelp")) $("help").hidden = false; } catch (e) { $("help").hidden = false; }
+
+renderTop();
+if (round >= ROUNDS) renderEnd(); else renderRound();
+</script>

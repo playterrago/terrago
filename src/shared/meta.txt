@@ -1,0 +1,195 @@
+Algeria|46.8|Arabic
+Angola|37.9|Portuguese
+Benin|14.5|French
+Botswana|2.5|Setswana and English
+Burkina Faso|23.5|Mooré and French
+Burundi|14.0|Kirundi
+Cabo Verde|0.52|Portuguese
+Cameroon|29.1|French and English
+Central African Republic|5.3|Sango and French
+Chad|20.3|French and Arabic
+Comoros|0.87|Comorian
+DR Congo|109|French
+Republic of the Congo|6.3|French
+Djibouti|1.17|French and Arabic
+Egypt|116|Arabic
+Equatorial Guinea|1.9|Spanish
+Eritrea|3.5|Tigrinya
+Eswatini|1.2|Swazi
+Ethiopia|132|Amharic
+Gabon|2.5|French
+Gambia|2.8|English
+Ghana|34.4|English
+Guinea|14.8|French
+Guinea-Bissau|2.2|Portuguese
+Ivory Coast|31.9|French
+Kenya|56.4|Swahili and English
+Lesotho|2.3|Sesotho
+Liberia|5.6|English
+Libya|7.4|Arabic
+Madagascar|31.9|Malagasy
+Malawi|21.7|Chichewa and English
+Mali|24.5|Bambara
+Mauritania|5.2|Arabic
+Mauritius|1.27|Mauritian Creole
+Morocco|38.1|Arabic
+Mozambique|34.6|Portuguese
+Namibia|3.0|English
+Niger|27.0|Hausa
+Nigeria|233|English
+Rwanda|14.3|Kinyarwanda
+São Tomé and Príncipe|0.235|Portuguese
+Senegal|18.5|Wolof and French
+Seychelles|0.13|Seychellois Creole
+Sierra Leone|8.6|English
+Somalia|19.0|Somali
+South Africa|64|Zulu (one of 12 official languages)
+South Sudan|11.9|English
+Sudan|50.4|Arabic
+Tanzania|68.6|Swahili
+Togo|9.5|French
+Tunisia|12.3|Arabic
+Uganda|50.0|English and Swahili
+Zambia|21.3|English
+Zimbabwe|16.6|Shona and English
+Afghanistan|42.6|Pashto and Dari
+Armenia|3.0|Armenian
+Azerbaijan|10.2|Azerbaijani
+Bahrain|1.6|Arabic
+Bangladesh|174|Bengali
+Bhutan|0.79|Dzongkha
+Brunei|0.46|Malay
+Cambodia|17.6|Khmer
+China|1409|Mandarin
+Georgia|3.8|Georgian
+India|1451|Hindi
+Indonesia|283|Indonesian
+Iran|91.6|Persian
+Iraq|46.0|Arabic
+Israel|9.4|Hebrew
+Japan|124|Japanese
+Jordan|11.5|Arabic
+Kazakhstan|20.6|Kazakh
+Kuwait|4.9|Arabic
+Kyrgyzstan|7.2|Kyrgyz
+Laos|7.8|Lao
+Lebanon|5.8|Arabic
+Malaysia|35.6|Malay
+Maldives|0.53|Dhivehi
+Mongolia|3.5|Mongolian
+Myanmar|54.5|Burmese
+Nepal|29.7|Nepali
+North Korea|26.5|Korean
+Oman|5.3|Arabic
+Pakistan|251|Urdu
+Philippines|116|Filipino
+Qatar|3.0|Arabic
+Saudi Arabia|33.9|Arabic
+Singapore|5.8|English
+South Korea|51.7|Korean
+Sri Lanka|23.0|Sinhala
+Syria|24.7|Arabic
+Tajikistan|10.6|Tajik
+Thailand|71.7|Thai
+Timor-Leste|1.4|Tetum
+Turkey|87.5|Turkish
+Turkmenistan|7.5|Turkmen
+United Arab Emirates|11.0|Arabic
+Uzbekistan|36.4|Uzbek
+Vietnam|101|Vietnamese
+Yemen|40.6|Arabic
+Albania|2.8|Albanian
+Andorra|0.08|Catalan
+Austria|9.1|German
+Belarus|9.1|Russian and Belarusian
+Belgium|11.8|Dutch and French
+Bosnia and Herzegovina|3.2|Bosnian
+Bulgaria|6.4|Bulgarian
+Croatia|3.9|Croatian
+Cyprus|1.36|Greek
+Czechia|10.7|Czech
+Denmark|6.0|Danish
+Estonia|1.36|Estonian
+Finland|5.6|Finnish
+France|66.5|French
+Germany|84.5|German
+Greece|10.0|Greek
+Hungary|9.6|Hungarian
+Iceland|0.39|Icelandic
+Ireland|5.3|English
+Italy|59.0|Italian
+Kosovo|1.6|Albanian
+Latvia|1.87|Latvian
+Liechtenstein|0.04|German
+Lithuania|2.87|Lithuanian
+Luxembourg|0.67|Luxembourgish
+Malta|0.54|Maltese
+Moldova|2.4|Romanian
+Monaco|0.039|French
+Montenegro|0.62|Montenegrin
+Netherlands|18.2|Dutch
+North Macedonia|1.8|Macedonian
+Norway|5.6|Norwegian
+Poland|36.6|Polish
+Portugal|10.6|Portuguese
+Romania|19.0|Romanian
+Russia|144|Russian
+San Marino|0.034|Italian
+Serbia|6.6|Serbian
+Slovakia|5.4|Slovak
+Slovenia|2.1|Slovene
+Spain|48.6|Spanish
+Sweden|10.6|Swedish
+Switzerland|9.0|German, French and Italian
+Ukraine|37|Ukrainian
+United Kingdom|69.1|English
+Vatican City|0.0008|Italian and Latin
+Antigua and Barbuda|0.094|English
+Bahamas|0.40|English
+Barbados|0.28|English
+Belize|0.42|English
+Canada|41.5|English and French
+Costa Rica|5.1|Spanish
+Cuba|10.9|Spanish
+Dominica|0.067|English
+Dominican Republic|11.4|Spanish
+El Salvador|6.3|Spanish
+Grenada|0.117|English
+Guatemala|18.4|Spanish
+Haiti|11.8|Haitian Creole and French
+Honduras|10.8|Spanish
+Jamaica|2.8|English
+Mexico|131|Spanish
+Nicaragua|7.0|Spanish
+Panama|4.5|Spanish
+Saint Kitts and Nevis|0.047|English
+Saint Lucia|0.18|English
+Saint Vincent and the Grenadines|0.10|English
+Trinidad and Tobago|1.5|English
+United States|340|English
+Argentina|45.7|Spanish
+Bolivia|12.4|Spanish
+Brazil|212|Portuguese
+Chile|19.8|Spanish
+Colombia|52.9|Spanish
+Ecuador|18.1|Spanish
+Guyana|0.83|English
+Paraguay|6.9|Spanish and Guaraní
+Peru|34.2|Spanish
+Suriname|0.63|Dutch
+Uruguay|3.4|Spanish
+Venezuela|28.4|Spanish
+Australia|27.2|English
+Fiji|0.93|English and Fijian
+Kiribati|0.13|Gilbertese
+Marshall Islands|0.04|Marshallese
+Micronesia|0.11|English
+Nauru|0.012|Nauruan
+New Zealand|5.2|English
+Palau|0.018|Palauan
+Papua New Guinea|10.5|Tok Pisin
+Samoa|0.22|Samoan
+Solomon Islands|0.82|English
+Tonga|0.104|Tongan
+Tuvalu|0.0099|Tuvaluan
+Vanuatu|0.33|Bislama

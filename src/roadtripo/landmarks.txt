@@ -1,0 +1,49 @@
+# name | state(s) you can see it from | lat | lon
+the Las Vegas Strip|Nevada|36.114|-115.173
+the Statue of Liberty|New York|40.689|-74.045
+the Four Corners Monument|Arizona,Colorado,New Mexico,Utah|36.999|-109.045
+the Grand Canyon|Arizona|36.107|-112.113
+Mount Rushmore|South Dakota|43.879|-103.459
+the Golden Gate Bridge|California|37.820|-122.478
+the Hollywood Sign|California|34.134|-118.322
+the Space Needle|Washington|47.620|-122.349
+the Gateway Arch|Missouri|38.625|-90.185
+Niagara Falls|New York|43.083|-79.074
+Old Faithful in Yellowstone|Wyoming|44.460|-110.828
+the Hoover Dam|Nevada,Arizona|36.016|-114.737
+Walt Disney World|Florida|28.385|-81.564
+Kennedy Space Center|Florida|28.573|-80.649
+the Alamo|Texas|29.426|-98.486
+Graceland|Tennessee|35.048|-90.026
+the French Quarter in New Orleans|Louisiana|29.958|-90.065
+the Liberty Bell|Pennsylvania|39.950|-75.150
+Times Square|New York|40.758|-73.985
+the Bean in Chicago|Illinois|41.883|-87.623
+Yosemite's Half Dome|California|37.746|-119.533
+the Rock and Roll Hall of Fame|Ohio|41.509|-81.695
+the Indy 500 Speedway|Indiana|39.795|-86.235
+the Mall of America|Minnesota|44.855|-93.242
+Churchill Downs, home of the Kentucky Derby|Kentucky|38.203|-85.770
+Fenway Park|Massachusetts|42.347|-71.097
+Devils Tower|Wyoming|44.590|-104.715
+Arches National Park|Utah|38.733|-109.592
+Pikes Peak|Colorado|38.841|-105.044
+the Great Smoky Mountains|Tennessee,North Carolina|35.611|-83.490
+the Grand Ole Opry|Tennessee|36.207|-86.692
+Monument Valley|Utah,Arizona|36.998|-110.099
+Lake Tahoe|California,Nevada|39.097|-120.033
+Gettysburg|Pennsylvania|39.811|-77.226
+Acadia National Park|Maine|44.339|-68.273
+the Mackinac Bridge|Michigan|45.817|-84.727
+Lambeau Field, home of the Packers|Wisconsin|44.501|-88.062
+the Atlantic City Boardwalk|New Jersey|39.358|-74.420
+Glacier National Park|Montana|48.697|-113.718
+Zion National Park|Utah|37.298|-113.026
+Space Center Houston|Texas|29.551|-95.098
+Mount Vernon, George Washington's home|Virginia|38.729|-77.107
+Mount St. Helens|Washington|46.191|-122.195
+the Everglades|Florida|25.286|-80.899
+the Wright Brothers Memorial at Kitty Hawk|North Carolina|36.014|-75.668
+Alcatraz|California|37.827|-122.423
+Plymouth Rock|Massachusetts|41.958|-70.662
+Myrtle Beach|South Carolina|33.689|-78.887

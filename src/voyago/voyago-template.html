@@ -1,0 +1,546 @@
+<title>Voyago</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: the world route map leads (it is the score), then one prompt card at a time. */
+:root {
+  --bg: #e9edf1;
+  --surface: #ffffff;
+  --ink: #111a24;
+  --muted: #5d6a78;
+  --line: #d3dae2;
+  --sea: #d9e5ec;
+  --land: #f7f9fb;
+  --coast: #b5c2cd;
+  --accent: #d9590b;
+  --accent-ink: #ffffff;
+  --accent-soft: #fde9da;
+  --route: #8a99a8;
+  --good: #1e8a4c;
+  --bad: #c9432f;
+  --t0: #9aa5b1; --t1: #d4a514; --t2: #2e9a5a; --t3: #2f6fb0; --t4: #7b4bc2; --t5: #d9590b;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d131a; --surface: #151e28; --ink: #e5ebf1; --muted: #93a1af; --line: #263342;
+    --sea: #0f1f2b; --land: #223040; --coast: #3d4d5d; --accent: #ff8a3d; --accent-ink: #1c0c02; --accent-soft: #3a2212;
+    --route: #5f7182; --good: #4fcb83; --bad: #ef7461;
+    --t0: #7d8996; --t1: #f0c040; --t2: #4fcb83; --t3: #6fa8e0; --t4: #b08ae8; --t5: #ff8a3d; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d131a; --surface: #151e28; --ink: #e5ebf1; --muted: #93a1af; --line: #263342;
+  --sea: #0f1f2b; --land: #223040; --coast: #3d4d5d; --accent: #ff8a3d; --accent-ink: #1c0c02; --accent-soft: #3a2212;
+  --route: #5f7182; --good: #4fcb83; --bad: #ef7461;
+  --t0: #7d8996; --t1: #f0c040; --t2: #4fcb83; --t3: #6fa8e0; --t4: #b08ae8; --t5: #ff8a3d; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--ink); font: 15px/1.5 var(--body); margin: 0;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 22px 48px;
+}
+.wrap { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+h1 { font: 800 30px/1 var(--display); letter-spacing: -0.03em; margin: 0; }
+h1 span { color: var(--accent); }
+.meta { font: 500 13px var(--mono); color: var(--muted); margin-top: 6px; }
+.meta .tag { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; margin-left: 6px; }
+.icon-btn { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 10px; padding: 8px 12px; font: 600 13px var(--body); cursor: pointer; }
+
+.mapcard { background: var(--sea); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+.mapcard svg { display: block; width: 100%; height: auto; }
+.land { fill: var(--land); stroke: var(--coast); stroke-width: .6; }
+.leg { fill: none; stroke: var(--route); stroke-width: 2.4; stroke-linecap: round; }
+.leg.fly { stroke-dasharray: 3 7; }
+.trail { fill: none; stroke: var(--accent); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+.city { fill: var(--surface); stroke: var(--route); stroke-width: 2.5; }
+.city.reached { fill: var(--accent); stroke: var(--accent); }
+.city.goal { fill: var(--ink); stroke: var(--ink); }
+.clab { font: 700 26px var(--body); fill: var(--ink); paint-order: stroke; stroke: var(--land); stroke-width: 7px; stroke-linejoin: round; }
+.mover { transition: transform .9s cubic-bezier(.4, 0, .2, 1); }
+.mover circle { fill: var(--surface); stroke: var(--accent); stroke-width: 3; }
+.where { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 10px 14px; background: var(--surface); border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+.where b { color: var(--ink); }
+.where .pts { font-family: var(--mono); }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.qno { display: flex; justify-content: space-between; align-items: center; font: 600 12px var(--body); letter-spacing: .09em; text-transform: uppercase; color: var(--accent); }
+.qno .timer { font: 600 15px var(--mono); color: var(--ink); letter-spacing: 0; text-transform: none; }
+.qno .timer.low { color: var(--bad); }
+.bar { height: 5px; border-radius: 3px; background: var(--line); overflow: hidden; margin-top: -6px; }
+.bar i { display: block; height: 100%; background: var(--accent); width: 100%; transform-origin: left; }
+.q { font: 800 25px/1.15 var(--display); letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
+.q-sub { color: var(--muted); font-size: 13px; margin: -8px 0 0; }
+.guessbox { position: relative; display: flex; gap: 8px; }
+#guess { flex: 1; min-width: 0; font: 500 18px var(--body); color: var(--ink); background: var(--bg); border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 14px; outline: none; }
+#guess:focus { border-color: var(--accent); }
+.btn { font: 600 15px var(--body); border-radius: 12px; padding: 12px 18px; cursor: pointer; border: 1.5px solid transparent; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); }
+.btn.ghost { background: transparent; border-color: var(--line); color: var(--ink); }
+.btn.wide { width: 100%; }
+.btn:focus-visible, .icon-btn:focus-visible, .sugg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sugg { position: absolute; left: 0; right: 0; top: calc(100% + 4px); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; z-index: 4; box-shadow: 0 10px 30px -12px rgba(0,0,0,.35); }
+.sugg button { display: flex; gap: 10px; width: 100%; text-align: left; border: 0; background: transparent; color: var(--ink); font: 500 15px var(--body); padding: 10px 14px; cursor: pointer; }
+.sugg button[aria-selected="true"] { background: var(--accent-soft); }
+.msg { min-height: 18px; font-size: 13px; color: var(--bad); margin-top: -8px; }
+.skip { background: none; border: 0; color: var(--muted); font: 500 13px var(--body); text-decoration: underline; cursor: pointer; align-self: flex-start; padding: 0; }
+
+.verdict { display: flex; align-items: center; gap: 14px; }
+.badge { border-radius: 12px; padding: 10px 14px; color: #fff; font: 800 18px/1.1 var(--display); min-width: 120px; text-align: center; }
+.badge small { display: block; font: 600 12px var(--mono); opacity: .9; margin-top: 2px; }
+.verdict .ans { font: 700 20px/1.2 var(--display); }
+.verdict .ans small { display: block; font: 500 13px var(--body); color: var(--muted); }
+.ladder { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
+.ladder div { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 10px; align-items: baseline; }
+.ladder span:first-child { font: 600 11px var(--mono); text-transform: uppercase; letter-spacing: .04em; }
+.ladder span:last-child { color: var(--muted); overflow-wrap: anywhere; }
+.ladder .mine { color: var(--ink); font-weight: 600; }
+
+.intro p { margin: 0; color: var(--muted); }
+.legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 6px 14px; font-size: 13px; }
+.legend span { display: flex; align-items: center; gap: 8px; }
+.legend i { width: 12px; height: 12px; border-radius: 3px; flex: none; }
+.legend b { font-family: var(--mono); font-weight: 600; margin-left: auto; }
+
+.result h2 { font: 800 28px/1.1 var(--display); margin: 0; text-wrap: balance; }
+.result p { margin: 0; color: var(--muted); }
+.grid { font: 500 14px var(--mono); background: var(--bg); border-radius: 10px; padding: 10px 12px; white-space: pre-wrap; }
+.copied { font-size: 13px; color: var(--good); min-height: 18px; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.actions .btn { flex: 1; }
+.sharebox { width: 100%; font: 500 13px var(--mono); padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); resize: none; }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; text-align: center; }
+.stats b { display: block; font: 600 22px/1.1 var(--mono); }
+.stats span { font-size: 11px; color: var(--muted); }
+.review { display: flex; flex-direction: column; gap: 6px; }
+.review div { display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; gap: 10px; align-items: center; font-size: 13px; padding: 8px 10px; background: var(--bg); border-radius: 8px; }
+.review i { width: 12px; height: 12px; border-radius: 3px; }
+.review .p { color: var(--muted); }
+.review b { font-family: var(--mono); font-weight: 600; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+.panel h2 { font: 700 18px var(--display); margin: 0; }
+.panel ol { margin: 0; padding-left: 20px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+@media (prefers-reduced-motion: reduce) { .mover { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Voyag<span>o</span></h1>
+      <div class="meta" id="meta"></div>
+    </div>
+    <button type="button" class="icon-btn" id="helpBtn">How to play</button>
+  </header>
+
+  <div class="panel" id="help" hidden>
+    <h2>How to play</h2>
+    <ol>
+      <li>Ten geography prompts a day, like "Name a country that borders Brazil". You get one answer and 30 seconds for each.</li>
+      <li>Any correct answer scores, but the less obvious it is, the more it's worth: from 15 points for the first answer most people think of, up to 130 for a real deep cut.</li>
+      <li>Your points carry you around the world from Brussels to Kampala, 16 legs by car and plane. Every leg is the same number of points.</li>
+      <li>A perfect day, the rarest answer every time, lands you in Kampala.</li>
+    </ol>
+    <button type="button" class="btn ghost" id="helpClose">Let's go</button>
+  </div>
+
+  <div class="mapcard">
+    <svg id="map" role="img" aria-label="World map of the route from Brussels to Kampala, showing how far you've travelled"></svg>
+    <div class="where"><span id="whereTxt"></span><span class="pts" id="ptsTxt"></span></div>
+  </div>
+
+  <section class="card" id="card" aria-live="polite"></section>
+</div>
+
+<script>
+const D = /*DATA*/;
+const C = D.countries, M = D.map, NQ = 10, MAXP = 130, TIME = 30;
+const FULL = NQ * MAXP, LEG = FULL / M.legs.length, LAST = M.cities[M.cities.length - 1].n;
+const track = n => { try { window.tgTrack && window.tgTrack(n); } catch (e) {} };
+const TIERS = [
+  { name: "Tourist", pts: 15, emo: "⬜", c: "--t0" },
+  { name: "Traveller", pts: 35, emo: "🟨", c: "--t1" },
+  { name: "Explorer", pts: 60, emo: "🟩", c: "--t2" },
+  { name: "Rare find", pts: 85, emo: "🟦", c: "--t3" },
+  { name: "Deep cut", pts: 110, emo: "🟪", c: "--t4" },
+  { name: "Off the map", pts: 130, emo: "🌟", c: "--t5" },
+];
+const norm = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[.'’]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+const byN = Object.fromEntries(C.map(c => [c.n, c]));
+/* names players type: countries (with aliases) and capitals (with alternates) */
+const CLOOK = new Map(), KLOOK = new Map();
+C.forEach(c => { [c.n, ...c.al].forEach(a => { if (!CLOOK.has(norm(a))) CLOOK.set(norm(a), c); }); [c.cap, ...c.ca].forEach(a => { if (!KLOOK.has(norm(a))) KLOOK.set(norm(a), c); }); });
+const KYIV = byN["Ukraine"]; if (KYIV) KLOOK.set("kiev", KYIV);
+const LETTER_OK = { "Ivory Coast": ["Cote d Ivoire"], "Cabo Verde": ["Cape Verde"], "Czechia": ["Czech Republic"], "Timor-Leste": ["East Timor"], "Eswatini": ["Swaziland"], "Turkey": ["Turkiye"] };
+const first = s => norm(s).charAt(0).toUpperCase();
+const startsWith = (c, L) => first(c.n) === L || (LETTER_OK[c.n] || []).some(a => first(a) === L);
+const CONTS = ["Africa", "Asia", "Europe", "North America", "South America", "Oceania"];
+
+/* ---------- prompt bank: every prompt is a filter over the country list ---------- */
+function bank() {
+  const P = [], seenText = new Set();
+  const has = v => v !== null && v !== undefined;
+  /* keep only prompts with 10-40 valid answers: enough room for a rarity ladder, small enough to recall */
+  const add = (type, text, kind, ok, sub) => { if (seenText.has(text)) return; const ans = C.filter(c => { try { return ok(c); } catch (e) { return false; } }); if (ans.length >= 10 && ans.length <= 40) { seenText.add(text); P.push({ type, text, kind, sub, ans: ans.map(c => c.n) }); } };
+  const CAP = "Type the city, not the country.";
+  const ADJ = { Africa: "an African", Asia: "an Asian", Europe: "a European", "North America": "a North American", "South America": "a South American", Oceania: "an Oceanian" };
+  const IN = k => ` in ${k}`;
+
+  /* neighbours and neighbours of neighbours */
+  C.forEach(x => {
+    if (x.nb.length >= 10) add("border", `Name a country that borders ${x.n}`, "country", c => x.nb.includes(c.n));
+    const two = new Set(x.nb); x.nb.forEach(n => byN[n].nb.forEach(m => two.add(m))); two.delete(x.n);
+    add("near", `Name a country within two border crossings of ${x.n}`, "country", c => two.has(c.n), `A neighbour of ${x.n}, or a neighbour's neighbour.`);
+  });
+
+  /* letters */
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(L => {
+    add("letter", `Name a country starting with ${L}`, "country", c => startsWith(c, L));
+    add("capletter", `Name a capital city starting with ${L}`, "capital", c => [c.cap, ...c.ca].some(x => first(x) === L), CAP);
+    add("ends", `Name a country ending in ${L}`, "country", c => norm(c.n).slice(-1).toUpperCase() === L);
+  });
+
+  /* continents, alone and with a condition */
+  CONTS.forEach(k => {
+    add("capcont", `Name a capital city${IN(k)}`, "capital", c => c.k === k, CAP);
+    const K = c => c.k === k, A = ADJ[k];
+    add("cont", `Name ${A} country with more than 50 million people`, "country", c => K(c) && c.pop > 50);
+    add("cont", `Name ${A} country with more than 20 million people`, "country", c => K(c) && c.pop > 20);
+    add("cont", `Name ${A} country with fewer than 5 million people`, "country", c => K(c) && c.pop < 5);
+    add("cont", `Name ${A} country with between 5 and 20 million people`, "country", c => K(c) && c.pop >= 5 && c.pop <= 20);
+    add("cont", `Name ${A} country bigger than 500,000 km²`, "country", c => K(c) && c.area > 5e5);
+    add("cont", `Name ${A} country smaller than 50,000 km²`, "country", c => K(c) && c.area < 5e4);
+    add("cont", `Name a landlocked country${IN(k)}`, "country", c => K(c) && c.ll);
+    add("cont", `Name ${A} country with a coastline`, "country", c => K(c) && !c.ll);
+    add("cont", `Name ${A} country with GDP per person above $20,000`, "country", c => K(c) && has(c.gdp) && c.gdp > 20000);
+    add("cont", `Name ${A} country with GDP per person below $2,000`, "country", c => K(c) && has(c.gdp) && c.gdp < 2000);
+    add("cont", `Name ${A} country more than half covered by forest`, "country", c => K(c) && has(c.forest) && c.forest > 50);
+    add("cont", `Name ${A} country whose capital is south of the equator`, "country", c => K(c) && c.lat < 0);
+    add("cont", `Name ${A} country whose name starts with a vowel`, "country", c => K(c) && /^[aeiou]/.test(norm(c.n)));
+    add("cont", `Name ${A} country with 4 or more land neighbours`, "country", c => K(c) && c.nb.length >= 4);
+    add("cont", `Name ${A} country where French is the main language`, "country", c => K(c) && c.lang === "French");
+    add("cont", `Name ${A} country where Arabic is the main language`, "country", c => K(c) && c.lang === "Arabic");
+    add("cont", `Name ${A} country where English is the main language`, "country", c => K(c) && c.lang === "English");
+  });
+
+  /* world-wide bands */
+  [[100, 1e9, "more than 100 million"], [50, 100, "between 50 and 100 million"], [20, 50, "between 20 and 50 million"], [10, 20, "between 10 and 20 million"], [5, 10, "between 5 and 10 million"], [2, 5, "between 2 and 5 million"], [0, 1, "fewer than 1 million"]]
+    .forEach(([lo, hi, t]) => add("pop", `Name a country with ${t} people`, "country", c => c.pop >= lo && c.pop < hi));
+  [[2e6, 1e9, "bigger than 2 million km²"], [1e6, 2e6, "between 1 and 2 million km²"], [5e5, 1e6, "between 500,000 km² and 1 million km²"], [3e5, 5e5, "between 300,000 and 500,000 km²"], [1e5, 2e5, "between 100,000 and 200,000 km²"], [0, 1e4, "smaller than 10,000 km²"], [0, 1000, "smaller than 1,000 km²"]]
+    .forEach(([lo, hi, t]) => add("area", `Name a country ${t}`, "country", c => c.area >= lo && c.area < hi));
+  [[60000, 1e9, "above $60,000"], [40000, 60000, "between $40,000 and $60,000"], [0, 1000, "below $1,000"], [1000, 1500, "between $1,000 and $1,500"]]
+    .forEach(([lo, hi, t]) => add("gdp", `Name a country with GDP per person ${t}`, "country", c => has(c.gdp) && c.gdp >= lo && c.gdp < hi, "World Bank, latest year."));
+  add("forest", "Name a country more than 60% covered by forest", "country", c => has(c.forest) && c.forest > 60);
+  add("forest", "Name a country less than 2% covered by forest", "country", c => has(c.forest) && c.forest < 2);
+  add("temp", "Name a country with an average temperature below 5°C", "country", c => has(c.temp) && c.temp < 5, "Yearly average across the whole country.");
+  add("temp", "Name a country with an average temperature above 27°C", "country", c => has(c.temp) && c.temp > 27, "Yearly average across the whole country.");
+  [1, 2, 3, 4, 5].forEach(n => add("nbn", `Name a country with exactly ${n} land neighbour${n > 1 ? "s" : ""}`, "country", c => c.nb.length === n));
+  add("nbn", "Name a country with 7 or more land neighbours", "country", c => c.nb.length >= 7);
+  add("lat", "Name a country whose capital is north of 55°N", "country", c => c.lat > 55, "Further north than Moscow, roughly.");
+  add("lat", "Name a country whose capital is between 45°N and 55°N", "country", c => c.lat >= 45 && c.lat <= 55);
+  add("lat", "Name a country whose capital is south of 20°S", "country", c => c.lat < -20);
+  add("lat", "Name a country whose capital is within 5° of the equator", "country", c => Math.abs(c.lat) <= 5);
+  add("lat", "Name a country whose capital is west of 70°W", "country", c => c.lon < -70);
+  add("lat", "Name a country whose capital is east of 100°E", "country", c => c.lon > 100);
+  ["Spanish", "French", "Arabic", "English", "Portuguese"].forEach(l => add("lang", `Name a country where ${l} is the main language`, "country", c => c.lang === l));
+
+  /* names */
+  add("name", "Name a country with the letter Z in its name", "country", c => /z/.test(norm(c.n)));
+  add("name", "Name a country with the letter K in its name", "country", c => /k/.test(norm(c.n)));
+  add("name", "Name a country with a double letter in its name", "country", c => /([a-z])\1/.test(norm(c.n)), "Like Greece or Philippines.");
+  add("name", "Name a country that starts and ends with the same letter", "country", c => { const s = norm(c.n).replace(/ /g, ""); return s[0] === s[s.length - 1]; });
+  add("name", "Name a country with 4 or 5 letters", "country", c => norm(c.n).replace(/ /g, "").length <= 5);
+  add("name", "Name a country with 12 or more letters", "country", c => norm(c.n).replace(/ /g, "").length >= 12, "Spaces don't count.");
+  add("name", "Name a country whose name ends in -ia", "country", c => /ia$/.test(norm(c.n)));
+  add("name", "Name a country whose name is more than one word", "country", c => /\s/.test(c.n.trim()));
+  add("name", "Name a country whose capital starts with the same letter", "country", c => first(c.n) === first(c.cap), "e.g. Panama and Panama City");
+  add("name", "Name a country whose name starts with a vowel", "country", c => /^[aeiou]/.test(norm(c.n)));
+  add("capname", "Name a capital city with more than one word in its name", "capital", c => /\s/.test(c.cap.trim()), CAP);
+  add("capname", "Name a capital city that shares its country's name", "capital", c => norm(c.cap).startsWith(norm(c.n)) || (norm(c.n).split(" ")[0].length > 3 && norm(c.cap).startsWith(norm(c.n).split(" ")[0])), "e.g. Mexico City");
+  add("capname", "Name a capital city with 4 letters", "capital", c => [c.cap, ...c.ca].some(x => norm(x).replace(/ /g, "").length === 4), CAP);
+  add("capname", "Name a capital city ending in A", "capital", c => [c.cap, ...c.ca].some(x => norm(x).endsWith("a")), CAP);
+  add("capname", "Name a capital city ending in O", "capital", c => [c.cap, ...c.ca].some(x => norm(x).endsWith("o")), CAP);
+  add("capname", "Name a capital city with the letter K in it", "capital", c => [c.cap, ...c.ca].some(x => /k/.test(norm(x))), CAP);
+
+  /* groups and geography sets */
+  const S = (type, text, list, sub) => { const L = new Set(list); add(type, text, "country", c => L.has(c.n), sub); };
+  add("set", "Name a country made up entirely of islands", "country", c => c.isl);
+  add("set", "Name a country the equator passes through", "country", c => c.eq);
+  add("set", "Name a country with a Mediterranean coastline", "country", c => c.med);
+  add("set", "Name a country in the European Union", "country", c => c.eu);
+  S("set", "Name a country that was part of the Soviet Union", ["Russia", "Ukraine", "Belarus", "Moldova", "Estonia", "Latvia", "Lithuania", "Georgia", "Armenia", "Azerbaijan", "Kazakhstan", "Uzbekistan", "Turkmenistan", "Kyrgyzstan", "Tajikistan"]);
+  S("set", "Name a member of NATO", ["Albania", "Belgium", "Bulgaria", "Canada", "Croatia", "Czechia", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hungary", "Iceland", "Italy", "Latvia", "Lithuania", "Luxembourg", "Montenegro", "Netherlands", "North Macedonia", "Norway", "Poland", "Portugal", "Romania", "Slovakia", "Slovenia", "Spain", "Sweden", "Turkey", "United Kingdom", "United States"]);
+  S("set", "Name a member of OPEC", ["Algeria", "Republic of the Congo", "Equatorial Guinea", "Gabon", "Iran", "Iraq", "Kuwait", "Libya", "Nigeria", "Saudi Arabia", "United Arab Emirates", "Venezuela"]);
+  S("set", "Name a G20 country", ["Argentina", "Australia", "Brazil", "Canada", "China", "France", "Germany", "India", "Indonesia", "Italy", "Japan", "Mexico", "Russia", "Saudi Arabia", "South Africa", "South Korea", "Turkey", "United Kingdom", "United States"], "Countries only, not the EU or African Union.");
+  S("set", "Name a country the Tropic of Cancer passes through", ["Mexico", "Bahamas", "Mauritania", "Mali", "Algeria", "Niger", "Libya", "Egypt", "Saudi Arabia", "United Arab Emirates", "Oman", "India", "Bangladesh", "Myanmar", "China"]);
+  S("set", "Name a country the Tropic of Capricorn passes through", ["Chile", "Argentina", "Paraguay", "Brazil", "Namibia", "Botswana", "South Africa", "Mozambique", "Madagascar", "Australia"]);
+  S("set", "Name a country the Danube flows through", ["Germany", "Austria", "Slovakia", "Hungary", "Croatia", "Serbia", "Romania", "Bulgaria", "Moldova", "Ukraine"]);
+  S("set", "Name a country in the Nile basin", ["Egypt", "Sudan", "South Sudan", "Ethiopia", "Eritrea", "Uganda", "Kenya", "Tanzania", "Rwanda", "Burundi", "DR Congo"]);
+  S("set", "Name a country the Sahara covers part of", ["Algeria", "Chad", "Egypt", "Libya", "Mali", "Mauritania", "Morocco", "Niger", "Sudan", "Tunisia"]);
+
+  /* between two famous countries: "more people than Canada but fewer than Germany" */
+  const famous = C.filter(c => c.fam >= 8);
+  const between = (type, key, ok, text, cap) => {
+    const cands = [];
+    famous.filter(ok).forEach(a => famous.filter(ok).forEach(b => {
+      if (!(a[key] < b[key])) return;
+      const ans = C.filter(c => ok(c) && c[key] > a[key] && c[key] < b[key] && c.n !== a.n && c.n !== b.n);
+      if (ans.length >= 10 && ans.length <= 40) cands.push({ a, b, d: Math.abs(ans.length - 20) });
+    }));
+    cands.sort((x, y) => x.d - y.d || x.a.n.localeCompare(y.a.n)).slice(0, cap).forEach(({ a, b }) => add(type, text(a, b), "country", c => ok(c) && c[key] > a[key] && c[key] < b[key] && c.n !== a.n && c.n !== b.n));
+  };
+  between("rpop", "pop", c => has(c.pop), (a, b) => `Name a country with more people than ${a.n} but fewer than ${b.n}`, 70);
+  between("rarea", "area", c => has(c.area), (a, b) => `Name a country bigger than ${a.n} but smaller than ${b.n}`, 70);
+  between("rgdp", "gdp", c => has(c.gdp), (a, b) => `Name a country richer per person than ${a.n} but poorer than ${b.n}`, 40);
+  return P;
+}
+const BANK = bank();
+
+/* rarity: rank the valid answers from most to least familiar, then cut into tiers */
+function tierOf(p, name) {
+  const sorted = p.ans.map(n => byN[n]).sort((a, b) => b.fam - a.fam);
+  const i = sorted.findIndex(c => c.n === name), q = sorted.length > 1 ? i / (sorted.length - 1) : 1;
+  return q < 0.25 ? 0 : q < 0.45 ? 1 : q < 0.65 ? 2 : q < 0.8 ? 3 : q < 0.93 ? 4 : 5;
+}
+const label = (p, c) => p.kind === "capital" ? `${c.cap} (${c.n})` : c.n;
+
+/* ---------- daily set ---------- */
+const EPOCH = Date.UTC(2026, 10, 2);
+const todayUTC = () => { const d = new Date(); return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()); };
+const DAY = Math.floor((todayUTC() - EPOCH) / 864e5) + 1;
+function mulberry32(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function pickSet(r, blocked) {
+  const idx = BANK.map((_, i) => i);
+  for (let i = idx.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; }
+  /* first pass: ten different kinds of prompt; if the 20-day rule leaves a gap, allow a second of a kind */
+  const out = [], per = {}; let caps = 0;
+  for (const limit of [1, 2]) for (const i of idx) {
+    if (out.length === NQ) break;
+    const p = BANK[i];
+    if (blocked.has(i) || out.includes(i) || (per[p.type] || 0) >= limit) continue;
+    if (p.kind === "capital" && caps >= 3) continue;
+    out.push(i); per[p.type] = (per[p.type] || 0) + 1; if (p.kind === "capital") caps++;
+  }
+  return out;
+}
+/* Daily sets are built in order from day 1 so no prompt comes back within 20 days */
+const NOREPEAT = 20, SETS = [];
+function daySet(day) {
+  for (let d = SETS.length + 1; d <= day; d++) {
+    const blocked = new Set(); for (let b = Math.max(1, d - NOREPEAT + 1); b < d; b++) SETS[b - 1].forEach(i => blocked.add(i));
+    SETS.push(pickSet(mulberry32(20261107 + d * 7919), blocked));
+  }
+  return SETS[day - 1];
+}
+function makeSet(seed) { return pickSet(mulberry32(seed), new Set()); }
+/* ---------- state ---------- */
+const LS = "voyago-v2";
+const store = { get(k, d) { try { const v = JSON.parse(localStorage.getItem(LS + k)); return v ?? d; } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem(LS + k, JSON.stringify(v)); } catch (e) {} } };
+let practice = false, set = daySet(Math.max(1, DAY)), answers = [], started = false;
+{ const s = store.get(":day", null); if (s && s.day === DAY && Array.isArray(s.answers)) { answers = s.answers; started = s.started; } }
+function persist() { if (!practice) store.set(":day", { day: DAY, answers, started }); }
+const total = () => answers.reduce((a, x) => a + x.pts, 0);
+const $ = id => document.getElementById(id);
+
+/* ---------- map ---------- */
+const SN = "http://www.w3.org/2000/svg";
+const svg = $("map");
+svg.setAttribute("viewBox", `0 0 ${M.W} ${M.H}`);
+const poly = pts => "M" + pts.map(p => p.join(",")).join("L");
+svg.innerHTML = `<path class="land" d="${M.land}"/>` +
+  M.legs.map(l => `<path class="leg ${l.m}" d="${poly(l.pts)}"/>`).join("") +
+  `<path class="trail" id="trail" d=""/>` +
+  M.cities.map((c, i) => `<circle class="city" data-i="${i}" cx="${c.x}" cy="${c.y}" r="${i === 0 || i === M.cities.length - 1 ? 9 : 6.5}"/>`).join("") +
+  `<g id="clabs"></g><g class="mover" id="mover"><circle r="24"/><text id="moverIc" text-anchor="middle" dominant-baseline="central" font-size="27">🚗</text></g>`;
+/* where you are after p points: leg index, and a point along that leg's polyline */
+function locate(p) {
+  const pos = Math.min(p / LEG, M.legs.length), li = Math.min(Math.floor(pos), M.legs.length - 1), t = pos - li;
+  const pts = M.legs[li].pts, f = t * (pts.length - 1), k = Math.min(Math.floor(f), pts.length - 2), u = f - k;
+  const x = pts[k][0] + (pts[k + 1][0] - pts[k][0]) * u, y = pts[k][1] + (pts[k + 1][1] - pts[k][1]) * u;
+  const trail = []; for (let j = 0; j < li; j++) trail.push(...M.legs[j].pts); trail.push(...pts.slice(0, k + 1), [x, y]);
+  return { li, t, x, y, trail, reached: pos >= M.legs.length ? M.cities.length - 1 : li };
+}
+function renderMap() {
+  const p = total(), L = locate(p);
+  $("trail").setAttribute("d", p > 0 ? poly(L.trail.map(q => [q[0].toFixed(1), q[1].toFixed(1)])) : "");
+  svg.querySelectorAll(".city").forEach(el => { const i = +el.dataset.i; el.setAttribute("class", "city" + (i <= L.reached && p > 0 || i === 0 ? " reached" : i === M.cities.length - 1 ? " goal" : "")); });
+  $("mover").style.transform = `translate(${L.x}px, ${L.y}px)`;
+  $("moverIc").textContent = p >= FULL ? "🏁" : M.legs[L.li].m === "fly" ? "✈️" : "🚗";
+  const lab = $("clabs"); lab.replaceChildren();
+  [...(L.reached === 0 || p === 0 ? [0] : []), L.reached, M.cities.length - 1].filter((v, i, a) => a.indexOf(v) === i).forEach(i => {
+    const c = M.cities[i], t = document.createElementNS(SN, "text"); t.setAttribute("class", "clab");
+    const right = c.x > 760; const off = i === L.reached && p > 0 ? 30 : 14; t.setAttribute("x", c.x + (right ? -off : off)); t.setAttribute("y", c.y + (c.y > M.H - 60 ? -12 : 9)); if (right) t.setAttribute("text-anchor", "end");
+    t.textContent = c.n; lab.append(t);
+  });
+  const next = M.cities[Math.min(L.reached + 1, M.cities.length - 1)];
+  $("whereTxt").innerHTML = p >= FULL ? `<b>You made it to ${LAST}.</b>` : `Last stop: <b>${M.cities[L.reached].n}</b> · next: ${next.n} ${M.legs[L.li].m === "fly" ? "✈️" : "🚗"}`;
+  $("ptsTxt").textContent = `${p} / ${FULL}`;
+}
+
+/* ---------- prompt flow ---------- */
+let timer = null, left = TIME, sel = 0, opts = [];
+function renderTop() {
+  const dateStr = new Date().toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+  $("meta").textContent = practice ? "Practice" : `No. ${DAY} · ${dateStr}`;
+  if (practice) { const t = document.createElement("span"); t.className = "tag"; t.textContent = "doesn't count"; $("meta").append(t); }
+}
+function renderIntro() {
+  const card = $("card"); card.className = "card intro";
+  card.innerHTML = `<h2 class="q">Brussels to Kampala. Ten prompts.</h2><p>Rare answers take you further. Each prompt has a 30-second clock, so have a minute to spare before you start.</p><div class="legend" id="legend"></div><button type="button" class="btn primary wide" id="startBtn">Start today's voyage</button>`;
+  $("legend").replaceChildren(...TIERS.map(t => { const s = document.createElement("span"); const i = document.createElement("i"); i.style.background = `var(${t.c})`; const b = document.createElement("b"); b.textContent = `+${t.pts}`; s.append(i, t.name, b); return s; }));
+  $("startBtn").onclick = () => { started = true; persist(); if (!practice) track("voyago-start"); renderPrompt(); };
+}
+function renderPrompt() {
+  const qi = answers.length, p = BANK[set[qi]], card = $("card"); card.className = "card";
+  card.innerHTML = `<div class="qno"><span>Prompt ${qi + 1} of ${NQ}</span><span class="timer" id="timer">${TIME}s</span></div><div class="bar"><i id="barFill"></i></div>
+    <h2 class="q"></h2>${p.sub ? '<p class="q-sub"></p>' : ""}
+    <div class="guessbox"><input id="guess" type="text" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="sugg"><button type="button" class="btn primary" id="go">Go</button><div class="sugg" id="sugg" role="listbox" hidden></div></div>
+    <div class="msg" id="msg" aria-live="polite"></div><button type="button" class="skip" id="skip">Skip this one</button>`;
+  card.querySelector(".q").textContent = p.text; if (p.sub) card.querySelector(".q-sub").textContent = p.sub;
+  const g = $("guess"); g.placeholder = p.kind === "capital" ? "Type a capital city" : "Type a country"; g.setAttribute("aria-label", g.placeholder);
+  g.addEventListener("input", () => { $("msg").textContent = ""; });
+  g.addEventListener("keydown", e => {
+    if (e.key === "ArrowDown") { e.preventDefault(); moveSel(1); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); moveSel(-1); }
+    else if (e.key === "Enter") { e.preventDefault(); submit(pick()); }
+    else if (e.key === "Escape") { $("sugg").hidden = true; }
+  });
+  g.addEventListener("blur", () => setTimeout(() => { const s = $("sugg"); if (s) s.hidden = true; }, 120));
+  $("go").onclick = () => submit(pick());
+  $("skip").onclick = () => finishPrompt(null);
+  g.focus({ preventScroll: true });
+  startTimer();
+}
+function startTimer() {
+  clearInterval(timer); left = TIME; const t0 = Date.now();
+  const fill = $("barFill"); fill.style.transition = "none"; fill.style.transform = "scaleX(1)";
+  requestAnimationFrame(() => requestAnimationFrame(() => { fill.style.transition = `transform ${TIME}s linear`; fill.style.transform = "scaleX(0)"; }));
+  timer = setInterval(() => {
+    left = Math.max(0, TIME - Math.floor((Date.now() - t0) / 1000));
+    const el = $("timer"); if (el) { el.textContent = left + "s"; el.classList.toggle("low", left <= 5); }
+    if (left <= 0) { clearInterval(timer); finishPrompt(null, true); }
+  }, 250);
+}
+function look(p) { return p.kind === "capital" ? KLOOK : CLOOK; }
+function suggest() {
+  const p = BANK[set[answers.length]], q = norm($("guess").value), box = $("sugg");
+  if (q.length < 2) { box.hidden = true; opts = []; $("guess").setAttribute("aria-expanded", "false"); return; }
+  const hits = [];
+  if (p.kind === "capital") C.forEach(c => [c.cap, ...c.ca].forEach(x => { const k = norm(x); if (k.startsWith(q) || k.split(" ").some(w => w.startsWith(q))) hits.push({ show: x, rank: k.startsWith(q) ? 0 : 1 }); }));
+  else C.forEach(c => { let best = -1, via = null; [c.n, ...c.al].forEach(x => { const k = norm(x); const rk = k.startsWith(q) ? 0 : k.split(" ").some(w => w.startsWith(q)) ? 1 : -1; if (rk >= 0 && (best < 0 || rk < best)) { best = rk; via = x; } }); if (best >= 0) hits.push({ show: c.n + (norm(via) !== norm(c.n) && !norm(c.n).includes(norm(via)) ? ` (${via})` : ""), val: c.n, rank: best }); });
+  hits.sort((a, b) => a.rank - b.rank || a.show.localeCompare(b.show));
+  const top = hits.slice(0, 5); opts = top.map(h => h.val || h.show); sel = 0;
+  box.replaceChildren(...top.map((h, k) => { const b = document.createElement("button"); b.type = "button"; b.setAttribute("role", "option"); b.setAttribute("aria-selected", k === sel); b.textContent = h.show; b.addEventListener("pointerdown", e => { e.preventDefault(); submit(h.val || h.show); }); return b; }));
+  box.hidden = !opts.length; $("guess").setAttribute("aria-expanded", String(!!opts.length));
+}
+function moveSel(d) { if (!opts.length) return; sel = (sel + d + opts.length) % opts.length; [...$("sugg").children].forEach((b, k) => b.setAttribute("aria-selected", k === sel)); }
+const pick = () => $("guess").value;
+/* No suggestions, so forgive small typos: exact match first, then the single closest name within 1-2 letters */
+function lev(a, b) { const m = a.length, n = b.length; if (Math.abs(m - n) > 2) return 9; let prev = [...Array(n + 1).keys()]; for (let i = 1; i <= m; i++) { const cur = [i]; for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); prev = cur; } return prev[n]; }
+function find(map, text) {
+  const q = norm(text || ""); if (!q) return null;
+  if (map.has(q)) return map.get(q);
+  const tol = q.length >= 8 ? 2 : q.length >= 5 ? 1 : 0; if (!tol) return null;
+  let best = null, bd = 9, tie = false;
+  for (const [k, c] of map) { const d = lev(q, k); if (d < bd) { bd = d; best = c; tie = false; } else if (d === bd && best && c.n !== best.n) tie = true; }
+  return bd <= tol && !tie ? best : null;
+}
+function submit(text) {
+  const p = BANK[set[answers.length]], c = find(look(p), text);
+  if (!c) { const other = p.kind === "capital" ? find(CLOOK, text) : find(KLOOK, text); $("msg").textContent = !(text || "").trim() ? "" : other ? `That's a ${p.kind === "capital" ? "country. Type its capital city" : "capital. Type the country"} instead.` : `"${text.trim()}" isn't a ${p.kind === "capital" ? "capital city" : "country"} I recognise. Check the spelling and try again.`; return; }
+  finishPrompt(c.n);
+}
+function finishPrompt(name, timedOut) {
+  clearInterval(timer);
+  const p = BANK[set[answers.length]], valid = name && p.ans.includes(name);
+  const tier = valid ? tierOf(p, name) : -1;
+  answers.push({ q: set[answers.length], a: name, pts: valid ? TIERS[tier].pts : 0, tier, to: !!timedOut });
+  persist(); renderMap(); renderVerdict();
+  if (answers.length === NQ) recordResult();
+}
+function renderVerdict() {
+  const x = answers[answers.length - 1], p = BANK[x.q], card = $("card"); card.className = "card";
+  const c = x.a ? byN[x.a] : null, T = x.tier >= 0 ? TIERS[x.tier] : null;
+  card.innerHTML = `<div class="qno"><span>Prompt ${answers.length} of ${NQ}</span></div><h2 class="q"></h2>
+    <div class="verdict"><div class="badge"></div><div class="ans"></div></div><div class="ladder" id="ladder"></div>
+    <button type="button" class="btn primary wide" id="next"></button>`;
+  card.querySelector(".q").textContent = p.text;
+  const badge = card.querySelector(".badge"), ans = card.querySelector(".ans");
+  if (T) { badge.style.background = `var(${T.c})`; badge.innerHTML = `${T.name}<small>+${T.pts} pts</small>`; }
+  else { badge.style.background = "var(--bad)"; badge.innerHTML = `${x.to ? "Time's up" : x.a ? "Not valid" : "Skipped"}<small>+0 pts</small>`; }
+  ans.textContent = c ? label(p, c) : "No answer";
+  const why = document.createElement("small"); why.textContent = `${p.ans.length} valid answers` + (c && !T ? `. ${c.n} doesn't fit this one.` : ""); ans.append(why);
+  /* show one example from each tier, so players learn what counted as rare */
+  const sorted = p.ans.map(n => byN[n]).sort((a, b) => b.fam - a.fam), lad = $("ladder");
+  [5, 4, 3, 0].forEach(t => {
+    const ex = sorted.filter(cc => tierOf(p, cc.n) === t).slice(0, 3);
+    if (!ex.length) return;
+    const row = document.createElement("div"), a = document.createElement("span"), b = document.createElement("span");
+    a.textContent = TIERS[t].name; a.style.color = `var(${TIERS[t].c})`;
+    b.textContent = ex.map(cc => label(p, cc)).join(", "); if (c && ex.some(cc => cc.n === c.n)) b.className = "mine";
+    row.append(a, b); lad.append(row);
+  });
+  const btn = $("next"); btn.textContent = answers.length < NQ ? "Next prompt" : "See where you landed";
+  btn.onclick = () => { if (answers.length < NQ) renderPrompt(); else renderEnd(); }; btn.focus({ preventScroll: true });
+}
+function reachedCity() { return M.cities[locate(total()).reached].n; }
+function shareText() {
+  const row = answers.map(x => x.tier >= 0 ? TIERS[x.tier].emo : "⬛").join("");
+  const site = /^https?:/.test(location.origin) && !/claude|localhost/.test(location.host) ? `\n${location.origin}/voyago/` : "";
+  return `Voyago ${practice ? "(practice)" : "#" + DAY} 🌍 Reached ${reachedCity()} · ${total()}/${FULL}\n${row}${site}`;
+}
+function recordResult() {
+  if (practice) return;
+  const s = { played: 0, best: 0, sum: 0, perth: 0, ...store.get(":stats", {}) };
+  if (s.lastDay === DAY) return;
+  s.played++; s.sum += total(); s.best = Math.max(s.best, total()); if (total() >= FULL) s.perth++; s.lastDay = DAY;
+  store.set(":stats", s); track("voyago-finished-stop-" + locate(total()).reached);
+}
+function renderEnd() {
+  const card = $("card"); card.className = "card result";
+  const p = total(), L = locate(p);
+  card.innerHTML = `<div class="qno"><span>${practice ? "Practice voyage" : "Today's voyage"}</span></div><h2></h2><p></p><div class="grid" id="grid"></div>
+    <div class="actions"><button type="button" class="btn primary" id="share">Copy result</button><button type="button" class="btn ghost" id="again"></button></div><div class="copied" id="copied"></div>
+    <div class="review" id="review"></div><div id="statsBox"></div>`;
+  card.querySelector("h2").textContent = p >= FULL ? `${LAST}! A perfect voyage.` : `You made it to ${M.cities[L.reached].n}.`;
+  card.querySelector("p").textContent = `${p} points, ${L.reached} of ${M.legs.length} legs. ${practice ? "Practice doesn't touch your stats." : "New prompts at midnight."}`;
+  $("grid").textContent = shareText().split("\n")[1];
+  $("again").textContent = practice ? "Another practice voyage" : "Practice a random set";
+  $("review").replaceChildren(...answers.map(x => {
+    const d = document.createElement("div"), i = document.createElement("i"), t = document.createElement("span"), b = document.createElement("b");
+    i.style.background = x.tier >= 0 ? `var(${TIERS[x.tier].c})` : "var(--bad)";
+    const q = BANK[x.q]; t.innerHTML = ""; t.append(x.a ? label(q, byN[x.a]) : "—"); const s = document.createElement("span"); s.className = "p"; s.textContent = " · " + q.text; t.append(s);
+    b.textContent = "+" + x.pts; d.append(i, t, b); return d;
+  }));
+  $("share").onclick = () => {
+    const text = shareText(); track(practice ? "voyago-share-practice" : "voyago-share");
+    const fallback = () => { let ta = card.querySelector("textarea"); if (!ta) { ta = document.createElement("textarea"); ta.className = "sharebox"; ta.rows = 3; ta.readOnly = true; card.insertBefore(ta, $("review")); } ta.value = text; ta.focus(); ta.select(); $("copied").textContent = "Select and copy the text below"; };
+    try { navigator.clipboard.writeText(text).then(() => { $("copied").textContent = "Copied. Paste it anywhere."; }, fallback); } catch (e) { fallback(); }
+  };
+  $("again").onclick = startPractice;
+  if (!practice) {
+    const s = { played: 0, best: 0, sum: 0, perth: 0, ...store.get(":stats", {}) };
+    const box = document.createElement("div"); box.className = "stats";
+    [[s.played, "Voyages"], [s.played ? Math.round(s.sum / s.played) : 0, "Avg points"], [s.best, "Best"]].forEach(([v, l]) => { const d = document.createElement("div"); const b = document.createElement("b"); b.textContent = v; const sp = document.createElement("span"); sp.textContent = l; d.append(b, sp); box.append(d); });
+    $("statsBox").append(box);
+  }
+}
+function startPractice() {
+  practice = true; track("voyago-practice"); set = makeSet((Math.random() * 1e9) | 0); answers = []; started = true;
+  renderTop(); renderMap(); renderPrompt(); window.scrollTo({ top: 0, behavior: "smooth" });
+}
+$("helpBtn").onclick = () => { $("help").hidden = !$("help").hidden; };
+$("helpClose").onclick = () => { $("help").hidden = true; try { localStorage.setItem(LS + ":seenHelp", "1"); } catch (e) {} };
+try { if (!localStorage.getItem(LS + ":seenHelp")) $("help").hidden = false; } catch (e) { $("help").hidden = false; }
+
+renderTop(); renderMap();
+if (answers.length >= NQ) renderEnd();
+else if (started && answers.length) renderPrompt();
+else renderIntro();
+</script>

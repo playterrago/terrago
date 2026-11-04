@@ -1,0 +1,19 @@
+<script>
+/* Terrago analytics: GoatCounter visit counting (no cookies) + anonymous game and return events */
+window.tgTrack = function (name) {
+  var ready = function () { return window.goatcounter && window.goatcounter.count; };
+  var send = function () { try { window.goatcounter.count({ path: name, title: name, event: true }); } catch (e) {} };
+  if (ready()) { send(); return; }
+  var tries = 0, t = setInterval(function () { if (ready() || ++tries > 20) { clearInterval(t); if (ready()) send(); } }, 500);
+};
+(function () {
+  try {
+    var n = new Date(), day = Math.floor((Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()) - Date.UTC(2026, 10, 2)) / 864e5) + 1;
+    var first = parseInt(localStorage.getItem("terrago-first-day") || "0", 10);
+    if (!first) { localStorage.setItem("terrago-first-day", String(day)); window.tgTrack("first-visit"); return; }
+    var d = day - first, sent = JSON.parse(localStorage.getItem("terrago-returns") || "[]");
+    if ([1, 3, 7, 14, 30].indexOf(d) >= 0 && sent.indexOf(d) < 0) { sent.push(d); localStorage.setItem("terrago-returns", JSON.stringify(sent)); window.tgTrack("return-day-" + d); }
+  } catch (e) {}
+})();
+</script>
+<script data-goatcounter="https://terrago.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>

@@ -1,0 +1,361 @@
+<title>Polygo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: one narrow puzzle column. The outline card is the hero; the edge ladder under it shows how much detail is left to unlock. */
+:root {
+  --bg: #e9edf1;
+  --surface: #ffffff;
+  --ink: #111a24;
+  --muted: #5d6a78;
+  --line: #d3dae2;
+  --accent: #d9590b;
+  --accent-ink: #ffffff;
+  --accent-soft: #fde9da;
+  --sil: #1b2633;
+  --grid: #e3e8ee;
+  --hot: #1e8a4c;
+  --warm: #d6a10f;
+  --mild: #e07a1f;
+  --cool: #c9432f;
+  --cold: #8c98a5;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d131a; --surface: #151e28; --ink: #e5ebf1; --muted: #93a1af; --line: #263342;
+    --accent: #ff8a3d; --accent-ink: #1c0c02; --accent-soft: #3a2212; --sil: #e3eaf1; --grid: #1c2733;
+    --hot: #4fcb83; --warm: #f0c040; --mild: #f39a4a; --cool: #ef7461; --cold: #6b7988; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d131a; --surface: #151e28; --ink: #e5ebf1; --muted: #93a1af; --line: #263342;
+  --accent: #ff8a3d; --accent-ink: #1c0c02; --accent-soft: #3a2212; --sil: #e3eaf1; --grid: #1c2733;
+  --hot: #4fcb83; --warm: #f0c040; --mild: #f39a4a; --cool: #ef7461; --cold: #6b7988; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--ink); font: 15px/1.5 var(--body); margin: 0;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 22px 48px;
+}
+.wrap { max-width: 540px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+h1 { font: 800 30px/1 var(--display); letter-spacing: -0.03em; margin: 0; }
+h1 span { color: var(--accent); }
+.meta { font: 500 13px var(--mono); color: var(--muted); margin-top: 6px; }
+.meta .tag { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; margin-left: 6px; }
+.icon-btn { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 10px; padding: 8px 12px; font: 600 13px var(--body); cursor: pointer; }
+
+.stage { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 16px 16px 14px; display: flex; flex-direction: column; gap: 12px; }
+.shape { width: 100%; max-width: 340px; aspect-ratio: 1; margin: 0 auto; display: block; }
+.shape .gridl { stroke: var(--grid); stroke-width: 1; }
+.shape path.poly { fill: var(--sil); stroke: var(--sil); stroke-width: 1; stroke-linejoin: round; }
+.shape path.line { fill: none; stroke: var(--sil); stroke-width: 6; stroke-linecap: round; }
+.shape .pop { animation: pop .45s ease-out; transform-origin: 150px 150px; }
+@keyframes pop { from { opacity: .25; transform: scale(.96); } to { opacity: 1; transform: none; } }
+.ladder { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; }
+.ladder div { text-align: center; padding: 6px 0 5px; border-radius: 8px; background: var(--bg); color: var(--muted); font: 600 14px var(--mono); line-height: 1.1; min-width: 0; }
+@media (max-width: 420px) { .ladder div { font-size: 12px; } .ladder div small { font-size: 8px; } }
+.ladder div small { display: block; font: 500 10px var(--body); letter-spacing: .06em; text-transform: uppercase; margin-top: 2px; opacity: .8; }
+.ladder div.seen { background: var(--line); color: var(--ink); }
+.ladder div.now { background: var(--accent); color: var(--accent-ink); }
+.hint { text-align: center; font-size: 13px; color: var(--muted); margin: 0; }
+
+.guessbox { position: relative; display: flex; gap: 8px; }
+#guess { flex: 1; min-width: 0; font: 500 18px var(--body); color: var(--ink); background: var(--surface); border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 14px; outline: none; }
+#guess:focus { border-color: var(--accent); }
+.btn { font: 600 15px var(--body); border-radius: 12px; padding: 12px 18px; cursor: pointer; border: 1.5px solid transparent; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); }
+.btn.ghost { background: transparent; border-color: var(--line); color: var(--ink); }
+.btn:focus-visible, .icon-btn:focus-visible, .sugg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sugg { position: absolute; left: 0; right: 0; top: calc(100% + 4px); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; z-index: 4; box-shadow: 0 10px 30px -12px rgba(0,0,0,.35); }
+.sugg button { display: block; width: 100%; text-align: left; border: 0; background: transparent; color: var(--ink); font: 500 15px var(--body); padding: 10px 14px; cursor: pointer; }
+.sugg button[aria-selected="true"] { background: var(--accent-soft); }
+.msg { min-height: 20px; font-size: 13px; color: var(--cool); margin-top: -8px; }
+
+.log { display: flex; flex-direction: column; gap: 6px; }
+.row { display: grid; grid-template-columns: 76px minmax(0, 1fr) auto; gap: 8px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; }
+.row .lvl { font: 600 11px var(--mono); color: var(--muted); }
+.row .name { font-weight: 600; overflow-wrap: anywhere; }
+.row .mark { font: 600 13px var(--body); color: var(--cool); }
+.row.empty { background: transparent; border-style: dashed; height: 42px; display: flex; }
+.row.empty .lvl { opacity: .6; }
+.row.win { border-color: var(--hot); }
+.row.win .mark { color: var(--hot); }
+
+.end { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.end h2 { font: 800 24px/1.15 var(--display); margin: 0; letter-spacing: -0.02em; text-wrap: balance; }
+.end p { margin: 0; color: var(--muted); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.copied { font-size: 13px; color: var(--hot); align-self: center; }
+.sharebox { width: 100%; font: 500 13px var(--mono); padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); resize: none; }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; text-align: center; }
+.stats b { display: block; font: 600 24px/1.1 var(--mono); }
+.stats span { font-size: 11px; color: var(--muted); letter-spacing: .04em; }
+.dist { display: flex; flex-direction: column; gap: 4px; }
+.dist div { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: center; font: 500 12px var(--mono); }
+.dist em { font-style: normal; background: var(--cold); color: #fff; padding: 1px 6px; border-radius: 4px; text-align: right; min-width: 22px; justify-self: start; }
+.dist em.today { background: var(--accent); }
+.subnote { font-size: 12px; color: var(--muted); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+.panel h2 { font: 700 18px var(--display); margin: 0; }
+@media (prefers-reduced-motion: reduce) { .shape .pop { animation: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Poly<span>go</span></h1>
+      <div class="meta" id="meta"></div>
+    </div>
+    <button type="button" class="icon-btn" id="statsBtn">Stats</button>
+  </header>
+
+  <div class="panel" id="statsPanel" hidden>
+    <h2>Stats</h2>
+    <div id="statsBody"></div>
+    <button type="button" class="btn ghost" id="closeStats">Close</button>
+  </div>
+
+  <section class="stage" aria-label="Country outline">
+    <svg class="shape" id="shape" viewBox="0 0 300 300" role="img" aria-label="Simplified outline of the mystery country"></svg>
+    <div class="ladder" id="ladder"></div>
+    <p class="hint" id="hint">Name the country. Every miss doubles the edges.</p>
+  </section>
+
+  <div id="play">
+    <div class="guessbox">
+      <input id="guess" type="text" autocomplete="off" spellcheck="false" placeholder="Guess a country" aria-label="Guess a country" role="combobox" aria-expanded="false" aria-controls="sugg">
+      <button type="button" class="btn primary" id="go">Guess</button>
+      <div class="sugg" id="sugg" role="listbox" hidden></div>
+    </div>
+  </div>
+  <div class="msg" id="msg" aria-live="polite"></div>
+
+  <div class="log" id="log"></div>
+  <div id="end"></div>
+</div>
+
+<script>
+const DATA = /*DATA*/;
+/*ALIASES*/
+const LEVELS = [2, 4, 8, 16, 32, 64, 128];
+const MAXG = LEVELS.length;
+DATA.forEach((c, i) => { c.i = i; c.names = [c.country, ...(ALIASES[c.country] || [])]; });
+
+const norm = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
+  .replace(/[ʻ'’`.]/g, "").replace(/\bst\s/g, "saint ").replace(/^the\s+/, "").replace(/[^a-z0-9]+/g, " ").trim();
+const LOOKUP = new Map();
+DATA.forEach(c => c.names.forEach(n => { const k = norm(n); if (!LOOKUP.has(k)) LOOKUP.set(k, c); }));
+const LATE = ["Kosovo"]; /* added after launch: slotted in later so earlier days keep their answers */
+const ENTRIES = DATA.map(c => ({ label: c.country, names: c.names }));
+
+/* ---------- daily answer: same for everyone, picked by date ---------- */
+const EPOCH = Date.UTC(2026, 10, 2);
+const todayUTC = () => { const d = new Date(); return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()); };
+const DAY = Math.floor((todayUTC() - EPOCH) / 864e5) + 1;
+/* The number players see: puzzle numbering starts at 42 */
+const SHOWN = DAY + 41;
+function mulberry32(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const POOL = DATA.filter(c => c.playable && !LATE.includes(c.country)).map(c => c.i);
+{ const r = mulberry32(20261103); for (let i = POOL.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [POOL[i], POOL[j]] = [POOL[j], POOL[i]]; } }
+LATE.forEach((n, k) => { const c = DATA.find(x => x.country === n && x.playable); if (c) POOL.splice(30 + k * 40, 0, c.i); });
+const answerForDay = n => DATA[POOL[((n - 1) % POOL.length + POOL.length) % POOL.length]];
+
+/* ---------- state ---------- */
+const LS = "polygo-v1";
+const store = { get(k, d) { try { const v = JSON.parse(localStorage.getItem(LS + k)); return v ?? d; } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem(LS + k, JSON.stringify(v)); } catch (e) {} } };
+let practice = false, answer = answerForDay(DAY), guesses = [], done = false, won = false, lastLevel = -1;
+{ const s = store.get(":day", null); if (s && s.day === DAY && Array.isArray(s.guesses)) { guesses = s.guesses.filter(i => DATA[i]); done = s.done; won = s.won; } }
+function persist() { if (!practice) store.set(":day", { day: DAY, guesses, done, won }); }
+const $ = id => document.getElementById(id);
+const dateStr = new Date().toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+const level = () => done ? MAXG : Math.min(MAXG - 1, guesses.length);
+
+function renderMeta() {
+  $("meta").textContent = practice ? "Practice round" : `No. ${SHOWN} · ${dateStr}`;
+  if (practice) { const t = document.createElement("span"); t.className = "tag"; t.textContent = "doesn't count"; $("meta").append(t); }
+}
+
+function renderShape() {
+  const svg = $("shape"), L = level();
+  let grid = "";
+  for (let k = 50; k < 300; k += 50) grid += `<line class="gridl" x1="${k}" y1="0" x2="${k}" y2="300"/><line class="gridl" x1="0" y1="${k}" x2="300" y2="${k}"/>`;
+  const d = L >= MAXG ? answer.full : answer.levels[L];
+  const cls = L === 0 ? "line" : "poly";
+  const animate = L !== lastLevel && lastLevel !== -1;
+  svg.innerHTML = `${grid}<g class="${animate ? "pop" : ""}"><path class="${cls}" d="${d}"/></g>`;
+  lastLevel = L;
+  const lad = $("ladder"); lad.replaceChildren();
+  LEVELS.forEach((n, k) => {
+    const el = document.createElement("div");
+    el.className = done ? "seen" : k === L ? "now" : k < L ? "seen" : "";
+    el.innerHTML = `${n}<small>edges</small>`;
+    lad.append(el);
+  });
+  $("hint").textContent = done ? `Full outline of ${answer.country}` : L === 0 ? "Two edges: just its longest stretch. Which country lies like this?" : L === MAXG - 1 ? `${LEVELS[L]} edges. Last guess.` : `${LEVELS[L]} edges. Miss, and it doubles to ${LEVELS[L + 1]}.`;
+}
+
+function renderLog() {
+  const log = $("log"); log.replaceChildren();
+  for (let k = 0; k < MAXG; k++) {
+    const r = document.createElement("div");
+    const lv = document.createElement("span"); lv.className = "lvl"; lv.textContent = `${LEVELS[k]} edges`;
+    const gi = guesses[k];
+    if (gi === undefined) { r.className = "row empty"; r.append(lv); log.append(r); continue; }
+    const g = DATA[gi], hit = gi === answer.i;
+    r.className = "row" + (hit ? " win" : "");
+    const nm = document.createElement("span"); nm.className = "name"; nm.textContent = g.country;
+    const mk = document.createElement("span"); mk.className = "mark"; mk.textContent = hit ? "Correct" : "Not it";
+    r.append(lv, nm, mk); log.append(r);
+  }
+}
+
+function shareText() {
+  const row = guesses.map(i => i === answer.i ? "🟩" : "⬛").join("") + "⬜".repeat(MAXG - guesses.length);
+  const tail = won ? `Got it at ${LEVELS[guesses.length - 1]} edges` : `Stumped at ${LEVELS[MAXG - 1]} edges`;
+  return `Polygo ${practice ? "(practice)" : "#" + SHOWN} ${won ? guesses.length : "X"}/${MAXG}\n${row}\n${tail}\n${location.origin}${location.pathname}`;
+}
+
+function statsBlock() {
+  const s = { played: 0, wins: 0, streak: 0, max: 0, dist: Array(MAXG).fill(0), ...store.get(":stats", {}) };
+  const wrap = document.createElement("div"); wrap.style.cssText = "display:flex;flex-direction:column;gap:12px";
+  const g = document.createElement("div"); g.className = "stats";
+  [[s.played, "Played"], [s.played ? Math.round(s.wins / s.played * 100) + "%" : "–", "Solved"], [s.streak, "Streak"], [s.max, "Best streak"]].forEach(([v, l]) => {
+    const d = document.createElement("div"); const b = document.createElement("b"); b.textContent = v; const sp = document.createElement("span"); sp.textContent = l; d.append(b, sp); g.append(d);
+  });
+  const cap = document.createElement("div"); cap.className = "subnote"; cap.textContent = "Solved at… (edges)";
+  const dist = document.createElement("div"); dist.className = "dist";
+  const mx = Math.max(1, ...s.dist);
+  s.dist.forEach((n, k) => {
+    const row = document.createElement("div"); const lab = document.createElement("span"); lab.textContent = LEVELS[k];
+    const bar = document.createElement("em"); bar.textContent = n; bar.style.width = Math.max(8, n / mx * 100) + "%";
+    if (done && won && !practice && guesses.length === k + 1) bar.className = "today";
+    row.append(lab, bar); dist.append(row);
+  });
+  wrap.append(g, cap, dist);
+  return wrap;
+}
+
+function recordResult() {
+  if (practice) return;
+  const s = { played: 0, wins: 0, streak: 0, max: 0, dist: Array(MAXG).fill(0), ...store.get(":stats", {}) };
+  if (s.lastDay === DAY) return;
+  s.played++;
+  if (won) { s.wins++; s.streak = s.lastWonDay === DAY - 1 ? s.streak + 1 : 1; s.max = Math.max(s.max, s.streak); s.dist[guesses.length - 1]++; s.lastWonDay = DAY; }
+  else s.streak = 0;
+  s.lastDay = DAY; store.set(":stats", s);
+}
+
+function renderEnd() {
+  const end = $("end"); end.replaceChildren();
+  $("play").hidden = done;
+  if (!done) return;
+  const box = document.createElement("div"); box.className = "end";
+  const h = document.createElement("h2");
+  h.textContent = won ? (guesses.length === 1 ? `${answer.country} from a single line. Impressive.` : `${answer.country}, at ${LEVELS[guesses.length - 1]} edges`) : `It was ${answer.country}`;
+  const p = document.createElement("p");
+  p.textContent = practice ? "Practice rounds don't touch your streak." : "Next outline in ";
+  if (!practice) { const t = document.createElement("strong"); t.id = "countdown"; p.append(t); }
+  const actions = document.createElement("div"); actions.className = "actions";
+  const share = document.createElement("button"); share.type = "button"; share.className = "btn primary"; share.textContent = "Copy result";
+  const again = document.createElement("button"); again.type = "button"; again.className = "btn ghost"; again.textContent = practice ? "Another practice round" : "Practice a random country";
+  const note = document.createElement("span"); note.className = "copied";
+  actions.append(share, again, note);
+  box.append(h, p, actions);
+  if (!practice) box.append(statsBlock());
+  end.append(box);
+  share.onclick = () => {
+    track(practice ? "polygo-share-practice" : "polygo-share");
+    const text = shareText();
+    const fallback = () => { let ta = box.querySelector("textarea"); if (!ta) { ta = document.createElement("textarea"); ta.className = "sharebox"; ta.rows = 4; ta.readOnly = true; box.append(ta); } ta.value = text; ta.focus(); ta.select(); note.textContent = "Select and copy the text below"; };
+    try { navigator.clipboard.writeText(text).then(() => { note.textContent = "Copied. Paste it anywhere."; }, fallback); } catch (e) { fallback(); }
+  };
+  again.onclick = startPractice;
+  tick();
+}
+
+function tick() {
+  const el = document.getElementById("countdown"); if (!el) return;
+  const now = new Date(), next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  const s = Math.max(0, Math.floor((next - now) / 1000));
+  el.textContent = `${String(Math.floor(s / 3600)).padStart(2, "0")}:${String(Math.floor(s / 60) % 60).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+}
+setInterval(tick, 1000);
+
+function renderAll() { renderMeta(); renderShape(); renderLog(); renderEnd(); }
+
+/* ---------- guessing ---------- */
+let sel = 0, opts = [];
+function suggest() {
+  const q = norm($("guess").value), box = $("sugg");
+  if (!q) { box.hidden = true; $("guess").setAttribute("aria-expanded", "false"); opts = []; return; }
+  const hits = [];
+  for (const e of ENTRIES) {
+    let best = null;
+    for (const n of e.names) {
+      const k = norm(n), rank = k.startsWith(q) ? 0 : k.split(" ").some(w => w.startsWith(q)) ? 1 : -1;
+      if (rank >= 0 && (!best || rank < best.rank)) best = { rank, n };
+    }
+    if (best) hits.push({ e, best });
+  }
+  hits.sort((a, b) => a.best.rank - b.best.rank || a.e.label.localeCompare(b.e.label));
+  const top = hits.slice(0, 6);
+  opts = top.map(h => h.e.label); sel = 0;
+  box.replaceChildren();
+  top.forEach((h, k) => {
+    const b = document.createElement("button"); b.type = "button"; b.setAttribute("role", "option");
+    const via = norm(h.best.n), lab = norm(h.e.label);
+    b.textContent = h.e.label + (via !== lab && !lab.includes(via) ? ` (${h.best.n})` : "");
+    b.setAttribute("aria-selected", k === sel);
+    b.addEventListener("pointerdown", ev => { ev.preventDefault(); submit(h.e.label); });
+    box.append(b);
+  });
+  box.hidden = !opts.length; $("guess").setAttribute("aria-expanded", String(!!opts.length));
+}
+function moveSel(d) { if (!opts.length) return; sel = (sel + d + opts.length) % opts.length; [...$("sugg").children].forEach((b, k) => b.setAttribute("aria-selected", k === sel)); }
+const track = n => { try { window.tgTrack && window.tgTrack(n); } catch (e) {} };
+function submit(text) {
+  if (done) return;
+  const c = LOOKUP.get(norm(text)), msg = $("msg");
+  if (!c) { msg.textContent = text.trim() ? `"${text.trim()}" isn't on the country list. Pick one from the suggestions.` : ""; return; }
+  if (guesses.includes(c.i)) { msg.textContent = `You already guessed ${c.country}.`; return; }
+  msg.textContent = "";
+  guesses.push(c.i);
+  if (!practice && guesses.length === 1) track("polygo-start");
+  if (c.i === answer.i) { done = true; won = true; } else if (guesses.length >= MAXG) { done = true; won = false; }
+  if (done) { recordResult(); if (!practice) track(won ? "polygo-solved-edges-" + LEVELS[guesses.length - 1] : "polygo-missed"); }
+  persist();
+  $("guess").value = ""; $("sugg").hidden = true; opts = [];
+  renderAll();
+  if (!done) $("guess").focus({ preventScroll: true });
+}
+const pick = () => opts.length && !LOOKUP.has(norm($("guess").value)) ? opts[sel] : $("guess").value;
+$("guess").addEventListener("input", suggest);
+$("guess").addEventListener("keydown", e => {
+  if (e.key === "ArrowDown") { e.preventDefault(); moveSel(1); }
+  else if (e.key === "ArrowUp") { e.preventDefault(); moveSel(-1); }
+  else if (e.key === "Enter") { e.preventDefault(); submit(pick()); }
+  else if (e.key === "Escape") { $("sugg").hidden = true; }
+});
+$("guess").addEventListener("blur", () => setTimeout(() => { $("sugg").hidden = true; }, 120));
+$("go").onclick = () => submit(pick());
+
+function startPractice() {
+  practice = true;
+  track("polygo-practice");
+  let c; do { c = DATA[POOL[Math.floor(Math.random() * POOL.length)]]; } while (c.i === answerForDay(DAY).i || c.i === answer.i);
+  answer = c; guesses = []; done = false; won = false; lastLevel = -1;
+  $("msg").textContent = ""; renderAll(); window.scrollTo({ top: 0, behavior: "smooth" }); $("guess").focus({ preventScroll: true });
+}
+$("statsBtn").onclick = () => { const p = $("statsPanel"); p.hidden = !p.hidden; if (!p.hidden) $("statsBody").replaceChildren(statsBlock()); };
+$("closeStats").onclick = () => { $("statsPanel").hidden = true; };
+
+renderAll();
+</script>

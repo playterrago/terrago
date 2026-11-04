@@ -1,0 +1,40 @@
+import fs from "fs";
+import * as topo from "topojson-server";
+import * as simp from "topojson-simplify";
+import * as tc from "topojson-client";
+import * as d3 from "d3-geo";
+const raw = JSON.parse(fs.readFileSync("adj_raw.json"));
+const { names, country } = raw;
+const A = names.map((_, i) => new Set(raw.adj[i]));
+const ix = n => { const i = names.indexOf(n); if (i < 0) throw new Error("no " + n); return i; };
+const cut = (a, b) => { A[ix(a)].delete(ix(b)); A[ix(b)].delete(ix(a)); };
+const add = (a, b) => { A[ix(a)].add(ix(b)); A[ix(b)].add(ix(a)); };
+[["Michigan", "Illinois"], ["Michigan", "Minnesota"], ["Ohio", "Ontario"], ["Pennsylvania", "Ontario"], ["Nunavut", "Newfoundland and Labrador"]].forEach(p => cut(...p));
+add("Delaware", "New Jersey"); add("Prince Edward Island", "New Brunswick");
+// geometry for drawing
+const g = JSON.parse(fs.readFileSync("data/na.geojson"));
+const RENAME = { "Distrito Federal": "Mexico City", "México": "State of Mexico", "Québec": "Quebec" };
+let feats = g.features.filter(f => f.properties.name && !["District of Columbia", "Hawaii"].includes(f.properties.name));
+feats.forEach(f => { f.properties.name = RENAME[f.properties.name] || f.properties.name; });
+let T = topo.topology({ r: { type: "FeatureCollection", features: feats } }, 1e5);
+T = simp.simplify(simp.presimplify(T), 0.003);
+const fr0 = tc.feature(T, T.objects.r).features;
+const fr = fr0.map(f => { const g = f.geometry; if (!g || g.type !== "MultiPolygon") return f; const polys = g.coordinates.map(p => ({ p, a: d3.geoArea({ type: "Polygon", coordinates: p }) })); const max = Math.max(...polys.map(x => x.a)); const keep = polys.filter(x => x.a > max * 0.004 || x.a > 2e-5).map(x => x.p); return { ...f, geometry: { type: "MultiPolygon", coordinates: keep } }; });
+// drop tiny far-flung islands so each region's shape stays readable
+const W = 1000;
+const proj = d3.geoConicEqualArea().parallels([20, 62]).rotate([100, 0]);
+const fc = { type: "FeatureCollection", features: fr };
+proj.fitWidth(W - 20, fc);
+const [[x0, y0], [x1, y1]] = d3.geoPath(proj).bounds(fc);
+proj.translate([proj.translate()[0] - x0 + 10, proj.translate()[1] - y0 + 10]);
+const H = Math.ceil(y1 - y0 + 20);
+const path = d3.geoPath(proj).digits(1);
+const regions = fr.map((f, i) => { const [cx, cy] = path.centroid(f); return { n: f.properties.name, c: country[i], d: path(f), x: +cx.toFixed(1), y: +cy.toFixed(1), adj: [...A[i]].sort((a, b) => a - b) }; });
+const outline = ["USA", "CAN", "MEX"].map(c => path(tc.merge(T, T.objects.r.geometries.filter((g, i) => country[i] === c))));
+fs.writeFileSync("roadtrip.json", JSON.stringify({ W, H, regions, outline }));
+console.log(regions.length, "regions; size", (JSON.stringify({ regions, outline }).length / 1024 | 0) + "KB; H", H);
+const show = n => n + ": " + regions[ix(n)].adj.map(k => names[k]).join(", ");
+["Michigan", "Ontario", "Prince Edward Island", "Nunavut", "Delaware", "Texas"].forEach(n => console.log(show(n)));
+// BFS sanity: distances from Florida to Yukon, Quebec to Oaxaca
+const bfs = s => { const d = Array(names.length).fill(-1); d[s] = 0; const q = [s]; while (q.length) { const u = q.shift(); for (const v of regions[u].adj) if (d[v] < 0) { d[v] = d[u] + 1; q.push(v); } } return d; };
+console.log("Florida→Yukon hops", bfs(ix("Florida"))[ix("Yukon")], "| Quebec→Oaxaca", bfs(ix("Quebec"))[ix("Oaxaca")], "| unreachable from Texas:", names.filter((n, i) => bfs(ix("Texas"))[i] < 0));

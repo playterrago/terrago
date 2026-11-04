@@ -1,0 +1,262 @@
+
+<script>
+const D = /*DATA*/;
+const R = D.regions, N = R.length, LM = D.landmarks;
+const track = n => { try { window.tgTrack && window.tgTrack(n); } catch (e) {} };
+const norm = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[.'’]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+R.forEach((r, i) => { r.i = i; r.names = [r.n, r.p]; });
+const LOOKUP = new Map(); R.forEach(r => r.names.forEach(n => { if (!LOOKUP.has(norm(n))) LOOKUP.set(norm(n), r); }));
+function bfs(s) { const d = Array(N).fill(-1); d[s] = 0; const q = [s]; while (q.length) { const u = q.shift(); for (const v of R[u].adj) if (d[v] < 0) { d[v] = d[u] + 1; q.push(v); } } return d; }
+const DIST = R.map((_, i) => bfs(i));
+
+/* The fewest states that join start (a), finish (b) and a landmark state (s): the cheapest tree
+   meeting at some hub c. States guessed = D[a][c] + D[b][c] + D[s][c] - 1 (a and b come free). */
+function plan(a, b, S) {
+  let best = Infinity, arg = null;
+  for (const s of S) for (let c = 0; c < N; c++) { const t = DIST[a][c] + DIST[b][c] + DIST[s][c] - 1; if (t < best || (t === best && c === s)) { best = t; arg = { s, c }; } }
+  return { best, ...arg };
+}
+
+/* ---------- daily trip ---------- */
+const EPOCH = Date.UTC(2026, 10, 2);
+const todayUTC = () => { const d = new Date(); return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()); };
+const DAY = Math.floor((todayUTC() - EPOCH) / 864e5) + 1;
+function mulberry32(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function shuffled(n, seed) { const r = mulberry32(seed), a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+/* Every landmark once per cycle, in a fresh order each cycle */
+function dailyLandmark(day) { const cyc = Math.floor((day - 1) / LM.length); return shuffled(LM.length, 9137 + cyc * 7919)[(day - 1) % LM.length]; }
+function makeTrip(seed, lm) {
+  const r = mulberry32(seed);
+  for (let k = 0; k < 20000; k++) {
+    const a = Math.floor(r() * N), b = Math.floor(r() * N), S = LM[lm].s;
+    if (a === b || S.includes(a) || S.includes(b)) continue;
+    const p = plan(a, b, S), direct = DIST[a][b] - 1, detour = p.best - direct;
+    if (p.best < 4 || p.best > 7) continue;
+    if (detour < 1 && r() < 0.75) continue; /* mostly make the landmark a real detour */
+    if (detour > 2) continue;
+    return { a, b, lm };
+  }
+}
+let practice = false, trip = makeTrip(20261106 + DAY * 104729, dailyLandmark(DAY));
+let P, best, LIMIT, S;
+function setupTrip() { S = LM[trip.lm].s; P = plan(trip.a, trip.b, S); best = P.best; LIMIT = best + 4; }
+setupTrip();
+
+/* ---------- state ---------- */
+const LS = "roadtripo-v1";
+const store = { get(k, d) { try { const v = JSON.parse(localStorage.getItem(LS + k)); return v ?? d; } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem(LS + k, JSON.stringify(v)); } catch (e) {} } };
+let guesses = [], done = false, won = false, hinted = false;
+{ const s = store.get(":day", null); if (s && s.day === DAY && Array.isArray(s.guesses)) { guesses = s.guesses.filter(i => R[i]); done = s.done; won = s.won; hinted = !!s.hinted; } }
+function persist() { if (!practice) store.set(":day", { day: DAY, guesses, done, won, hinted }); }
+
+/* How many states the best trip needs if it must also pass through g */
+function costWith(g) {
+  const a = trip.a, b = trip.b; let m = Infinity;
+  for (const s of S) for (let c = 0; c < N; c++) {
+    const base = DIST[a][c] + DIST[b][c] + DIST[s][c] - 1;
+    for (const x of [a, b, s]) { const extra = DIST[c][g] + DIST[g][x] - DIST[c][x]; if (base + extra < m) m = base + extra; }
+  }
+  return m;
+}
+const QC = {};
+const quality = g => { if (!(g in QC)) { const c = costWith(g); QC[g] = c === best ? "good" : c === best + 1 ? "near" : "far"; } return QC[g]; };
+function linked() {
+  const allowed = new Set([trip.a, trip.b, ...guesses]); const seen = new Set([trip.a]); const q = [trip.a];
+  while (q.length) { const u = q.shift(); for (const v of R[u].adj) if (allowed.has(v) && !seen.has(v)) { seen.add(v); q.push(v); } }
+  return seen;
+}
+const isWon = () => { const l = linked(); return l.has(trip.b) && S.some(s => l.has(s)); };
+const seenLandmark = () => done || S.some(s => guesses.includes(s));
+const $ = id => document.getElementById(id);
+
+/* one best route, for the reveal after a loss */
+function stepTo(x, c) { const out = [x]; let u = x; while (u !== c) { u = R[u].adj.find(v => DIST[c][v] === DIST[c][u] - 1); out.push(u); } return out; }
+function bestRoute() {
+  const set = new Set([...stepTo(trip.a, P.c), ...stepTo(trip.b, P.c), ...stepTo(P.s, P.c)]);
+  set.delete(trip.a); set.delete(trip.b);
+  return [...set];
+}
+/* Words for the reveal: the main drive, plus a side trip if the landmark sits off it */
+function routeText() {
+  const main = [...stepTo(trip.a, P.c), ...stepTo(trip.b, P.c).reverse().slice(1)].map(i => R[i].n);
+  const side = stepTo(P.s, P.c).reverse().slice(1).map(i => R[i].n);
+  return main.join(" → ") + (side.length ? `, with a side trip from ${R[P.c].n} into ${side.join(" → ")} and back` : "");
+}
+
+/* ---------- map ---------- */
+const SN = "http://www.w3.org/2000/svg";
+const svg = $("map");
+svg.innerHTML = `<path class="ol" d="${D.outline}"/>` + R.map(r => `<path class="rg" data-i="${r.i}" d="${r.d}"/>`).join("") + `<path class="lake" d="${D.lakes}"/><g id="labels"></g><g id="pinG"></g>`;
+const regionEl = i => svg.querySelector(`.rg[data-i="${i}"]`);
+function frame(ids, pt) {
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  ids.forEach(i => { const b = regionEl(i).getBBox(); x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y); x1 = Math.max(x1, b.x + b.width); y1 = Math.max(y1, b.y + b.height); });
+  if (pt) { x0 = Math.min(x0, pt.x); y0 = Math.min(y0, pt.y); x1 = Math.max(x1, pt.x); y1 = Math.max(y1, pt.y); }
+  let w = x1 - x0, h = y1 - y0; const pad = Math.max(w, h) * 0.12 + 24; x0 -= pad; y0 -= pad; w += pad * 2; h += pad * 2;
+  const ratio = 4 / 3; if (w / h > ratio) { const nh = w / ratio; y0 -= (nh - h) / 2; h = nh; } else { const nw = h * ratio; x0 -= (nw - w) / 2; w = nw; }
+  svg.setAttribute("viewBox", `${x0} ${y0} ${w} ${h}`);
+  return w;
+}
+function renderMap() {
+  const link = linked(), show = [trip.a, trip.b, ...guesses], L = LM[trip.lm], reveal = seenLandmark();
+  if (done) show.push(...bestRoute());
+  svg.querySelectorAll(".rg").forEach(el => { el.setAttribute("class", "rg" + (hinted ? " hint" : "")); });
+  const paint = (i, cls) => { regionEl(i).setAttribute("class", `rg on ${cls}`); };
+  guesses.forEach(g => paint(g, "mine" + (link.has(g) ? "" : " loose")));
+  /* after the trip, outline the shortest-route states you didn't use */
+  if (done) bestRoute().forEach(i => { if (!guesses.includes(i)) paint(i, "ghost"); });
+  paint(trip.a, "start"); paint(trip.b, "finish");
+  const w = frame(show, reveal ? L : null), fs = Math.max(9, w / 48);
+  const labels = $("labels"); labels.replaceChildren();
+  [...new Set(show)].forEach(i => { const t = document.createElementNS(SN, "text"); t.setAttribute("class", "lab"); t.setAttribute("x", R[i].x); t.setAttribute("y", R[i].y); t.setAttribute("font-size", fs); t.style.strokeWidth = fs / 3.5 + "px"; t.textContent = R[i].n; labels.append(t); });
+  const pin = $("pinG"); pin.replaceChildren();
+  if (reveal) {
+    const g = document.createElementNS(SN, "g"); g.setAttribute("class", "pin");
+    const rr = fs * 1.15;
+    g.innerHTML = `<circle cx="${L.x}" cy="${L.y}" r="${rr}"/><text x="${L.x}" y="${L.y}" font-size="${rr * 1.1}">📍</text>`;
+    pin.append(g);
+  }
+}
+
+/* ---------- render ---------- */
+function renderTop() {
+  const dateStr = new Date().toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+  $("meta").textContent = practice ? "Practice trip" : `No. ${DAY} · ${dateStr}`;
+  if (practice) { const t = document.createElement("span"); t.className = "tag"; t.textContent = "doesn't count"; $("meta").append(t); }
+  $("route").innerHTML = `<div class="pt from"><small>Start</small><b></b></div><div class="arrow">→</div><div class="pt to"><small>Finish</small><b></b></div>`;
+  const ends = $("route").querySelectorAll(".pt");
+  ends[0].querySelector("b").textContent = R[trip.a].n; ends[1].querySelector("b").textContent = R[trip.b].n;
+  const L = LM[trip.lm], want = $("want");
+  want.innerHTML = `<span class="ic" aria-hidden="true">📍</span><div><small>On the way I want to see</small><b></b><div class="seen"></div></div>`;
+  want.querySelector("b").textContent = L.n.charAt(0).toUpperCase() + L.n.slice(1);
+  const hit = S.filter(s => guesses.includes(s));
+  want.querySelector(".seen").textContent = hit.length ? `✓ You'll see it in ${R[hit[0]].n}` : done ? `It's in ${S.map(s => R[s].n).join(" / ")}` : "";
+  $("budget").innerHTML = "";
+  const l = document.createElement("span"); l.innerHTML = `Shortest route: <b>${best}</b> states in between`;
+  const r = document.createElement("span"); r.innerHTML = `Guesses: <b>${guesses.length}/${LIMIT}</b>`;
+  $("budget").append(l, r);
+  $("hintBtn").setAttribute("aria-pressed", String(hinted));
+}
+function renderLog() {
+  const log = $("log"); log.replaceChildren();
+  const link = linked();
+  [...guesses].reverse().forEach(g => {
+    const row = document.createElement("div"); row.className = "row";
+    const dot = document.createElement("span"); dot.className = "dot"; dot.style.background = "var(--mine)"; if (!link.has(g)) dot.style.opacity = .45;
+    const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = R[g].n + (S.includes(g) ? " 📍" : "");
+    const why = document.createElement("span"); why.className = "why";
+    why.textContent = S.includes(g) ? "Landmark state" : link.has(g) ? "On your route" : "Not linked yet";
+    row.append(dot, nm, why); log.append(row);
+  });
+}
+function shareText() {
+  const row = guesses.map(g => (S.includes(g) ? "📍" : "🟦")).join("");
+  const site = /^https?:/.test(location.origin) && !/claude|localhost/.test(location.host) ? `\n${location.origin}/roadtripo/` : "";
+  return `Roadtripo ${practice ? "(practice)" : "#" + DAY} · ${R[trip.a].n} → ${R[trip.b].n}\n${row}\n${won ? `Made it in ${guesses.length} (shortest ${best})` : "Ran out of gas"}${hinted ? " · used border hint" : ""}${site}`;
+}
+function recordResult() {
+  if (practice) return;
+  const s = { played: 0, wins: 0, streak: 0, perfect: 0, ...store.get(":stats", {}) };
+  if (s.lastDay === DAY) return;
+  s.played++;
+  if (won) { s.wins++; s.streak = s.lastWonDay === DAY - 1 ? s.streak + 1 : 1; s.lastWonDay = DAY; if (guesses.length === best) s.perfect++; } else s.streak = 0;
+  s.lastDay = DAY; store.set(":stats", s);
+  track(won ? "roadtripo-won-extra-" + (guesses.length - best) : "roadtripo-missed");
+}
+function renderEnd() {
+  const end = $("end"); end.replaceChildren();
+  $("play").hidden = done;
+  if (!done) return;
+  const box = document.createElement("div"); box.className = "end";
+  const h = document.createElement("h2");
+  h.textContent = won ? (guesses.length === best ? "Perfect route." : `Made it in ${guesses.length} guesses.`) : "Ran out of gas.";
+  const p = document.createElement("p");
+  p.textContent = won ? (guesses.length === best ? "You found the shortest route." : `${guesses.length - best} more than the shortest route.`) + (practice ? " Practice trips don't touch your stats." : " A new trip starts at midnight.") : "You ran out of guesses before linking the trip.";
+  const bl = document.createElement("div"); bl.className = "bestline"; bl.innerHTML = `<small>Shortest route · ${best} states</small>`; bl.append(routeText() + ".");
+  const actions = document.createElement("div"); actions.className = "actions";
+  const share = document.createElement("button"); share.type = "button"; share.className = "btn primary"; share.textContent = "Copy result";
+  const again = document.createElement("button"); again.type = "button"; again.className = "btn ghost"; again.textContent = practice ? "Another practice trip" : "Practice a random trip";
+  const note = document.createElement("span"); note.className = "copied";
+  actions.append(share, again, note); box.append(h, p, bl, actions);
+  if (!practice) {
+    const s = { played: 0, wins: 0, streak: 0, perfect: 0, ...store.get(":stats", {}) };
+    const g = document.createElement("div"); g.className = "stats";
+    [[s.played, "Played"], [s.played ? Math.round(s.wins / s.played * 100) + "%" : "–", "Arrived"], [s.streak, "Streak"], [s.perfect, "Perfect"]].forEach(([v, l]) => { const d = document.createElement("div"); const b = document.createElement("b"); b.textContent = v; const sp = document.createElement("span"); sp.textContent = l; d.append(b, sp); g.append(d); });
+    box.append(g);
+  }
+  end.append(box);
+  share.onclick = () => {
+    const text = shareText(); track(practice ? "roadtripo-share-practice" : "roadtripo-share");
+    const fallback = () => { let ta = box.querySelector("textarea"); if (!ta) { ta = document.createElement("textarea"); ta.className = "sharebox"; ta.rows = 4; ta.readOnly = true; box.append(ta); } ta.value = text; ta.focus(); ta.select(); note.textContent = "Select and copy the text below"; };
+    try { navigator.clipboard.writeText(text).then(() => { note.textContent = "Copied. Paste it anywhere."; }, fallback); } catch (e) { fallback(); }
+  };
+  again.onclick = startPractice;
+}
+function renderAll() { renderTop(); renderMap(); renderLog(); renderEnd(); }
+
+/* ---------- guessing ---------- */
+let sel = 0, opts = [];
+function suggest() {
+  const q = norm($("guess").value), box = $("sugg");
+  if (!q) { box.hidden = true; $("guess").setAttribute("aria-expanded", "false"); opts = []; return; }
+  const hits = [];
+  for (const r of R) {
+    const k = norm(r.n), rank = k.startsWith(q) ? 0 : k.split(" ").some(w => w.startsWith(q)) ? 1 : norm(r.p) === q ? 0 : -1;
+    if (rank >= 0) hits.push({ r, rank });
+  }
+  hits.sort((a, b) => a.rank - b.rank || a.r.n.localeCompare(b.r.n));
+  const top = hits.slice(0, 6); opts = top.map(h => h.r.n); sel = 0;
+  box.replaceChildren();
+  top.forEach((h, k) => {
+    const b = document.createElement("button"); b.type = "button"; b.setAttribute("role", "option"); b.setAttribute("aria-selected", k === sel);
+    const s1 = document.createElement("span"); s1.textContent = h.r.n;
+    const s2 = document.createElement("small"); s2.textContent = h.r.p;
+    b.append(s1, s2);
+    b.addEventListener("pointerdown", e => { e.preventDefault(); submit(h.r.n); });
+    box.append(b);
+  });
+  box.hidden = !opts.length; $("guess").setAttribute("aria-expanded", String(!!opts.length));
+}
+function moveSel(d) { if (!opts.length) return; sel = (sel + d + opts.length) % opts.length; [...$("sugg").children].forEach((b, k) => b.setAttribute("aria-selected", k === sel)); }
+function submit(text) {
+  if (done) return;
+  const r = LOOKUP.get(norm(text)), msg = $("msg");
+  if (!r) { msg.textContent = text.trim() ? `"${text.trim()}" isn't one of the lower 48 states.` : ""; return; }
+  if (r.i === trip.a || r.i === trip.b) { msg.textContent = `${r.n} is the ${r.i === trip.a ? "start" : "finish"}. Name the states in between.`; return; }
+  if (guesses.includes(r.i)) { msg.textContent = `You already named ${r.n}.`; return; }
+  msg.textContent = "";
+  if (!practice && guesses.length === 0) track("roadtripo-start");
+  guesses.push(r.i);
+  if (isWon()) { done = true; won = true; }
+  else if (guesses.length >= LIMIT) { done = true; won = false; }
+  if (done) recordResult();
+  persist();
+  $("guess").value = ""; $("sugg").hidden = true; opts = [];
+  renderAll();
+  if (!done) $("guess").focus({ preventScroll: true });
+}
+const pick = () => opts.length && !LOOKUP.has(norm($("guess").value)) ? opts[sel] : $("guess").value;
+$("guess").addEventListener("input", suggest);
+$("guess").addEventListener("keydown", e => {
+  if (e.key === "ArrowDown") { e.preventDefault(); moveSel(1); }
+  else if (e.key === "ArrowUp") { e.preventDefault(); moveSel(-1); }
+  else if (e.key === "Enter") { e.preventDefault(); submit(pick()); }
+  else if (e.key === "Escape") { $("sugg").hidden = true; }
+});
+$("guess").addEventListener("blur", () => setTimeout(() => { $("sugg").hidden = true; }, 120));
+$("go").onclick = () => submit(pick());
+$("hintBtn").onclick = () => { if (done) { hinted = !hinted; } else hinted = true; persist(); renderAll(); };
+
+function startPractice() {
+  practice = true; track("roadtripo-practice");
+  trip = makeTrip((Math.random() * 1e9) | 0, Math.floor(Math.random() * LM.length)); setupTrip();
+  for (const k in QC) delete QC[k];
+  guesses = []; done = false; won = false; hinted = false;
+  $("msg").textContent = ""; renderAll(); window.scrollTo({ top: 0, behavior: "smooth" }); $("guess").focus({ preventScroll: true });
+}
+$("helpBtn").onclick = () => { $("help").hidden = !$("help").hidden; };
+$("helpClose").onclick = () => { $("help").hidden = true; try { localStorage.setItem(LS + ":seenHelp", "1"); } catch (e) {} };
+try { if (!localStorage.getItem(LS + ":seenHelp")) $("help").hidden = false; } catch (e) { $("help").hidden = false; }
+
+renderAll();
+</script>
