@@ -53,7 +53,7 @@ HOOK = {
  "equalo": ('  $("again").onclick = startPractice;\n',
             '  $("again").onclick = startPractice;\n  if (!practice && window.tgDaily) tgDaily.finish("equalo", { g: results.map(r => r.g) }, card, $("share"), "");\n'),
  "voyago": ('  $("again").onclick = startPractice;\n',
-            '  $("again").onclick = startPractice;\n  if (!practice && window.tgDaily) tgDaily.finish("voyago", { pts: total(), city: reachedCity() }, card, $("share"), shareText().split("\\n")[1]);\n'),
+            '  $("again").onclick = startPractice;\n  if (!practice && window.tgDaily) tgDaily.finish("voyago", { pts: total(), city: reachedCity(), valid: validN() }, card, $("share"), shareText().split("\\n")[1]);\n'),
 }
 def wrap(src, out, cur, title, desc, subs=(), og="/og.png"):
     s=open(os.path.join(STD, src),encoding="utf-8").read()
@@ -77,13 +77,13 @@ wrap("edgewise.html", f"{SITE}/polygo/index.html","polygo","Polygo: name the cou
      "A daily country outline that starts as 2 edges and doubles with every miss. How few edges do you need?",
      subs=[HOOK["polygo"]], og="/og-polygo.png")
 wrap("equalo.html", f"{SITE}/equalo/index.html","equalo","Equalo: balance the countries",
-     "Seven countries, two pans. Split them so population, area and GDP weigh the same on both sides.",
-     subs=[HOOK["equalo"]], og="/og-equalo.png")
+     "A daily balance puzzle: drag 5 to 10 country flags onto two pans so a hidden statistic weighs exactly the same on both sides.",
+     subs=[], og="/og-equalo.png")
 wrap("roadtripo.html", f"{SITE}/roadtripo/index.html","roadtripo","Roadtripo: the daily US road trip game",
      "Drive state to state across the US and stop at one famous landmark on the way. Name the states in between.",
      subs=[HOOK["roadtripo"],("<title>Roadtripo</title>","<title>Roadtripo (beta)</title>"),("<h1>Roadtrip<span>o</span></h1>","<h1>Roadtrip<span>o</span>"+BADGE+"</h1>")], og="/og-roadtripo.png")
 wrap("voyago.html", f"{SITE}/voyago/index.html","voyago","Voyago: rare geography answers take you further",
-     "Ten geography prompts a day. The rarer your answer, the further you travel around the world from Brussels to Kampala.",
+     "Ten geography prompts a day. Valid answers earn points, and rarer answers score higher: up to 100 each, 1,000 a day, from Brussels to Kampala.",
      subs=[HOOK["voyago"],("<title>Voyago</title>","<title>Voyago (beta)</title>"),("<h1>Voyag<span>o</span></h1>","<h1>Voyag<span>o</span>"+BADGE+"</h1>")], og="/og-voyago.png")
 wrap("today.html", f"{SITE}/today/index.html","today","Today's Terrago: your daily results",
      "Your combined score across today's five Terrago games.",

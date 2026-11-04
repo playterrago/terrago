@@ -1,0 +1,557 @@
+<title>Equalo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: one daily puzzle. Header, today's statistic, the balance scale (two hanging pans that take flags),
+   the bench of unplaced flags, the weigh button and weigh history. The end screen replaces the play area. */
+:root {
+  --bg: #e9edf1; --surface: #ffffff; --ink: #111a24; --muted: #5d6a78; --line: #d3dae2;
+  --accent: #d9590b; --accent-ink: #ffffff; --accent-soft: #fde9da;
+  --left: #2f6fb0; --left-soft: #e1ecf7; --right: #b0452f; --right-soft: #f7e3de;
+  --beam: #1b2633; --metal: #8796a6; --good: #1e8a4c; --warm: #c08a06; --far: #c9432f;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d131a; --surface: #151e28; --ink: #e5ebf1; --muted: #93a1af; --line: #263342;
+    --accent: #ff8a3d; --accent-ink: #1c0c02; --accent-soft: #3a2212;
+    --left: #6fa8e0; --left-soft: #172a3d; --right: #ec8a73; --right-soft: #3a1f19; --beam: #dfe7ee; --metal: #6b7a8a;
+    --good: #4fcb83; --warm: #f0c040; --far: #ef7461; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d131a; --surface: #151e28; --ink: #e5ebf1; --muted: #93a1af; --line: #263342;
+  --accent: #ff8a3d; --accent-ink: #1c0c02; --accent-soft: #3a2212;
+  --left: #6fa8e0; --left-soft: #172a3d; --right: #ec8a73; --right-soft: #3a1f19; --beam: #dfe7ee; --metal: #6b7a8a;
+  --good: #4fcb83; --warm: #f0c040; --far: #ef7461; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--ink); font: 15px/1.5 var(--body); margin: 0;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 22px 48px;
+}
+.wrap { max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+h1 { font: 800 30px/1 var(--display); letter-spacing: -0.03em; margin: 0; }
+h1 span { color: var(--accent); }
+.meta { font: 500 13px var(--mono); color: var(--muted); margin-top: 6px; }
+.meta .tag { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; margin-left: 6px; }
+.icon-btn { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 10px; padding: 8px 12px; font: 600 13px var(--body); cursor: pointer; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.eyebrow { font: 600 12px var(--body); letter-spacing: .09em; text-transform: uppercase; color: var(--accent); }
+.stat h2 { font: 800 26px/1.1 var(--display); letter-spacing: -0.02em; margin: 2px 0 0; }
+.stat p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+.stat-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.info { border: 1px solid var(--line); background: transparent; color: var(--muted); border-radius: 999px; width: 28px; height: 28px; font: 600 14px var(--body); cursor: pointer; flex: none; }
+.source { font-size: 12px; color: var(--muted); margin: 0; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+.panel h2 { font: 700 18px var(--display); margin: 0; }
+.panel ol { margin: 0; padding-left: 20px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+.panel b { color: var(--ink); }
+
+/* ---- scale ---- */
+.scale { position: relative; height: var(--h, 300px); margin: 4px 0 0; user-select: none; -webkit-user-select: none; }
+.scale .post { position: absolute; left: 50%; top: 26px; bottom: 16px; width: 10px; margin-left: -5px; border-radius: 5px; background: var(--beam); }
+.scale .base { position: absolute; left: 50%; bottom: 4px; width: 120px; height: 14px; margin-left: -60px; border-radius: 8px 8px 4px 4px; background: var(--beam); }
+.scale .beam { position: absolute; left: var(--bx); right: var(--bx); top: 20px; height: 10px; border-radius: 5px; background: var(--beam);
+  transform: rotate(var(--tilt, 0deg)); transition: transform .9s cubic-bezier(.3, 1.35, .5, 1); }
+.scale .beam::after { content: ""; position: absolute; left: 50%; top: 50%; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: var(--accent); border: 3px solid var(--beam); }
+.scale .pan { position: absolute; top: 25px; width: var(--pw); transform: translateY(var(--dy, 0px)); transition: transform .9s cubic-bezier(.3, 1.35, .5, 1); display: flex; flex-direction: column; align-items: center; }
+.scale .pan.L { left: calc(var(--bx) - var(--pw) / 2); }
+.scale .pan.R { right: calc(var(--bx) - var(--pw) / 2); }
+.scale .rope { width: 76%; height: var(--rope, 120px); display: block; overflow: visible; }
+.scale .rope polyline { fill: none; stroke: var(--metal); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.scale .tray { width: 100%; min-height: 40px; margin-top: calc(-1 * var(--tray, 120px)); height: var(--tray, 120px); display: flex; flex-wrap: wrap-reverse; align-content: flex-start; justify-content: center; gap: 4px; padding: 0 2px 3px; position: relative; z-index: 1; }
+.scale .dish { width: 100%; height: 16px; border-radius: 0 0 999px 999px; border: 2px solid; border-top-width: 3px; }
+.scale .pan.L .dish { background: var(--left-soft); border-color: var(--left); }
+.scale .pan.R .dish { background: var(--right-soft); border-color: var(--right); }
+.scale .cnt { font: 600 12px var(--mono); margin-top: 4px; }
+.scale .pan.L .cnt { color: var(--left); } .scale .pan.R .cnt { color: var(--right); }
+.scale .pan.hot .dish { box-shadow: 0 0 0 4px var(--accent-soft); }
+.scale .pan.tapme .dish { box-shadow: 0 0 0 3px var(--accent); }
+.scale .pan.tapme { cursor: pointer; }
+.verdict { text-align: center; font: 600 15px var(--body); min-height: 22px; margin: 0; }
+.verdict.good { color: var(--good); } .verdict.warm { color: var(--warm); } .verdict.far { color: var(--far); } .verdict.idle { color: var(--muted); font-weight: 500; }
+
+/* ---- flags ---- */
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px 4px 4px; border-radius: 9px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink);
+  font: 600 13px/1.15 var(--body); cursor: grab; touch-action: none; max-width: 100%; min-height: 34px; text-align: left; box-shadow: 0 1px 0 rgba(0,0,0,.06); }
+.chip img { width: 28px; height: 21px; border-radius: 3px; flex: none; object-fit: cover; box-shadow: 0 0 0 1px rgba(0,0,0,.12); pointer-events: none; }
+.chip span { min-width: 0; overflow-wrap: break-word; hyphens: auto; }
+.chip small { display: block; font: 500 11px var(--mono); color: var(--muted); margin-top: 1px; }
+.chip.L { border-color: var(--left); } .chip.R { border-color: var(--right); }
+.chip.sel { outline: 3px solid var(--accent); outline-offset: 1px; }
+.chip.dragging { opacity: .25; }
+.chip:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+.tray .chip { flex-direction: column; justify-content: center; text-align: center; font-size: 11px; line-height: 1.1; padding: 4px 3px; min-height: 0; gap: 3px; width: calc(50% - 2px); flex: none; overflow: hidden; }
+.tray .chip img { width: 26px; height: 19px; }
+.tray .chip span { width: 100%; }
+.drag-ghost { position: fixed; z-index: 50; pointer-events: none; transform: translate(-50%, -60%) scale(1.06) rotate(-2deg); box-shadow: 0 10px 24px rgba(0,0,0,.25); cursor: grabbing; }
+.bench { border: 1.5px dashed var(--line); border-radius: 14px; padding: 10px; display: flex; flex-wrap: wrap; gap: 6px; min-height: 58px; align-content: flex-start; }
+.bench.hot { border-color: var(--accent); background: var(--accent-soft); }
+.bench.tapme { border-color: var(--accent); cursor: pointer; }
+.bench .empty { color: var(--muted); font-size: 13px; margin: auto; }
+.bench-label { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--muted); margin-bottom: -8px; }
+.mover { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; background: var(--bg); border-radius: 12px; padding: 8px 10px; font-size: 13px; }
+.mover b { margin-right: auto; }
+.mover button { font: 600 13px var(--body); border-radius: 9px; padding: 7px 10px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+.mover button.l { border-color: var(--left); color: var(--left); } .mover button.r { border-color: var(--right); color: var(--right); }
+
+.btn { font: 600 15px var(--body); border-radius: 12px; padding: 13px 18px; cursor: pointer; border: 1.5px solid transparent; flex: 1; text-align: center; text-decoration: none; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); }
+.btn.primary:disabled { opacity: .45; cursor: default; }
+.btn.ghost { background: transparent; border-color: var(--line); color: var(--ink); }
+.btn:focus-visible, .icon-btn:focus-visible, .info:focus-visible, .mover button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.row-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.weighs { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.weighs li { display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 8px; align-items: center; background: var(--bg); border-radius: 10px; padding: 8px 12px; font-size: 14px; }
+.weighs li b { font: 600 12px var(--mono); color: var(--muted); }
+.weighs li span:last-child { overflow-wrap: anywhere; }
+
+/* ---- results ---- */
+.result h2 { font: 800 28px/1.1 var(--display); margin: 0; letter-spacing: -.02em; }
+.score { display: flex; align-items: baseline; gap: 8px; }
+.score b { font: 800 44px/1 var(--display); letter-spacing: -.03em; }
+.score span { font: 500 15px var(--mono); color: var(--muted); }
+.how { font-size: 13px; color: var(--muted); margin: -6px 0 0; }
+.sides { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+.side { border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.side.L { background: var(--left-soft); } .side.R { background: var(--right-soft); }
+.side h4 { margin: 0; font: 600 12px var(--body); letter-spacing: .06em; text-transform: uppercase; }
+.side.L h4 { color: var(--left); } .side.R h4 { color: var(--right); }
+.side .chip { cursor: default; touch-action: auto; font-size: 12px; }
+.side .tot { font: 600 14px var(--mono); border-top: 1px solid var(--line); padding-top: 6px; margin-top: auto; overflow-wrap: anywhere; }
+.diffline { text-align: center; font: 600 14px var(--body); margin: 0; }
+.balanced { display: inline-block; background: var(--good); color: #fff; font: 600 12px var(--body); letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 6px; opacity: 0; transform: scale(.8); transition: opacity .3s .9s, transform .3s .9s; }
+.settled .balanced { opacity: 1; transform: none; }
+.grid { font: 500 14px var(--mono); line-height: 1.7; background: var(--bg); border-radius: 10px; padding: 10px 12px; white-space: pre-wrap; }
+.copied { font-size: 13px; color: var(--good); min-height: 18px; }
+.sharebox { width: 100%; font: 500 13px var(--mono); padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); resize: none; }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; text-align: center; }
+.stats b { display: block; font: 600 22px/1.1 var(--mono); }
+.stats span { font-size: 11px; color: var(--muted); }
+h3 { font: 700 17px var(--display); margin: 4px 0 -4px; }
+@media (max-width: 380px) { .card { padding: 14px 12px; } }
+@media (max-width: 420px) { .stat h2 { font-size: 23px; } .chip { font-size: 12px; } .tray .chip { font-size: 10.5px; } .stats b { font-size: 19px; } }
+@media (prefers-reduced-motion: reduce) { .scale .beam, .scale .pan, .balanced { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Equal<span>o</span></h1>
+      <div class="meta" id="meta"></div>
+    </div>
+    <button type="button" class="icon-btn" id="helpBtn">How to play</button>
+  </header>
+
+  <div class="panel" id="help" hidden>
+    <h2>How to play</h2>
+    <ol>
+      <li>Every day: <b>5 to 10 countries</b> and one statistic, like coastline or population.</li>
+      <li>Drag every flag onto the left or right pan. Or tap a flag, then tap a pan.</li>
+      <li>Press <b>Weigh</b>. The heavier side drops and you see how far apart the sides are. You get <b>3 weighs</b>.</li>
+      <li>There is always a split that balances <b>exactly</b>. Find it on weigh 1, 2 or 3 for <b>1,000, 850 or 700</b> points. Otherwise your closest weigh scores up to 600: you lose 30 points for every 1% the sides are apart.</li>
+    </ol>
+    <button type="button" class="btn ghost" id="helpClose">Let's weigh</button>
+  </div>
+
+  <section class="card stat" id="statCard"></section>
+  <section class="card" id="play"></section>
+  <section class="card result" id="end" hidden></section>
+</div>
+
+<script>
+const D = /*DATA*/;
+const MAXW = 3;
+const track = n => { try { window.tgTrack && window.tgTrack(n); } catch (e) {} };
+const $ = id => document.getElementById(id);
+const C = D.countries.map(([n, f, r], i) => ({ i, n, f, r }));
+
+/* ---------- day ---------- */
+const EPOCH = Date.UTC(2026, 10, 2);
+const todayUTC = () => { const d = new Date(); return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()); };
+const DAY = Math.floor((todayUTC() - EPOCH) / 864e5) + 1;
+const SHOWN = DAY + 53;
+const dayPuzzle = n => D.days[((n - 1) % D.days.length + D.days.length) % D.days.length];
+
+/* ---------- exact arithmetic: every value is a safe integer, sums stay below 2^53 ---------- */
+const val = (P, k) => D.stats[P.s].values[P.c[k]];
+function weighOf(P, place) {
+  let L = 0, R = 0;
+  for (let k = 0; k < P.c.length; k++) { if (place[k] === "L") L += val(P, k); else if (place[k] === "R") R += val(P, k); }
+  return { L, R, d: Math.abs(L - R), heavy: L === R ? "" : L > R ? "L" : "R" };
+}
+/* share of the total weight by which the sides differ, in hundredths of a percent (integer, rounded half up) */
+const offBp = w => w.d === 0 ? 0 : Math.max(1, Math.floor((w.d * 10000 * 2 + (w.L + w.R)) / (2 * (w.L + w.R))));
+const pctTxt = bp => (bp / 100).toFixed(bp < 1000 ? 2 : 1) + "%";
+/* Score out of 1,000. Exact balance: 1,000 / 850 / 700 on weigh 1 / 2 / 3. Otherwise the closest weigh:
+   600 x (1 - off% / 20%), so 30 points per 1% apart, and 0 from 20% apart. */
+function scoreOf(weighs, P) {
+  const ws = weighs.map(x => weighOf(P, x.p));
+  const ex = ws.findIndex(w => w.d === 0);
+  if (ex >= 0) return { pts: 1000 - 150 * ex, won: true, at: ex + 1, best: ex, bp: 0 };
+  let best = 0; ws.forEach((w, k) => { if (offBp(w) < offBp(ws[best])) best = k; });
+  const bp = offBp(ws[best]);
+  return { pts: Math.max(0, Math.round(600 * (2000 - bp) / 2000)), won: false, at: 0, best, bp };
+}
+const grade = w => w.d === 0 ? "🟩" : offBp(w) <= 500 ? "🟨" : "🟥";
+
+/* ---------- number formatting (exact, from integers) ---------- */
+const group = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+function fixed(n, places) { const s = String(n).padStart(places + 1, "0"); const a = s.slice(0, -places), b = s.slice(-places).replace(/0+$/, ""); return group(a) + (b ? "." + b : ""); }
+const FMT = {
+  pop: v => `${group(v)} people`,
+  gdp: v => `US$ ${group(v)} million`,
+  land: v => `${group(v)} km²`,
+  mean: v => `${group(v)} m`,
+  hi: v => `${group(v)} m`,
+  coast: v => `${group(v)} km`,
+  water: v => `${fixed(v, 6)} km³`,
+  air: v => `${group(v)} airport${v === 1 ? "" : "s"}`,
+};
+const SHORT = {
+  pop: v => v >= 1e9 ? (v / 1e9).toFixed(2) + "B" : v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : v >= 1e4 ? Math.round(v / 1e3) + "K" : group(v),
+  gdp: v => v >= 1e6 ? "$" + (v / 1e6).toFixed(2) + "T" : v >= 1e3 ? "$" + (v / 1e3).toFixed(1) + "B" : "$" + v + "M",
+  water: v => fixed(v, 6) + " km³",
+};
+const fmt = (s, v) => FMT[s](v), short = (s, v) => (SHORT[s] || FMT[s])(v);
+const BLURB = {
+  pop: "How many people live there.", gdp: "The size of each economy.", land: "How much land each country covers.",
+  mean: "The average height of each country's land.", hi: "Each country's highest point above sea level.", coast: "How long each country's coastline is.",
+  water: "How much fresh water each country renews every year.", air: "How many airports and airfields each country has.",
+};
+
+/* ---------- state ---------- */
+const LS = "equalo-v2";
+const store = { get(k, d) { try { const v = JSON.parse(localStorage.getItem(LS + k)); return v ?? d; } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem(LS + k, JSON.stringify(v)); } catch (e) {} } };
+let practice = false, P = dayPuzzle(DAY), N = P.c.length;
+let place = Array(N).fill(""), weighs = [], done = false, sel = -1, tiltFor = null;
+{
+  const s = store.get(":day", null);
+  if (s && s.day === DAY && Array.isArray(s.weighs) && typeof s.place === "string" && s.place.length === N) {
+    place = s.place.split("").map(x => x === "L" || x === "R" ? x : "");
+    weighs = s.weighs.filter(w => typeof w.p === "string" && w.p.length === N && /^[LR]+$/.test(w.p)).slice(0, MAXW);
+    done = !!s.done;
+    if (weighs.length && weighs[weighs.length - 1].p === place.join("")) tiltFor = weighs[weighs.length - 1].p;
+  }
+}
+function persist() {
+  if (practice) return;
+  const out = { day: DAY, place: place.map(x => x || ".").join(""), weighs, done };
+  if (done) { const sc = scoreOf(weighs, P); out.pts = sc.pts; out.won = sc.won; out.bp = sc.bp; }
+  store.set(":day", out);
+}
+const blankStats = () => ({ played: 0, wins: 0, streak: 0, max: 0, best: 0, sum: 0, dist: [0, 0, 0] });
+function stats() {
+  let s = store.get(":stats", null);
+  if (!s) { /* first time on the new Equalo: keep the games played on the old version */
+    const old = (() => { try { return JSON.parse(localStorage.getItem("equalo-v1:stats")); } catch (e) { return null; } })();
+    s = { ...blankStats(), played: old && old.played || 0, oldPlayed: old && old.played || 0 };
+  }
+  return { ...blankStats(), ...s };
+}
+function recordResult() {
+  if (practice) return;
+  const s = stats(); if (s.lastDay === DAY) return;
+  const sc = scoreOf(weighs, P);
+  s.played++; s.sum += sc.pts; s.best = Math.max(s.best, sc.pts); s.scored = (s.scored || 0) + 1;
+  if (sc.won) { s.wins++; s.dist[sc.at - 1]++; s.streak = s.lastWonDay === DAY - 1 ? s.streak + 1 : 1; s.max = Math.max(s.max, s.streak); s.lastWonDay = DAY; }
+  else s.streak = 0;
+  s.lastDay = DAY; store.set(":stats", s);
+  track(sc.won ? "equalo-solved-weigh-" + sc.at : "equalo-missed");
+}
+
+/* ---------- elements ---------- */
+const flagImg = c => { const im = document.createElement("img"); im.src = `/flags/${c.f}.svg`; im.alt = ""; im.width = 28; im.height = 21; im.decoding = "async"; return im; };
+function chip(k, opts = {}) {
+  const c = C[P.c[k]], b = document.createElement(opts.static ? "div" : "button");
+  if (!opts.static) { b.type = "button"; b.dataset.k = k; }
+  b.className = "chip" + (place[k] && !opts.static ? " " + place[k] : "") + (k === sel && !opts.static ? " sel" : "");
+  const t = document.createElement("span"); t.textContent = c.n;
+  if (opts.value) { const sm = document.createElement("small"); sm.textContent = short(P.s, val(P, k)); sm.title = fmt(P.s, val(P, k)); t.append(sm); }
+  b.append(flagImg(c), t);
+  if (!opts.static) b.setAttribute("aria-label", `${c.n}, ${place[k] === "L" ? "on the left pan" : place[k] === "R" ? "on the right pan" : "not placed"}`);
+  return b;
+}
+/* scale: --tilt rotates the beam, each pan moves by the beam end's height change */
+function buildScale(el, h) {
+  el.className = "scale"; el.innerHTML = `<div class="post"></div><div class="base"></div><div class="beam"></div>
+    <div class="pan L" data-side="L"><svg class="rope" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,100 50,0 100,100"/></svg><div class="tray"></div><div class="dish"></div><div class="cnt"></div></div>
+    <div class="pan R" data-side="R"><svg class="rope" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,100 50,0 100,100"/></svg><div class="tray"></div><div class="dish"></div><div class="cnt"></div></div>`;
+  el.style.setProperty("--h", h + "px");
+  layoutScale(el); return el;
+}
+function layoutScale(el) {
+  const W = el.clientWidth || 340, pw = Math.min(250, Math.floor((W - 14) / 2)), bx = pw / 2 + 4;
+  const h = parseFloat(el.style.getPropertyValue("--h")) || 300, rope = h - 25 - 16 - 22 - 26;
+  el.style.setProperty("--pw", pw + "px"); el.style.setProperty("--bx", bx + "px");
+  el.style.setProperty("--rope", rope + "px"); el.style.setProperty("--tray", Math.max(60, rope - 14) + "px");
+  el._half = (W - 2 * bx) / 2;
+  setTilt(el, el._deg || 0, true);
+}
+/* make the pans tall enough for the flags they hold (2 flags per row) */
+function fitScale(el, base) {
+  const trays = [...el.querySelectorAll(".tray")];
+  const most = Math.max(...trays.map(t => t.children.length)), all = trays.flatMap(t => [...t.children]);
+  const rows = Math.ceil(most / 2), chipH = all.length ? Math.max(...all.map(c => c.offsetHeight)) : 52;
+  const need = rows * (chipH + 4) + 8 + 14 + 25 + 16 + 22 + 26 + 10;
+  const h = Math.max(base, need);
+  if (h !== parseFloat(el.style.getPropertyValue("--h"))) { el.style.setProperty("--h", h + "px"); layoutScale(el); }
+}
+function setTilt(el, deg, instant) {
+  el._deg = deg;
+  const dy = Math.sin(deg * Math.PI / 180) * (el._half || 120);
+  if (instant) [el.querySelector(".beam"), ...el.querySelectorAll(".pan")].forEach(x => { x.style.transition = "none"; });
+  el.style.setProperty("--tilt", deg + "deg");
+  el.querySelector(".beam").style.transform = `rotate(${deg}deg)`;
+  el.querySelector(".pan.L").style.transform = `translateY(${-dy}px)`;
+  el.querySelector(".pan.R").style.transform = `translateY(${dy}px)`;
+  if (instant) { el.getBoundingClientRect(); [el.querySelector(".beam"), ...el.querySelectorAll(".pan")].forEach(x => { x.style.transition = ""; }); }
+}
+/* heavier side drops: left heavier = negative angle. Never level unless exactly equal. */
+const tiltDeg = w => w.d === 0 ? 0 : (w.heavy === "L" ? -1 : 1) * (2 + 10 * Math.pow(Math.min(1, offBp(w) / 3000), 0.6));
+
+/* ---------- header and statistic ---------- */
+function renderHead() {
+  const ds = new Date().toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+  $("meta").textContent = practice ? "" : `No. ${SHOWN} · ${ds}`;
+  if (practice) { const t = document.createElement("span"); t.className = "tag"; t.textContent = "Practice"; $("meta").replaceChildren(t); }
+  const S = D.stats[P.s], card = $("statCard");
+  card.innerHTML = `<div class="stat-top"><div><div class="eyebrow"></div><h2></h2><p></p></div><button type="button" class="info" aria-expanded="false" aria-controls="srcBox" title="Source and definition">i</button></div><p class="source" id="srcBox" hidden></p>`;
+  card.querySelector(".eyebrow").textContent = `${practice ? "Practice" : "Today's"} weight · ${N} countries`;
+  card.querySelector("h2").textContent = S.name;
+  card.querySelector("p").textContent = `${BLURB[P.s]} Split the flags so both sides weigh exactly the same.`;
+  $("srcBox").textContent = `${S.definition} Unit: ${S.unit}. Source: ${S.source}, ${S.year}. Exact stored values are used; there is always at least one split that balances exactly.`;
+  const ib = card.querySelector(".info"); ib.onclick = () => { const b = $("srcBox"); b.hidden = !b.hidden; ib.setAttribute("aria-expanded", String(!b.hidden)); };
+}
+
+/* ---------- play view ---------- */
+let scaleEl = null;
+function renderPlay() {
+  const play = $("play");
+  if (done) { play.hidden = true; return; }
+  play.hidden = false;
+  if (!scaleEl || !play.contains(scaleEl)) {
+    play.innerHTML = `<div id="scaleBox"></div><p class="verdict idle" id="verdict" aria-live="polite"></p>
+      <div class="bench-label"><span id="benchHint"></span><span id="benchCount"></span></div>
+      <div class="bench" id="bench" data-side="" role="group" aria-label="Flags not on the scale"></div>
+      <div class="mover" id="mover" hidden></div>
+      <button type="button" class="btn primary" id="weigh"></button>
+      <ol class="weighs" id="weighs"></ol>`;
+    scaleEl = buildScale($("scaleBox"), N > 8 ? 320 : 290);
+    $("weigh").onclick = doWeigh;
+    $("bench").addEventListener("click", e => { if (sel >= 0 && !e.target.closest(".chip")) move(sel, ""); });
+    scaleEl.querySelectorAll(".pan").forEach(p => p.addEventListener("click", e => { if (sel >= 0 && !e.target.closest(".chip")) move(sel, p.dataset.side); }));
+  }
+  /* chips */
+  const trays = { L: scaleEl.querySelector(".pan.L .tray"), R: scaleEl.querySelector(".pan.R .tray") };
+  trays.L.replaceChildren(); trays.R.replaceChildren(); $("bench").replaceChildren();
+  for (let k = 0; k < N; k++) { const ch = chip(k); bindChip(ch); (place[k] ? trays[place[k]] : $("bench")).append(ch); }
+  fitScale(scaleEl, N > 8 ? 320 : 290);
+  const nL = place.filter(x => x === "L").length, nR = place.filter(x => x === "R").length, nB = N - nL - nR;
+  scaleEl.querySelector(".pan.L .cnt").textContent = `${nL} flag${nL === 1 ? "" : "s"}`;
+  scaleEl.querySelector(".pan.R .cnt").textContent = `${nR} flag${nR === 1 ? "" : "s"}`;
+  if (!nB) { const e = document.createElement("span"); e.className = "empty"; e.textContent = "All flags are on the scale. Drag one back here to take it off."; $("bench").append(e); }
+  $("benchHint").textContent = nB ? "Drag a flag onto a pan, or tap it and then a pan." : "Ready to weigh.";
+  $("benchCount").textContent = `${nB} to place`;
+  scaleEl.querySelectorAll(".pan").forEach(p => p.classList.toggle("tapme", sel >= 0));
+  $("bench").classList.toggle("tapme", sel >= 0 && !!place[sel]);
+  /* mover: accessible tap controls for the selected flag */
+  const mv = $("mover");
+  if (sel >= 0) {
+    mv.hidden = false; mv.innerHTML = ""; const b = document.createElement("b"); b.textContent = C[P.c[sel]].n; mv.append(b);
+    [["L", "← Left pan", "l"], ["R", "Right pan →", "r"], ["", "Off the scale", ""]].forEach(([s, t, c]) => {
+      if (place[sel] === s) return;
+      const x = document.createElement("button"); x.type = "button"; x.className = c; x.textContent = t; x.onclick = () => move(sel, s, true); mv.append(x);
+    });
+  } else mv.hidden = true;
+  /* weigh button */
+  const left = MAXW - weighs.length, w = $("weigh");
+  const again = weighs.some(x => x.p === place.join(""));
+  const ready = nB === 0 && nL > 0 && nR > 0 && !again;
+  w.disabled = !ready;
+  w.textContent = again && !nB ? "Already weighed. Move a flag to try a new split" : nB ? `Place ${nB} more flag${nB === 1 ? "" : "s"}` : !nL || !nR ? "Put at least one flag on each pan" : `Weigh it · ${left} weigh${left === 1 ? "" : "s"} left`;
+  /* scale tilt: shows the last weigh only while the arrangement is unchanged */
+  const cur = place.join(""), v = $("verdict");
+  if (tiltFor && tiltFor === cur) {
+    const wt = weighOf(P, place); setTilt(scaleEl, tiltDeg(wt));
+    v.className = "verdict " + (wt.d === 0 ? "good" : offBp(wt) <= 500 ? "warm" : "far");
+    v.textContent = verdictText(wt);
+  } else {
+    if (tiltFor !== null) tiltFor = null;
+    setTilt(scaleEl, 0); v.className = "verdict idle";
+    v.textContent = weighs.length ? "Arrangement changed. Weigh to see the new balance." : "The scale stays level until you weigh.";
+  }
+  renderWeighs();
+}
+function verdictText(w) {
+  if (w.d === 0) return `Perfect balance: ${fmt(P.s, w.L)} on each side.`;
+  return `${w.heavy === "L" ? "Left" : "Right"} side heavier by ${fmt(P.s, w.d)} (${pctTxt(offBp(w))} of the total).`;
+}
+function renderWeighs() {
+  const ol = $("weighs"); ol.replaceChildren();
+  weighs.forEach((x, k) => {
+    const w = weighOf(P, x.p), li = document.createElement("li");
+    const a = document.createElement("b"); a.textContent = `Weigh ${k + 1}`;
+    const g = document.createElement("span"); g.textContent = grade(w); g.setAttribute("aria-hidden", "true");
+    const t = document.createElement("span"); t.textContent = w.d === 0 ? "Perfect balance" : `${w.heavy === "L" ? "Left" : "Right"} heavier · ${pctTxt(offBp(w))} apart`;
+    li.append(a, g, t); ol.append(li);
+  });
+}
+
+/* ---------- moving flags ---------- */
+function move(k, side, keepFocus) {
+  if (done || k < 0) return;
+  place[k] = side; sel = -1; persist(); renderPlay();
+  const ch = document.querySelector(`#play .chip[data-k="${k}"]`); if (ch && keepFocus) ch.focus({ preventScroll: true });
+  announce(`${C[P.c[k]].n} ${side === "L" ? "on the left pan" : side === "R" ? "on the right pan" : "taken off the scale"}.`);
+}
+function announce(t) { let a = $("sr"); if (!a) { a = document.createElement("div"); a.id = "sr"; a.setAttribute("aria-live", "polite"); a.style.cssText = "position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"; document.body.append(a); } a.textContent = t; }
+function zoneAt(x, y) { const el = document.elementFromPoint(x, y); if (!el) return null; const z = el.closest(".pan, .bench"); return z ? z.dataset.side ?? "" : null; }
+function bindChip(ch) {
+  const k = +ch.dataset.k;
+  ch.addEventListener("keydown", e => {
+    if (e.key === "ArrowLeft") { e.preventDefault(); move(k, "L", true); }
+    else if (e.key === "ArrowRight") { e.preventDefault(); move(k, "R", true); }
+    else if (e.key === "ArrowDown" || e.key === "Backspace" || e.key === "Delete") { e.preventDefault(); move(k, "", true); }
+    else if (e.key === "Escape") { sel = -1; renderPlay(); }
+  });
+  /* touch: stop the browser from turning a flag drag into a scroll (which would cancel the pointer) */
+  ch.addEventListener("touchstart", e => { if (!done) e.preventDefault(); }, { passive: false });
+  ch.addEventListener("pointerdown", e => {
+    if (e.button !== 0) return;
+    const sx = e.clientX, sy = e.clientY; let ghost = null, hot = null;
+    ch.setPointerCapture(e.pointerId);
+    const mv = ev => {
+      if (!ghost && Math.hypot(ev.clientX - sx, ev.clientY - sy) < 6) return;
+      if (!ghost) { ghost = ch.cloneNode(true); ghost.classList.add("drag-ghost"); ghost.classList.remove("sel"); document.body.append(ghost); ch.classList.add("dragging"); }
+      ghost.style.left = ev.clientX + "px"; ghost.style.top = ev.clientY + "px";
+      const z = zoneAt(ev.clientX, ev.clientY);
+      if (hot) hot.classList.remove("hot");
+      hot = z === null ? null : z === "" ? $("bench") : scaleEl.querySelector(`.pan.${z}`);
+      if (hot) hot.classList.add("hot");
+    };
+    const up = ev => {
+      ch.removeEventListener("pointermove", mv); ch.removeEventListener("pointerup", up); ch.removeEventListener("pointercancel", up);
+      if (hot) hot.classList.remove("hot");
+      if (ghost) { ghost.remove(); ch.classList.remove("dragging"); const z = ev.type === "pointerup" ? zoneAt(ev.clientX, ev.clientY) : null; if (z !== null && z !== place[k]) { track("equalo-drag"); move(k, z); } else renderPlay(); }
+      else if (ev.type === "pointerup") { sel = sel === k ? -1 : k; renderPlay(); const c2 = document.querySelector(`#play .chip[data-k="${k}"]`); if (c2) c2.focus({ preventScroll: true }); }
+    };
+    ch.addEventListener("pointermove", mv); ch.addEventListener("pointerup", up); ch.addEventListener("pointercancel", up);
+  });
+  ch.addEventListener("click", e => { if (e.detail === 0) { sel = sel === k ? -1 : k; renderPlay(); const c2 = document.querySelector(`#play .chip[data-k="${k}"]`); if (c2) c2.focus({ preventScroll: true }); } }); /* keyboard Enter/Space */
+}
+
+/* ---------- weighing ---------- */
+function doWeigh() {
+  if (done || weighs.length >= MAXW) return;
+  if (place.some(x => !x) || !place.includes("L") || !place.includes("R")) return;
+  if (weighs.some(x => x.p === place.join(""))) return; /* the same split twice would waste a weigh */
+  if (!practice && weighs.length === 0) track("equalo-start");
+  const p = place.join(""); weighs.push({ p }); tiltFor = p; sel = -1;
+  const w = weighOf(P, place);
+  if (w.d === 0 || weighs.length >= MAXW) { done = true; recordResult(); }
+  persist(); renderPlay();
+  if (done) setTimeout(() => { renderEnd(true); }, w.d === 0 ? 1100 : 900);
+}
+
+/* ---------- end screen ---------- */
+function shareText() {
+  const sc = scoreOf(weighs, P), S = D.stats[P.s];
+  const row = weighs.map(x => grade(weighOf(P, x.p))).join("");
+  const site = /^https?:/.test(location.origin) && !/claude|localhost/.test(location.host) ? `\n${location.origin}/equalo/` : "";
+  return `Equalo ${practice ? "(practice)" : "#" + SHOWN} ⚖️ ${S.name}\n${row} ${sc.won ? `Balanced on weigh ${sc.at}` : `Closest: ${pctTxt(sc.bp)} apart`}\n${sc.pts}/1000${site}`;
+}
+function sidesBlock(placeStr, title) {
+  const wrap = document.createElement("div"); wrap.className = "sides";
+  const w = weighOf(P, placeStr.split(""));
+  ["L", "R"].forEach(s => {
+    const col = document.createElement("div"); col.className = "side " + s;
+    const h = document.createElement("h4"); h.textContent = s === "L" ? "Left" : "Right"; col.append(h);
+    for (let k = 0; k < N; k++) if (placeStr[k] === s) col.append(chip(k, { static: true, value: true }));
+    const t = document.createElement("div"); t.className = "tot"; t.textContent = "= " + fmt(P.s, s === "L" ? w.L : w.R); col.append(t);
+    wrap.append(col);
+  });
+  return wrap;
+}
+function renderEnd(fresh) {
+  $("play").hidden = true;
+  const end = $("end"); end.hidden = false; end.replaceChildren();
+  const sc = scoreOf(weighs, P), S = D.stats[P.s];
+  const best = weighs[sc.best].p, bw = weighOf(P, best.split(""));
+  const box = document.createElement("div"); box.style.cssText = "display:flex;flex-direction:column;gap:14px";
+  const h = document.createElement("h2");
+  h.textContent = sc.won ? (sc.at === 1 ? "Perfect balance, first weigh!" : `Perfect balance on weigh ${sc.at}.`) : `So close: ${pctTxt(sc.bp)} apart.`;
+  const score = document.createElement("div"); score.className = "score"; score.innerHTML = `<b></b><span>/ 1,000 points</span>`; score.querySelector("b").textContent = group(sc.pts);
+  const how = document.createElement("p"); how.className = "how";
+  how.textContent = sc.won ? `Exact balance on weigh ${sc.at} of 3 scores ${group(sc.pts)}.` : `No exact balance. Closest weigh was ${pctTxt(sc.bp)} apart: 600 × (1 − ${(sc.bp / 100).toFixed(2)}% ÷ 20%) = ${sc.pts}.`;
+  box.append(h, score, how);
+  /* the exact balance, animated from the player's best tilt to level */
+  const h3a = document.createElement("h3"); h3a.textContent = sc.won ? "Your exact balance" : "The exact balance";
+  const scBox = document.createElement("div"); const sol = sc.won ? best : P.sol;
+  box.append(h3a, scBox);
+  const sideBlock = sidesBlock(sol, "");
+  const ok = document.createElement("p"); ok.className = "diffline"; ok.innerHTML = `<span class="balanced">Perfectly balanced</span>`;
+  const each = document.createElement("div"); each.className = "how"; each.style.textAlign = "center"; each.textContent = `${fmt(P.s, weighOf(P, sol.split("")).L)} on each side`;
+  box.append(ok, each, sideBlock);
+  if (!sc.won) {
+    const h3b = document.createElement("h3"); h3b.textContent = "Your closest weigh";
+    const dl = document.createElement("p"); dl.className = "how"; dl.textContent = `Weigh ${sc.best + 1}: ${bw.heavy === "L" ? "left" : "right"} side heavier by ${fmt(P.s, bw.d)} (${pctTxt(sc.bp)} of the total).`;
+    box.append(h3b, sidesBlock(best, ""), dl);
+  }
+  const g = document.createElement("div"); g.className = "grid"; g.textContent = shareText().split("\n").slice(1, 3).join("\n");
+  const acts = document.createElement("div"); acts.className = "row-btns";
+  const share = document.createElement("button"); share.type = "button"; share.className = "btn primary"; share.textContent = "Copy result";
+  const again = document.createElement("button"); again.type = "button"; again.className = "btn ghost"; again.textContent = practice ? "Another practice puzzle" : "Practice a random puzzle";
+  acts.append(share, again);
+  const note = document.createElement("div"); note.className = "copied";
+  box.append(g, acts, note);
+  if (!practice) {
+    const s = stats(), st = document.createElement("div"); st.className = "stats";
+    const avg = s.scored ? Math.round(s.sum / s.scored) : 0;
+    [[s.played, "Played"], [s.wins, "Exact"], [s.streak, "Streak"], [avg, "Avg pts"]].forEach(([v, l]) => { const d = document.createElement("div"); const b = document.createElement("b"); b.textContent = v; const sp = document.createElement("span"); sp.textContent = l; d.append(b, sp); st.append(d); });
+    box.append(st);
+  }
+  const src = document.createElement("p"); src.className = "source"; src.textContent = `${S.name}: ${S.definition} Source: ${S.source}, ${S.year}.`; box.append(src);
+  end.append(box);
+  /* static scale with the solution on its pans */
+  const sEl = buildScale(scBox, N > 8 ? 300 : 260);
+  for (let k = 0; k < N; k++) sEl.querySelector(`.pan.${sol[k]} .tray`).append(chip(k, { static: true }));
+  fitScale(sEl, N > 8 ? 300 : 260);
+  sEl.querySelectorAll(".cnt").forEach(c => c.remove());
+  const startDeg = sc.won ? 0 : tiltDeg(bw);
+  setTilt(sEl, fresh ? startDeg : 0, true);
+  if (fresh && startDeg) requestAnimationFrame(() => setTimeout(() => { setTilt(sEl, 0); }, 250));
+  box.classList.add("settled");
+  window.addEventListener("resize", () => { if (sEl.isConnected) layoutScale(sEl); });
+  share.onclick = () => {
+    const text = shareText(); track(practice ? "equalo-share-practice" : "equalo-share");
+    const fallback = () => { let ta = box.querySelector("textarea"); if (!ta) { ta = document.createElement("textarea"); ta.className = "sharebox"; ta.rows = 4; ta.readOnly = true; note.after(ta); } ta.value = text; ta.focus(); ta.select(); note.textContent = "Select and copy the text below"; };
+    try { navigator.clipboard.writeText(text).then(() => { note.textContent = "Copied. Paste it anywhere."; }, fallback); } catch (e) { fallback(); }
+  };
+  again.onclick = startPractice;
+  if (!practice && window.tgDaily) tgDaily.finish("equalo", { pts: sc.pts, won: sc.won, at: sc.at, bp: sc.bp }, end, share, weighs.map(x => grade(weighOf(P, x.p))).join(""));
+  if (fresh && !(window.tgDaily && !practice)) end.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+}
+function startPractice() {
+  practice = true; track("equalo-practice");
+  let q; do { q = D.practice[Math.floor(Math.random() * D.practice.length)]; } while (q === P);
+  P = q; N = P.c.length; place = Array(N).fill(""); weighs = []; done = false; sel = -1; tiltFor = null; scaleEl = null;
+  $("end").hidden = true; renderHead(); renderPlay(); window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+$("helpBtn").onclick = () => { $("help").hidden = !$("help").hidden; };
+$("helpClose").onclick = () => { $("help").hidden = true; try { localStorage.setItem(LS + ":seenHelp", "1"); } catch (e) {} };
+try { if (!localStorage.getItem(LS + ":seenHelp") && !done) $("help").hidden = false; } catch (e) { $("help").hidden = false; }
+window.addEventListener("resize", () => { if (scaleEl && scaleEl.isConnected) layoutScale(scaleEl); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && sel >= 0) { sel = -1; renderPlay(); } });
+
+renderHead();
+if (done) renderEnd(false); else renderPlay();
+</script>

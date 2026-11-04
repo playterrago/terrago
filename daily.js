@@ -8,7 +8,7 @@
   var GAMES = [
     { id: "polygo", name: "Polygo", icon: "🗺️", path: "/polygo/", ls: "polygo-v1", off: 41 },
     { id: "capitalo", name: "Capitalo", icon: "🏛️", path: "/capitalo/", ls: "capital-clues-v3", off: 27 },
-    { id: "equalo", name: "Equalo", icon: "⚖️", path: "/equalo/", ls: "equalo-v1", off: 53 },
+    { id: "equalo", name: "Equalo", icon: "⚖️", path: "/equalo/", ls: "equalo-v2", off: 53 },
     { id: "roadtripo", name: "Roadtripo", icon: "🚗", path: "/roadtripo/", ls: "roadtripo-v1", off: 0 },
     { id: "voyago", name: "Voyago", icon: "🌍", path: "/voyago/", ls: "voyago-v2", off: 0 }
   ];
@@ -37,19 +37,21 @@
     if (!r) return 0;
     if (id === "polygo") return r.won ? Math.max(0, 100 - 13 * (r.n - 1)) : 0; /* 8 rounds: 100 … 9 */
     if (id === "capitalo") return r.won ? Math.max(0, 100 - 15 * (r.n - 1)) : 0;
-    if (id === "equalo") {
+    if (id === "equalo" && r.pts != null) return Math.round(r.pts / 10); /* new Equalo: points out of 1,000 / 10 */
+    if (id === "equalo") { /* old 3-round Equalo */
       var g = r.g || [];
       if (g.length === 3 && g.every(function (x) { return x === "g"; })) return 100;
       return g.reduce(function (a, x) { return a + (x === "g" ? 33 : x === "y" ? 15 : 0); }, 0);
     }
     if (id === "roadtripo") return r.won && r.best ? Math.max(0, 100 - 20 * Math.max(0, r.n - r.best)) : 0;
-    if (id === "voyago") return Math.max(0, Math.min(100, Math.round((r.pts || 0) / 13)));
+    if (id === "voyago") return Math.max(0, Math.min(100, Math.round((r.pts || 0) / 10))); /* out of 1,000 */
     return 0;
   }
   function line(id, r) {
     if (!r) return "";
     if (id === "polygo") return !r.won ? "Stumped" : LEVELS[r.n - 1] === "Full" ? "Full outline" : LEVELS[r.n - 1] + " edges";
     if (id === "capitalo") return r.won ? "Turn " + r.n + "/6" : "Stumped";
+    if (id === "equalo" && r.pts != null) return r.won ? "Balanced on weigh " + r.at : (r.bp / 100).toFixed(2) + "% apart";
     if (id === "equalo") return (r.g || []).map(function (x) { return EQ[x]; }).join("");
     if (id === "roadtripo") return !r.won ? "Ran out of gas" : !r.best ? "Arrived in " + r.n : r.n === r.best ? "Shortest route" : "+" + (r.n - r.best) + " over shortest";
     if (id === "voyago") return (r.pts || 0) + " pts" + (r.city ? " · " + r.city : "");
@@ -59,12 +61,19 @@
   /* Fallback summary straight from a game's own storage, for games finished before this layer existed. */
   function fromGame(g, day) {
     var s = read(g.ls + ":day");
+    if (g.id === "equalo" && (!s || s.day !== day)) { /* played on the old 3-round Equalo today */
+      var v1 = read("equalo-v1:day");
+      if (v1 && v1.day === day && (v1.results || []).length >= 3) return { state: "done", r: { g: v1.results.map(function (x) { return x.g; }) } };
+    }
     if (!s || s.day !== day) return { state: "new" };
     if (g.id === "polygo") return s.done ? { state: "done", r: { won: !!s.won, n: (s.guesses || []).length } } : (s.guesses || []).length ? { state: "started" } : { state: "new" };
     if (g.id === "capitalo") return s.done ? { state: "done", r: { won: !!s.won, n: (s.turns || []).length } } : (s.turns || []).length ? { state: "started" } : { state: "new" };
-    if (g.id === "equalo") { var res = s.results || []; return res.length >= 3 ? { state: "done", r: { g: res.map(function (x) { return x.g; }) } } : res.length ? { state: "started" } : { state: "new" }; }
+    if (g.id === "equalo") {
+      if (s.done) return { state: "done", r: { pts: s.pts || 0, won: !!s.won, at: (s.weighs || []).length, bp: s.bp || 0 } };
+      return (s.weighs || []).length || /[LR]/.test(s.place || "") ? { state: "started" } : { state: "new" };
+    }
     if (g.id === "roadtripo") return s.done ? { state: "done", r: { won: !!s.won, n: (s.guesses || []).length } } : (s.guesses || []).length ? { state: "started" } : { state: "new" };
-    if (g.id === "voyago") { var a = s.answers || []; return a.length >= 10 ? { state: "done", r: { pts: a.reduce(function (t, x) { return t + (x.pts || 0); }, 0) } } : (a.length || s.started) ? { state: "started" } : { state: "new" }; }
+    if (g.id === "voyago") { var a = s.answers || [], TP = [10, 25, 45, 65, 85, 100]; return a.length >= 10 ? { state: "done", r: { pts: a.reduce(function (t, x) { return t + (x.tier >= 0 ? TP[x.tier] || 0 : 0); }, 0) } } : (a.length || s.started) ? { state: "started" } : { state: "new" }; }
     return { state: "new" };
   }
 

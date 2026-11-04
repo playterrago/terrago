@@ -124,6 +124,53 @@ h1 span { color: var(--accent); }
 .review i { width: 12px; height: 12px; border-radius: 3px; }
 .review .p { color: var(--muted); }
 .review b { font-family: var(--mono); font-weight: 600; }
+.rule { font: 700 17px/1.3 var(--display); color: var(--ink) !important; }
+.example { background: var(--bg); border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+.example small { font: 600 11px var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.example .q2 { font-weight: 600; }
+.exrow { display: flex; justify-content: space-between; gap: 10px; }
+.exrow b { font-family: var(--mono); }
+.sumrow { display: flex; align-items: center; gap: 14px 22px; flex-wrap: wrap; }
+.big b { font: 800 46px/1 var(--display); letter-spacing: -.03em; }
+.big span { font: 500 15px var(--mono); color: var(--muted); margin-left: 6px; }
+.kpis { display: flex; gap: 18px; }
+.kpis b { display: block; font: 600 20px/1.1 var(--mono); }
+.kpis span { font-size: 12px; color: var(--muted); }
+.result h3 { font: 700 18px var(--display); margin: 4px 0 -8px; }
+.hint { font-size: 13px; }
+.qlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.qrow { width: 100%; display: grid; grid-template-columns: 22px minmax(0, 1fr) auto 14px; gap: 10px; align-items: center; text-align: left; background: var(--bg); border: 1.5px solid transparent; border-radius: 12px; padding: 10px 10px 10px 12px; color: var(--ink); font: 14px/1.35 var(--body); cursor: pointer; }
+.qrow:hover { border-color: var(--line); }
+.qrow:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.qrow[aria-expanded="true"] { border-color: var(--line); border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.qn { font: 600 12px var(--mono); color: var(--muted); }
+.qt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.qq { color: var(--muted); font-size: 13px; overflow-wrap: break-word; }
+.qa { font-weight: 600; overflow-wrap: break-word; }
+.qa.no { color: var(--bad); }
+.qp { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+.qp b { font: 600 15px var(--mono); }
+.qp small { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.rbar { display: inline-flex; gap: 2px; }
+.rbar i { width: 7px; height: 7px; border-radius: 2px; background: var(--line); }
+.rbar.none { height: 7px; }
+.chev { color: var(--muted); font-size: 18px; transition: transform .15s; }
+.qrow[aria-expanded="true"] .chev { transform: rotate(90deg); }
+.qd { border: 1.5px solid var(--line); border-top: 0; border-radius: 0 0 12px 12px; padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
+.qd h4 { margin: 4px 0 0; font: 600 11px var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.qd .you { margin: 0; color: var(--ink); }
+.fine { margin: 0; font-size: 12px; color: var(--muted); }
+.chart { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.chart li { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(40px, 1fr) auto auto; gap: 8px; align-items: center; padding: 3px 6px; border-radius: 6px; }
+.chart li.mine { background: var(--accent-soft); font-weight: 600; }
+.chart li.gap { display: block; color: var(--muted); font-size: 12px; padding-left: 6px; }
+.chart .nm { overflow-wrap: break-word; min-width: 0; }
+.barw { height: 8px; border-radius: 4px; background: var(--bg); overflow: hidden; }
+.barw i { display: block; height: 100%; border-radius: 4px; }
+.chart .pc { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.chart b { font-family: var(--mono); font-weight: 600; min-width: 34px; text-align: right; }
+.linkbtn { background: none; border: 0; padding: 0; color: var(--accent); font: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+@media (max-width: 420px) { .chart li { grid-template-columns: minmax(0, 1fr) 46px auto; } .chart .pc { display: none; } .big b { font-size: 40px; } }
 .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
 .panel h2 { font: 700 18px var(--display); margin: 0; }
 .panel ol { margin: 0; padding-left: 20px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
@@ -143,9 +190,15 @@ h1 span { color: var(--accent); }
     <h2>How to play</h2>
     <ol>
       <li>Ten geography prompts a day, like "Name a country that borders Brazil". You get one answer and 30 seconds for each.</li>
-      <li>Any correct answer scores, but the less obvious it is, the more it's worth: from 15 points for the first answer most people think of, up to 130 for a real deep cut.</li>
-      <li>Your points carry you around the world from Brussels to Kampala, 16 legs by car and plane. Every leg is the same number of points.</li>
-      <li>A perfect day, the rarest answer every time, lands you in Kampala.</li>
+      <li><b>Valid answers earn points. Rarer answers score higher:</b> from 10 points for the most obvious answer up to 100 for one almost nobody thinks of. Wrong, skipped or timed-out answers score 0. The best possible day is 1,000.</li>
+      <li>Your points carry you around the world from Brussels to Kampala, 16 legs by car and plane. 1,000 points lands you in Kampala.</li>
+      <li>Refreshing doesn't reset the clock, and each prompt takes one answer.</li>
+    </ol>
+    <h2>How rarity is scored</h2>
+    <ol>
+      <li>For every prompt, all the valid answers are ranked from most to least well known, using a fixed familiarity score for each country (Terrago's own rating, not player data).</li>
+      <li>An answer's position in that ranking sets its tier: top quarter <b>Tourist 10</b>, then <b>Traveller 25</b>, <b>Explorer 45</b>, <b>Rare find 65</b>, <b>Deep cut 85</b>, and the rarest 7% <b>Off the map 100</b>.</li>
+      <li>The ranking is fixed before the day starts, so the same answer always earns the same points for every player, however many people play.</li>
     </ol>
     <button type="button" class="btn ghost" id="helpClose">Let's go</button>
   </div>
@@ -160,21 +213,23 @@ h1 span { color: var(--accent); }
 
 <script>
 const D = /*DATA*/;
-const C = D.countries, M = D.map, NQ = 10, MAXP = 130, TIME = 30;
+const C = D.countries, M = D.map, NQ = 10, MAXP = 100, TIME = 30;
 const FULL = NQ * MAXP, LEG = FULL / M.legs.length, LAST = M.cities[M.cities.length - 1].n;
 const track = n => { try { window.tgTrack && window.tgTrack(n); } catch (e) {} };
 const TIERS = [
-  { name: "Tourist", pts: 15, emo: "⬜", c: "--t0" },
-  { name: "Traveller", pts: 35, emo: "🟨", c: "--t1" },
-  { name: "Explorer", pts: 60, emo: "🟩", c: "--t2" },
-  { name: "Rare find", pts: 85, emo: "🟦", c: "--t3" },
-  { name: "Deep cut", pts: 110, emo: "🟪", c: "--t4" },
-  { name: "Off the map", pts: 130, emo: "🌟", c: "--t5" },
+  { name: "Tourist", pts: 10, emo: "⬜", c: "--t0" },
+  { name: "Traveller", pts: 25, emo: "🟨", c: "--t1" },
+  { name: "Explorer", pts: 45, emo: "🟩", c: "--t2" },
+  { name: "Rare find", pts: 65, emo: "🟦", c: "--t3" },
+  { name: "Deep cut", pts: 85, emo: "🟪", c: "--t4" },
+  { name: "Off the map", pts: 100, emo: "🌟", c: "--t5" },
 ];
-const norm = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[.'’]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+const norm = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/&/g, " and ").replace(/[.'’`]/g, "").replace(/[^a-z0-9]+/g, " ").trim()
+  .replace(/^the /, "").replace(/(^| )st( |$)/g, "$1saint$2").replace(/(^| )ste( |$)/g, "$1sainte$2").replace(/ +/g, " ");
 const byN = Object.fromEntries(C.map(c => [c.n, c]));
 /* names players type: countries (with aliases) and capitals (with alternates) */
 const CLOOK = new Map(), KLOOK = new Map();
+C.forEach(c => { c.ca = c.ca.flatMap(a => a.split(";")).map(a => a.trim()).filter(Boolean); }); /* some alternates were stored as "A;B" */
 C.forEach(c => { [c.n, ...c.al].forEach(a => { if (!CLOOK.has(norm(a))) CLOOK.set(norm(a), c); }); [c.cap, ...c.ca].forEach(a => { if (!KLOOK.has(norm(a))) KLOOK.set(norm(a), c); }); });
 const KYIV = byN["Ukraine"]; if (KYIV) KLOOK.set("kiev", KYIV);
 const LETTER_OK = { "Ivory Coast": ["Cote d Ivoire"], "Cabo Verde": ["Cape Verde"], "Czechia": ["Czech Republic"], "Timor-Leste": ["East Timor"], "Eswatini": ["Swaziland"], "Turkey": ["Turkiye"] };
@@ -301,13 +356,38 @@ function bank() {
   return P;
 }
 const BANK = bank();
+BANK.forEach((p, i) => { p.id = i; });
 
 /* rarity: rank the valid answers from most to least familiar, then cut into tiers */
+/* Reference rarity. For each prompt, every valid answer is ranked from most to least well known using a fixed
+   familiarity score (Terrago's own, not player data). position = rank / (valid answers - 1): 0 = best known, 1 = least.
+   Tier cut-offs: under 25% Tourist, 45% Traveller, 65% Explorer, 80% Rare find, 93% Deep cut, otherwise Off the map.
+   The same answer to the same prompt always gets the same points, for every player, forever. */
+const famSort = p => p.ans.map(n => byN[n]).sort((a, b) => b.fam - a.fam || (a.n < b.n ? -1 : 1));
+function rankOf(p, name) { return famSort(p).findIndex(c => c.n === name); }
 function tierOf(p, name) {
-  const sorted = p.ans.map(n => byN[n]).sort((a, b) => b.fam - a.fam);
-  const i = sorted.findIndex(c => c.n === name), q = sorted.length > 1 ? i / (sorted.length - 1) : 1;
+  const n = p.ans.length, i = rankOf(p, name); if (i < 0) return -1;
+  const q = n > 1 ? i / (n - 1) : 1;
   return q < 0.25 ? 0 : q < 0.45 ? 1 : q < 0.65 ? 2 : q < 0.8 ? 3 : q < 0.93 ? 4 : 5;
 }
+/* Points for an answer. FROZEN can hold player-based tiers for a day, fixed before that day starts (none yet). */
+const FROZEN = {};
+function pointsFor(day, p, name) {
+  if (!name || !p.ans.includes(name)) return { tier: -1, pts: 0 };
+  const f = FROZEN[day] && FROZEN[day][p.id] && FROZEN[day][p.id][name];
+  const tier = f != null ? f : tierOf(p, name);
+  return { tier, pts: TIERS[tier].pts };
+}
+/* Popularity of answers among players. Returns {ok:false, reason, n} when there is no data or too little. */
+const MIN_RESPONSES = 50;
+function popularity(responses, p) {
+  if (!responses || typeof responses !== "object") return { ok: false, reason: "none", n: 0 };
+  const counts = Object.entries(responses).filter(([a, k]) => p.ans.includes(a) && Number.isInteger(k) && k > 0);
+  const n = Object.values(responses).reduce((a, k) => a + (Number.isInteger(k) && k > 0 ? k : 0), 0);
+  if (n < MIN_RESPONSES) return { ok: false, reason: n ? "few" : "none", n };
+  return { ok: true, n, rows: counts.sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1)).map(([a, k]) => ({ a, k, pct: Math.round(k * 1000 / n) / 10 })) };
+}
+const RESPONSES = null; /* not collected: Terrago has no server that stores answers */
 const label = (p, c) => p.kind === "capital" ? `${c.cap} (${c.n})` : c.n;
 
 /* ---------- daily set ---------- */
@@ -343,8 +423,15 @@ function makeSet(seed) { return pickSet(mulberry32(seed), new Set()); }
 const LS = "voyago-v2";
 const store = { get(k, d) { try { const v = JSON.parse(localStorage.getItem(LS + k)); return v ?? d; } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem(LS + k, JSON.stringify(v)); } catch (e) {} } };
 let practice = false, set = daySet(Math.max(1, DAY)), answers = [], started = false;
-{ const s = store.get(":day", null); if (s && s.day === DAY && Array.isArray(s.answers)) { answers = s.answers; started = s.started; } }
-function persist() { if (!practice) store.set(":day", { day: DAY, answers, started }); }
+let cur = null; /* {q, t0}: the prompt on screen and when its clock started, so a refresh can't reset the 30 seconds */
+{
+  const s = store.get(":day", null);
+  if (s && s.day === DAY && Array.isArray(s.answers)) {
+    answers = s.answers.slice(0, NQ).map(x => ({ ...x, pts: x.tier >= 0 && TIERS[x.tier] ? TIERS[x.tier].pts : 0 }));
+    started = s.started; cur = s.cur && s.cur.q === set[answers.length] ? s.cur : null;
+  }
+}
+function persist() { if (!practice) store.set(":day", { day: DAY, answers, started, cur, scale: 1000 }); }
 const total = () => answers.reduce((a, x) => a + x.pts, 0);
 const $ = id => document.getElementById(id);
 
@@ -392,8 +479,16 @@ function renderTop() {
 }
 function renderIntro() {
   const card = $("card"); card.className = "card intro";
-  card.innerHTML = `<h2 class="q">Brussels to Kampala. Ten prompts.</h2><p>Rare answers take you further. Each prompt has a 30-second clock, so have a minute to spare before you start.</p><div class="legend" id="legend"></div><button type="button" class="btn primary wide" id="startBtn">Start today's voyage</button>`;
+  card.innerHTML = `<h2 class="q">Brussels to Kampala. Ten prompts.</h2><p class="rule">Valid answers earn points. Rarer answers score higher.</p><div class="example" id="example"></div><p>Each prompt has a 30-second clock and takes one answer, so have five minutes to spare before you start.</p><div class="legend" id="legend"></div><button type="button" class="btn primary wide" id="startBtn">Start today's voyage</button>`;
   $("legend").replaceChildren(...TIERS.map(t => { const s = document.createElement("span"); const i = document.createElement("i"); i.style.background = `var(${t.c})`; const b = document.createElement("b"); b.textContent = `+${t.pts}`; s.append(i, t.name, b); return s; }));
+  {
+    const ex = BANK.find(p => /borders Germany$/.test(p.text)) || BANK.find(p => p.ans.length >= 8);
+    const srt = famSort(ex), a = srt[0], z = srt[srt.length - 1];
+    $("example").innerHTML = `<small>Example</small><div class="q2"></div><div class="exrow"><span></span><b></b></div><div class="exrow"><span></span><b></b></div>`;
+    $("example").querySelector(".q2").textContent = ex.text;
+    const rows = $("example").querySelectorAll(".exrow");
+    [[a, rows[0]], [z, rows[1]]].forEach(([c, r]) => { const t = pointsFor(0, ex, c.n); r.children[0].textContent = `${label(ex, c)} · ${TIERS[t.tier].name}`; r.children[1].textContent = "+" + t.pts; r.children[1].style.color = `var(${TIERS[t.tier].c})`; });
+  }
   $("startBtn").onclick = () => { started = true; persist(); if (!practice) track("voyago-start"); renderPrompt(); };
 }
 function renderPrompt() {
@@ -418,9 +513,12 @@ function renderPrompt() {
   startTimer();
 }
 function startTimer() {
-  clearInterval(timer); left = TIME; const t0 = Date.now();
-  const fill = $("barFill"); fill.style.transition = "none"; fill.style.transform = "scaleX(1)";
-  requestAnimationFrame(() => requestAnimationFrame(() => { fill.style.transition = `transform ${TIME}s linear`; fill.style.transform = "scaleX(0)"; }));
+  clearInterval(timer);
+  if (!cur || cur.q !== set[answers.length]) { cur = { q: set[answers.length], t0: Date.now() }; persist(); }
+  const t0 = cur.t0, gone = Math.min(TIME, Math.max(0, (Date.now() - t0) / 1000)); left = Math.ceil(TIME - gone);
+  const fill = $("barFill"); fill.style.transition = "none"; fill.style.transform = `scaleX(${1 - gone / TIME})`;
+  requestAnimationFrame(() => requestAnimationFrame(() => { fill.style.transition = `transform ${TIME - gone}s linear`; fill.style.transform = "scaleX(0)"; }));
+  const el0 = $("timer"); if (el0) el0.textContent = left + "s";
   timer = setInterval(() => {
     left = Math.max(0, TIME - Math.floor((Date.now() - t0) / 1000));
     const el = $("timer"); if (el) { el.textContent = left + "s"; el.classList.toggle("low", left <= 5); }
@@ -458,9 +556,10 @@ function submit(text) {
 }
 function finishPrompt(name, timedOut) {
   clearInterval(timer);
-  const p = BANK[set[answers.length]], valid = name && p.ans.includes(name);
-  const tier = valid ? tierOf(p, name) : -1;
-  answers.push({ q: set[answers.length], a: name, pts: valid ? TIERS[tier].pts : 0, tier, to: !!timedOut });
+  if (answers.length >= NQ || !cur || cur.q !== set[answers.length]) return; /* already answered */
+  const p = BANK[set[answers.length]], sc = pointsFor(practice ? 0 : DAY, p, name);
+  answers.push({ q: set[answers.length], a: name, pts: sc.pts, tier: sc.tier, to: !!timedOut });
+  cur = null;
   persist(); renderMap(); renderVerdict();
   if (answers.length === NQ) recordResult();
 }
@@ -490,49 +589,110 @@ function renderVerdict() {
   btn.onclick = () => { if (answers.length < NQ) renderPrompt(); else renderEnd(); }; btn.focus({ preventScroll: true });
 }
 function reachedCity() { return M.cities[locate(total()).reached].n; }
+const validN = () => answers.filter(x => x.tier >= 0).length;
 function shareText() {
   const row = answers.map(x => x.tier >= 0 ? TIERS[x.tier].emo : "⬛").join("");
   const site = /^https?:/.test(location.origin) && !/claude|localhost/.test(location.host) ? `\n${location.origin}/voyago/` : "";
-  return `Voyago ${practice ? "(practice)" : "#" + DAY} 🌍 Reached ${reachedCity()} · ${total()}/${FULL}\n${row}${site}`;
+  return `Voyago ${practice ? "(practice)" : "#" + DAY} 🌍 ${total()}/${FULL}\n${row}\n${validN()}/${NQ} valid · reached ${reachedCity()}${site}`;
+}
+const blankStats = () => ({ played: 0, best: 0, sum: 0, scored: 0, valid: 0, scale: 1000 });
+function loadStats() {
+  const s = store.get(":stats", {});
+  if (s.scale === 1000) return { ...blankStats(), ...s };
+  /* stats from the old 1,300-point scale: keep the number of voyages, restart points on the new scale */
+  return { ...blankStats(), played: s.played || 0, oldPlayed: s.played || 0, lastDay: s.lastDay };
 }
 function recordResult() {
   if (practice) return;
-  const s = { played: 0, best: 0, sum: 0, perth: 0, ...store.get(":stats", {}) };
-  if (s.lastDay === DAY) return;
-  s.played++; s.sum += total(); s.best = Math.max(s.best, total()); if (total() >= FULL) s.perth++; s.lastDay = DAY;
+  const s = loadStats();
+  if (s.lastDay === DAY) { if (!store.get(":stats", {}).scale) store.set(":stats", s); return; }
+  s.played++; s.scored++; s.sum += total(); s.best = Math.max(s.best, total()); s.valid += validN(); s.lastDay = DAY;
   store.set(":stats", s); track("voyago-finished-stop-" + locate(total()).reached);
+}
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+function rarityBar(tier) {
+  const b = el("span", "rbar"); b.setAttribute("aria-hidden", "true");
+  for (let t = 0; t < TIERS.length; t++) { const i = el("i"); if (t <= tier) i.style.background = `var(${TIERS[tier].c})`; b.append(i); }
+  return b;
+}
+function detail(x, k) {
+  const p = BANK[x.q], box = el("div", "qd"); box.id = "qd-" + k; box.hidden = true;
+  const sorted = famSort(p), n = sorted.length, mine = x.a ? rankOf(p, x.a) : -1;
+  /* the player's answer */
+  const you = el("p", "you");
+  if (x.tier >= 0 && byN[x.a]) you.append("Your answer ", el("b", null, label(p, byN[x.a])), ` is #${mine + 1} of ${n} valid answers, ranked from most to least well known: `, el("b", null, `${TIERS[x.tier].name}, +${x.pts}`), ".");
+  else you.append(x.to ? "Time ran out" : !x.a || !byN[x.a] ? "Skipped" : el("b", null, label(p, byN[x.a]) + " doesn't fit this prompt"), `. ${n} answers were valid; here is how they score.`);
+  box.append(you);
+  /* player popularity: only from real response data, never invented */
+  const pop = popularity(RESPONSES && RESPONSES[DAY] && RESPONSES[DAY][p.id], p);
+  const ph = el("h4", null, "What other players answered");
+  box.append(ph);
+  if (pop.ok) {
+    const ul = el("ul", "chart");
+    pop.rows.slice(0, 6).forEach(r => {
+      const li = el("li", r.a === x.a ? "mine" : ""), c = byN[r.a], t = pointsFor(DAY, p, r.a);
+      const bar = el("span", "barw"); const f = el("i"); f.style.width = Math.max(2, r.pct) + "%"; f.style.background = `var(${TIERS[t.tier].c})`; bar.append(f);
+      li.append(el("span", "nm", label(p, c)), bar, el("span", "pc", r.pct + "%"), el("b", null, "+" + t.pts)); ul.append(li);
+    });
+    box.append(ul, el("p", "fine", `Share of all ${pop.n.toLocaleString("en-US")} player answers to this prompt, including wrong ones.`));
+  } else box.append(el("p", "fine", pop.reason === "few" ? `Only ${pop.n} player answers so far: too few to show percentages.` : "Not collected yet. Terrago doesn't store other players' answers, so there are no popularity percentages. Points come from the reference rarity below, the same for everyone."));
+  /* reference rarity: best-known answers, the player's answer, and the rarest */
+  box.append(el("h4", null, "Reference rarity · most to least well known"));
+  const show = new Set([0, 1, 2, 3, 4, n - 2, n - 1].filter(i => i >= 0 && i < n)); if (mine >= 0) show.add(mine);
+  const ul = el("ul", "chart ref"); let last = -1;
+  [...show].sort((a, b) => a - b).forEach(i => {
+    if (last >= 0 && i > last + 1) ul.append(el("li", "gap", `… ${i - last - 1} more`));
+    const c = sorted[i], t = pointsFor(practice ? 0 : DAY, p, c.n), li = el("li", i === mine ? "mine" : "");
+    const pos = n > 1 ? i / (n - 1) : 1, bar = el("span", "barw"); const f = el("i"); f.style.width = Math.max(4, Math.round(pos * 100)) + "%"; f.style.background = `var(${TIERS[t.tier].c})`; bar.append(f);
+    li.append(el("span", "nm", `#${i + 1} ${label(p, c)}`), bar, el("span", "pc", TIERS[t.tier].name), el("b", null, "+" + t.pts)); ul.append(li); last = i;
+  });
+  box.append(ul, el("p", "fine", "Bar length = how far down the well-known ranking an answer sits. Further down scores more."));
+  return box;
 }
 function renderEnd() {
   const card = $("card"); card.className = "card result";
-  const p = total(), L = locate(p);
-  card.innerHTML = `<div class="qno"><span>${practice ? "Practice voyage" : "Today's voyage"}</span></div><h2></h2><p></p><div class="grid" id="grid"></div>
+  const p = total(), L = locate(p), v = validN();
+  card.innerHTML = `<div class="qno"><span>${practice ? "Practice voyage" : "Today's voyage"}</span></div><h2></h2>
+    <div class="sumrow"><div class="big"><b id="tot"></b><span>/ 1,000</span></div>
+      <div class="kpis"><div><b id="kv"></b><span>valid answers</span></div><div><b id="ka"></b><span>avg per valid answer</span></div></div></div>
+    <div class="grid" id="grid"></div>
     <div class="actions"><button type="button" class="btn primary" id="share">Copy result</button><button type="button" class="btn ghost" id="again"></button></div><div class="copied" id="copied"></div>
-    <div class="review" id="review"></div><div id="statsBox"></div>`;
+    <h3>Your answers</h3><p class="hint">Tap a prompt to see how its answers were scored.</p>
+    <ol class="qlist" id="qlist"></ol><div id="statsBox"></div>
+    <p class="hint"><button type="button" class="linkbtn" id="howBtn">How points work</button></p>`;
   card.querySelector("h2").textContent = p >= FULL ? `${LAST}! A perfect voyage.` : `You made it to ${M.cities[L.reached].n}.`;
-  card.querySelector("p").textContent = `${p} points, ${L.reached} of ${M.legs.length} legs. ${practice ? "Practice doesn't touch your stats." : "New prompts at midnight."}`;
-  $("grid").textContent = shareText().split("\n")[1];
+  $("tot").textContent = p.toLocaleString("en-US");
+  $("kv").textContent = `${v}/${NQ}`;
+  $("ka").textContent = v ? Math.round(p / v) : "–";
+  $("grid").textContent = answers.map(x => x.tier >= 0 ? TIERS[x.tier].emo : "⬛").join("");
   $("again").textContent = practice ? "Another practice voyage" : "Practice a random set";
-  $("review").replaceChildren(...answers.map(x => {
-    const d = document.createElement("div"), i = document.createElement("i"), t = document.createElement("span"), b = document.createElement("b");
-    i.style.background = x.tier >= 0 ? `var(${TIERS[x.tier].c})` : "var(--bad)";
-    const q = BANK[x.q]; t.innerHTML = ""; t.append(x.a ? label(q, byN[x.a]) : "—"); const s = document.createElement("span"); s.className = "p"; s.textContent = " · " + q.text; t.append(s);
-    b.textContent = "+" + x.pts; d.append(i, t, b); return d;
+  $("qlist").replaceChildren(...answers.map((x, k) => {
+    const q = BANK[x.q], li = el("li"), b = el("button", "qrow"); b.type = "button"; b.setAttribute("aria-expanded", "false"); b.setAttribute("aria-controls", "qd-" + k);
+    const txt = el("span", "qt"); txt.append(el("span", "qq", q.text));
+    const ans = el("span", "qa " + (x.tier >= 0 ? "ok" : "no"), (x.tier >= 0 ? "✓ " : "✗ ") + (x.a && byN[x.a] ? label(q, byN[x.a]) : x.to ? "Time ran out" : "Skipped") + (x.a && x.tier < 0 ? " · not valid" : ""));
+    txt.append(ans);
+    const pts = el("span", "qp"); pts.append(el("b", null, "+" + x.pts), x.tier >= 0 ? rarityBar(x.tier) : el("span", "rbar none"), el("small", null, x.tier >= 0 ? TIERS[x.tier].name : "0 points"));
+    b.append(el("span", "qn", String(k + 1)), txt, pts, el("span", "chev", "›"));
+    const d = detail(x, k);
+    b.onclick = () => { const open = b.getAttribute("aria-expanded") !== "true"; b.setAttribute("aria-expanded", String(open)); d.hidden = !open; if (open) track("voyago-review-open"); };
+    li.append(b, d); return li;
   }));
   $("share").onclick = () => {
     const text = shareText(); track(practice ? "voyago-share-practice" : "voyago-share");
-    const fallback = () => { let ta = card.querySelector("textarea"); if (!ta) { ta = document.createElement("textarea"); ta.className = "sharebox"; ta.rows = 3; ta.readOnly = true; card.insertBefore(ta, $("review")); } ta.value = text; ta.focus(); ta.select(); $("copied").textContent = "Select and copy the text below"; };
+    const fallback = () => { let ta = card.querySelector("textarea"); if (!ta) { ta = document.createElement("textarea"); ta.className = "sharebox"; ta.rows = 4; ta.readOnly = true; $("copied").after(ta); } ta.value = text; ta.focus(); ta.select(); $("copied").textContent = "Select and copy the text below"; };
     try { navigator.clipboard.writeText(text).then(() => { $("copied").textContent = "Copied. Paste it anywhere."; }, fallback); } catch (e) { fallback(); }
   };
   $("again").onclick = startPractice;
+  $("howBtn").onclick = () => { $("help").hidden = false; $("help").scrollIntoView({ behavior: "smooth" }); };
   if (!practice) {
-    const s = { played: 0, best: 0, sum: 0, perth: 0, ...store.get(":stats", {}) };
-    const box = document.createElement("div"); box.className = "stats";
-    [[s.played, "Voyages"], [s.played ? Math.round(s.sum / s.played) : 0, "Avg points"], [s.best, "Best"]].forEach(([v, l]) => { const d = document.createElement("div"); const b = document.createElement("b"); b.textContent = v; const sp = document.createElement("span"); sp.textContent = l; d.append(b, sp); box.append(d); });
+    const s = loadStats(), box = el("div", "stats");
+    [[s.played, "Voyages"], [s.scored ? Math.round(s.sum / s.scored) : "–", "Avg points"], [s.best || "–", "Best"]].forEach(([v, l]) => { const d = el("div"); d.append(el("b", null, String(v)), el("span", null, l)); box.append(d); });
     $("statsBox").append(box);
+    if (s.oldPlayed && s.scored < 2) $("statsBox").append(el("p", "fine", "Points moved to a 1,000-point scale on Nov 4, 2026, so averages and best scores start fresh."));
   }
 }
 function startPractice() {
-  practice = true; track("voyago-practice"); set = makeSet((Math.random() * 1e9) | 0); answers = []; started = true;
+  practice = true; track("voyago-practice"); set = makeSet((Math.random() * 1e9) | 0); answers = []; started = true; cur = null;
   renderTop(); renderMap(); renderPrompt(); window.scrollTo({ top: 0, behavior: "smooth" });
 }
 $("helpBtn").onclick = () => { $("help").hidden = !$("help").hidden; };
@@ -541,6 +701,6 @@ try { if (!localStorage.getItem(LS + ":seenHelp")) $("help").hidden = false; } c
 
 renderTop(); renderMap();
 if (answers.length >= NQ) renderEnd();
-else if (started && answers.length) renderPrompt();
+else if (started) renderPrompt(); /* resumes the prompt clock where it was */
 else renderIntro();
 </script>

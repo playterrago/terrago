@@ -1,0 +1,1757 @@
+{
+ "DZA": {
+  "file": "africa/ag.json",
+  "land": "2,381,740 sq km",
+  "mean": "800 m",
+  "hi": "Tahat 2,908 m",
+  "coast": "998 km",
+  "water": "11.667 billion cubic meters (2022 est.)",
+  "air": "95 (2025)"
+ },
+ "AGO": {
+  "file": "africa/ao.json",
+  "land": "1,246,700 sq km",
+  "mean": "1,112 m",
+  "hi": "Moco 2,620 m",
+  "coast": "1,600 km",
+  "water": "148.4 billion cubic meters (2022 est.)",
+  "air": "107 (2025)"
+ },
+ "BEN": {
+  "file": "africa/bn.json",
+  "land": "110,622 sq km",
+  "mean": "273 m",
+  "hi": "unnamed elevation 675 m; located 2.5 km southeast of the town of Kotopounga",
+  "coast": "121 km",
+  "water": "26.39 billion cubic meters (2022 est.)",
+  "air": "10 (2025)"
+ },
+ "BWA": {
+  "file": "africa/bc.json",
+  "land": "566,730 sq km",
+  "mean": "1,013 m",
+  "hi": "Manyelanong Hill 1,495 m",
+  "coast": "0 km (landlocked)",
+  "water": "12.24 billion cubic meters (2022 est.)",
+  "air": "122 (2025)"
+ },
+ "BFA": {
+  "file": "africa/uv.json",
+  "land": "273,800 sq km",
+  "mean": "297 m",
+  "hi": "Tena Kourou 749 m",
+  "coast": "0 km (landlocked)",
+  "water": "13.5 billion cubic meters (2022 est.)",
+  "air": "49 (2025)"
+ },
+ "BDI": {
+  "file": "africa/by.json",
+  "land": "25,680 sq km",
+  "mean": "1,504 m",
+  "hi": "unnamed elevation on Mukike Range 2,685 m",
+  "coast": "0 km (landlocked)",
+  "water": "12.536 billion cubic meters (2022 est.)",
+  "air": "6 (2025)"
+ },
+ "CPV": {
+  "file": "africa/cv.json",
+  "land": "4,033 sq km",
+  "mean": null,
+  "hi": "Mt. Fogo (a volcano on Fogo Island) 2,829 m",
+  "coast": "965 km",
+  "water": "300 million cubic meters (2022 est.)",
+  "air": "10 (2025)"
+ },
+ "CMR": {
+  "file": "africa/cm.json",
+  "land": "472,710 sq km",
+  "mean": "667 m",
+  "hi": "Fako on Mont Cameroun 4,045 m",
+  "coast": "402 km",
+  "water": "283.15 billion cubic meters (2022 est.)",
+  "air": "37 (2025)"
+ },
+ "CAF": {
+  "file": "africa/ct.json",
+  "land": "622,984 sq km",
+  "mean": "635 m",
+  "hi": "Mont Ngaoui 1,410 m",
+  "coast": "0 km (landlocked)",
+  "water": "141 billion cubic meters (2022 est.)",
+  "air": "43 (2025)"
+ },
+ "TCD": {
+  "file": "africa/cd.json",
+  "land": "1,259,200 sq km",
+  "mean": "543 m",
+  "hi": "Emi Koussi 3,445 m",
+  "coast": "0 km (landlocked)",
+  "water": "45.7 billion cubic meters (2022 est.)",
+  "air": "44 (2025)"
+ },
+ "COM": {
+  "file": "africa/cn.json",
+  "land": "2,235 sq km",
+  "mean": null,
+  "hi": "Karthala 2,360 m",
+  "coast": "340 km",
+  "water": "1.2 billion cubic meters (2022 est.)",
+  "air": "3 (2025)"
+ },
+ "COD": {
+  "file": "africa/cg.json",
+  "land": "2,267,048 sq km",
+  "mean": "726 m",
+  "hi": "Pic Marguerite on Mont Ngaliema (Mount Stanley) 5,110 m",
+  "coast": "37 km",
+  "water": "1.283 trillion cubic meters (2022 est.)",
+  "air": "273 (2025)"
+ },
+ "COG": {
+  "file": "africa/cf.json",
+  "land": "341,500 sq km",
+  "mean": "430 m",
+  "hi": "Mont Nabeba 1,020 m",
+  "coast": "169 km",
+  "water": "832 billion cubic meters (2022 est.)",
+  "air": "56 (2025)"
+ },
+ "DJI": {
+  "file": "africa/dj.json",
+  "land": "23,180 sq km",
+  "mean": "430 m",
+  "hi": "Moussa Ali 2,021 m",
+  "coast": "314 km",
+  "water": "300 million cubic meters (2022 est.)",
+  "air": "10 (2025)"
+ },
+ "EGY": {
+  "file": "africa/eg.json",
+  "land": "995,450 sq km",
+  "mean": "321 m",
+  "hi": "Mount Catherine 2,629 m",
+  "coast": "2,450 km",
+  "water": "57.5 billion cubic meters (2022 est.)",
+  "air": "73 (2025)"
+ },
+ "GNQ": {
+  "file": "africa/ek.json",
+  "land": "28,051 sq km",
+  "mean": "577 m",
+  "hi": "Pico Basile 3,008 m",
+  "coast": "296 km",
+  "water": "26 billion cubic meters (2022 est.)",
+  "air": "7 (2025)"
+ },
+ "ERI": {
+  "file": "africa/er.json",
+  "land": "101,000 sq km",
+  "mean": "853 m",
+  "hi": "Soira 3,018 m",
+  "coast": "2,234 km (mainland on Red Sea 1,151 km; islands in Red Sea 1,083 km)",
+  "water": "7.315 billion cubic meters (2022 est.)",
+  "air": "11 (2025)"
+ },
+ "SWZ": {
+  "file": "africa/wz.json",
+  "land": "17,204 sq km",
+  "mean": "305 m",
+  "hi": "Emlembe 1,862 m",
+  "coast": "0 km (landlocked)",
+  "water": "4.51 billion cubic meters (2022 est.)",
+  "air": "16 (2025)"
+ },
+ "ETH": {
+  "file": "africa/et.json",
+  "land": "1,096,570 sq km",
+  "mean": "1,330 m",
+  "hi": "Ras Dejen 4,550 m",
+  "coast": "0 km (landlocked)",
+  "water": "122 billion cubic meters (2022 est.)",
+  "air": "58 (2025)"
+ },
+ "GAB": {
+  "file": "africa/gb.json",
+  "land": "257,667 sq km",
+  "mean": "377 m",
+  "hi": "Mont Bengoue 1,050 m",
+  "coast": "885 km",
+  "water": "166 billion cubic meters (2022 est.)",
+  "air": "42 (2025)"
+ },
+ "GMB": {
+  "file": "africa/ga.json",
+  "land": "10,120 sq km",
+  "mean": "34 m",
+  "hi": "unnamed elevation 63 m; 3 km southeast of the town of Sabi",
+  "coast": "80 km",
+  "water": "8 billion cubic meters (2022 est.)",
+  "air": "1 (2025)"
+ },
+ "GHA": {
+  "file": "africa/gh.json",
+  "land": "227,533 sq km",
+  "mean": "190 m",
+  "hi": "Mount Afadjato 885 m",
+  "coast": "539 km",
+  "water": "56.2 billion cubic meters (2022 est.)",
+  "air": "11 (2025)"
+ },
+ "GIN": {
+  "file": "africa/gv.json",
+  "land": "245,717 sq km",
+  "mean": "472 m",
+  "hi": "Mont Nimba 1,752 m",
+  "coast": "320 km",
+  "water": "226 billion cubic meters (2022 est.)",
+  "air": "16 (2025)"
+ },
+ "GNB": {
+  "file": "africa/pu.json",
+  "land": "28,120 sq km",
+  "mean": "70 m",
+  "hi": "Dongol Ronde 277 m",
+  "coast": "350 km",
+  "water": "31.4 billion cubic meters (2022 est.)",
+  "air": "7 (2025)"
+ },
+ "CIV": {
+  "file": "africa/iv.json",
+  "land": "318,003 sq km",
+  "mean": "250 m",
+  "hi": "Monts Nimba 1,752 m",
+  "coast": "515 km",
+  "water": "84.14 billion cubic meters (2022 est.)",
+  "air": "29 (2025)"
+ },
+ "KEN": {
+  "file": "africa/ke.json",
+  "land": "569,140 sq km",
+  "mean": "762 m",
+  "hi": "Mount Kenya 5,199 m",
+  "coast": "536 km",
+  "water": "30.7 billion cubic meters (2022 est.)",
+  "air": "368 (2025)"
+ },
+ "LSO": {
+  "file": "africa/lt.json",
+  "land": "30,355 sq km",
+  "mean": "2,161 m",
+  "hi": "Thabana Ntlenyana 3,482 m",
+  "coast": "0 km (landlocked)",
+  "water": "3.022 billion cubic meters (2022 est.)",
+  "air": "34 (2025)"
+ },
+ "LBR": {
+  "file": "africa/li.json",
+  "land": "96,320 sq km",
+  "mean": "243 m",
+  "hi": "Mount Wuteve 1,447 m",
+  "coast": "579 km",
+  "water": "232 billion cubic meters (2022 est.)",
+  "air": "19 (2025)"
+ },
+ "LBY": {
+  "file": "africa/ly.json",
+  "land": "1,759,540 sq km",
+  "mean": "423 m",
+  "hi": "Bikku Bitti 2,267 m",
+  "coast": "1,770 km",
+  "water": "700 million cubic meters (2022 est.)",
+  "air": "75 (2025)"
+ },
+ "MDG": {
+  "file": "africa/ma.json",
+  "land": "581,540 sq km",
+  "mean": "615 m",
+  "hi": "Maromokotro 2,876 m",
+  "coast": "4,828 km",
+  "water": "337 billion cubic meters (2022 est.)",
+  "air": "93 (2025)"
+ },
+ "MWI": {
+  "file": "africa/mi.json",
+  "land": "94,080 sq km",
+  "mean": "779 m",
+  "hi": "Sapitwa (Mount Mlanje) 3,002 m",
+  "coast": "0 km (landlocked)",
+  "water": "17.28 billion cubic meters (2022 est.)",
+  "air": "27 (2025)"
+ },
+ "MLI": {
+  "file": "africa/ml.json",
+  "land": "1,220,190 sq km",
+  "mean": "343 m",
+  "hi": "Hombori Tondo 1,155 m",
+  "coast": "0 km (landlocked)",
+  "water": "120 billion cubic meters (2022 est.)",
+  "air": "30 (2025)"
+ },
+ "MRT": {
+  "file": "africa/mr.json",
+  "land": "1,030,700 sq km",
+  "mean": "276 m",
+  "hi": "Kediet Ijill 915 m",
+  "coast": "754 km",
+  "water": "11.4 billion cubic meters (2022 est.)",
+  "air": "25 (2025)"
+ },
+ "MUS": {
+  "file": "africa/mp.json",
+  "land": "2,030 sq km",
+  "mean": null,
+  "hi": "Mont Piton 828 m",
+  "coast": "177 km",
+  "water": "2.751 billion cubic meters (2022 est.)",
+  "air": "5 (2025)"
+ },
+ "MAR": {
+  "file": "africa/mo.json",
+  "land": "716,300 sq km",
+  "mean": "909 m",
+  "hi": "Jebel Toubkal 4,165 m",
+  "coast": "2,945 km",
+  "water": "29 billion cubic meters (2022 est.)",
+  "air": "48 (2025)"
+ },
+ "MOZ": {
+  "file": "africa/mz.json",
+  "land": "786,380 sq km",
+  "mean": "345 m",
+  "hi": "Monte Binga 2,436 m",
+  "coast": "2,470 km",
+  "water": "217.1 billion cubic meters (2022 est.)",
+  "air": "92 (2025)"
+ },
+ "NAM": {
+  "file": "africa/wa.json",
+  "land": "823,290 sq km",
+  "mean": "1,141 m",
+  "hi": "Konigstein on Brandberg 2,573 m",
+  "coast": "1,572 km",
+  "water": "39.91 billion cubic meters (2022 est.)",
+  "air": "259 (2025)"
+ },
+ "NER": {
+  "file": "africa/ng.json",
+  "land": "1,266,700 sq km",
+  "mean": "474 m",
+  "hi": "Idoukal-n-Taghes 2,022 m",
+  "coast": "0 km (landlocked)",
+  "water": "34,050,000,000 cubic meters (2022 est.)",
+  "air": "26 (2025)"
+ },
+ "NGA": {
+  "file": "africa/ni.json",
+  "land": "910,768 sq km",
+  "mean": "380 m",
+  "hi": "Chappal Waddi 2,419 m",
+  "coast": "853 km",
+  "water": "286.2 billion cubic meters (2022 est.)",
+  "air": "50 (2025)"
+ },
+ "RWA": {
+  "file": "africa/rw.json",
+  "land": "24,668 sq km",
+  "mean": "1,598 m",
+  "hi": "Volcan Karisimbi 4,519 m",
+  "coast": "0 km (landlocked)",
+  "water": "13.3 billion cubic meters (2022 est.)",
+  "air": "8 (2025)"
+ },
+ "STP": {
+  "file": "africa/tp.json",
+  "land": "964 sq km",
+  "mean": null,
+  "hi": "Pico de Sao Tome 2,024 m",
+  "coast": "209 km",
+  "water": "2.18 billion cubic meters (2022)",
+  "air": "2 (2025)"
+ },
+ "SEN": {
+  "file": "africa/sg.json",
+  "land": "192,530 sq km",
+  "mean": "69 m",
+  "hi": "unnamed elevation 2.8 km southeast of Nepen Diaka 648 m",
+  "coast": "531 km",
+  "water": "38.97 billion cubic meters (2022 est.)",
+  "air": "20 (2025)"
+ },
+ "SYC": {
+  "file": "africa/se.json",
+  "land": "455 sq km",
+  "mean": null,
+  "hi": "Morne Seychellois 905 m",
+  "coast": "491 km",
+  "water": null,
+  "air": "16 (2025)"
+ },
+ "SLE": {
+  "file": "africa/sl.json",
+  "land": "71,620 sq km",
+  "mean": "279 m",
+  "hi": "Loma Mansa (Bintimani) 1,948 m",
+  "coast": "402 km",
+  "water": "160 billion cubic meters (2022 est.)",
+  "air": "8 (2025)"
+ },
+ "SOM": {
+  "file": "africa/so.json",
+  "land": "627,337 sq km",
+  "mean": "410 m",
+  "hi": "Mount Shimbiris 2,460 m",
+  "coast": "3,025 km",
+  "water": "14.7 billion cubic meters (2022 est.)",
+  "air": "40 (2025)"
+ },
+ "ZAF": {
+  "file": "africa/sf.json",
+  "land": "1,214,470 sq km",
+  "mean": "1,034 m",
+  "hi": "Ntheledi (Mafadi) 3,450 m",
+  "coast": "2,798 km",
+  "water": "51.35 billion cubic meters (2022 est.)",
+  "air": "573 (2025)"
+ },
+ "SSD": {
+  "file": "africa/od.json",
+  "land": "NA",
+  "mean": null,
+  "hi": "Kinyeti 3,187 m",
+  "coast": "0 km (landlocked)",
+  "water": "49.5 billion cubic meters (2022 est.)",
+  "air": "89 (2025)"
+ },
+ "SDN": {
+  "file": "africa/su.json",
+  "land": "1,731,671 sq km",
+  "mean": "568 m",
+  "hi": "Jabal Marrah 3,042 m",
+  "coast": "853 km",
+  "water": "37.8 billion cubic meters (2022 est.)",
+  "air": "45 (2025)"
+ },
+ "TZA": {
+  "file": "africa/tz.json",
+  "land": "885,800 sq km",
+  "mean": "1,018 m",
+  "hi": "Kilimanjaro (highest point in Africa) 5,895 m",
+  "coast": "1,424 km",
+  "water": "96.27 billion cubic meters (2022 est.)",
+  "air": "206 (2025)"
+ },
+ "TGO": {
+  "file": "africa/to.json",
+  "land": "54,385 sq km",
+  "mean": "236 m",
+  "hi": "Mont Agou 986 m",
+  "coast": "56 km",
+  "water": "14.7 billion cubic meters (2022 est.)",
+  "air": "7 (2025)"
+ },
+ "TUN": {
+  "file": "africa/ts.json",
+  "land": "155,360 sq km",
+  "mean": "246 m",
+  "hi": "Jebel ech Chambi 1,544 m",
+  "coast": "1,148 km",
+  "water": "4.615 billion cubic meters (2022 est.)",
+  "air": "14 (2025)"
+ },
+ "UGA": {
+  "file": "africa/ug.json",
+  "land": "197,100 sq km",
+  "mean": null,
+  "hi": "Margherita Peak on Mount Stanley 5,110 m",
+  "coast": "0 km (landlocked)",
+  "water": "60.1 billion cubic meters (2022 est.)",
+  "air": "39 (2025)"
+ },
+ "ZMB": {
+  "file": "africa/za.json",
+  "land": "743,398 sq km",
+  "mean": "1,138 m",
+  "hi": "Mafinga Central 2,330 m",
+  "coast": "0 km (landlocked)",
+  "water": "104.8 billion cubic meters (2022 est.)",
+  "air": "120 (2025)"
+ },
+ "ZWE": {
+  "file": "africa/zi.json",
+  "land": "386,847 sq km",
+  "mean": "961 m",
+  "hi": "Inyangani 2,592 m",
+  "coast": "0 km (landlocked)",
+  "water": "20 billion cubic meters (2022 est.)",
+  "air": "144 (2025)"
+ },
+ "AFG": {
+  "file": "south-asia/af.json",
+  "land": "652,230 sq km",
+  "mean": "1,884 m",
+  "hi": "Noshak 7,492 m",
+  "coast": "0 km (landlocked)",
+  "water": "65.33 billion cubic meters (2022 est.)",
+  "air": "68 (2025)"
+ },
+ "ARM": {
+  "file": "central-asia/am.json",
+  "land": "28,203 sq km",
+  "mean": "1,792 m",
+  "hi": "Aragats Lerrnagagat' 4,090 m",
+  "coast": "0 km (landlocked)",
+  "water": "7.769 billion cubic meters (2022 est.)",
+  "air": "11 (2025)"
+ },
+ "AZE": {
+  "file": "central-asia/aj.json",
+  "land": "82,629 sq km",
+  "mean": "384 m",
+  "hi": "Bazarduzu Dagi 4,466 m",
+  "coast": "0 km (landlocked)",
+  "water": "34.675 billion cubic meters (2022 est.)",
+  "air": "32 (2025)"
+ },
+ "BHR": {
+  "file": "middle-east/ba.json",
+  "land": "760 sq km",
+  "mean": null,
+  "hi": "Jabal ad Dukhan 135 m",
+  "coast": "161 km",
+  "water": "116 million cubic meters (2022 est.)",
+  "air": "3 (2025)"
+ },
+ "BGD": {
+  "file": "south-asia/bg.json",
+  "land": "130,170 sq km",
+  "mean": "85 m",
+  "hi": "Mowdok Taung 1,060 m",
+  "coast": "580 km",
+  "water": "1.227 trillion cubic meters (2022 est.)",
+  "air": "17 (2025)"
+ },
+ "BTN": {
+  "file": "south-asia/bt.json",
+  "land": "38,394 sq km",
+  "mean": "2,220 m",
+  "hi": "Gangkar Puensum 7,570 m",
+  "coast": "0 km (landlocked)",
+  "water": "78 billion cubic meters (2022 est.)",
+  "air": "4 (2025)"
+ },
+ "BRN": {
+  "file": "east-n-southeast-asia/bx.json",
+  "land": "5,265 sq km",
+  "mean": "478 m",
+  "hi": "Bukit Pagon 1,850 m",
+  "coast": "161 km",
+  "water": "8.5 billion cubic meters (2022 est.)",
+  "air": "2 (2025)"
+ },
+ "KHM": {
+  "file": "east-n-southeast-asia/cb.json",
+  "land": "176,515 sq km",
+  "mean": "126 m",
+  "hi": "Phnum Aoral 1,810 m",
+  "coast": "443 km",
+  "water": "476.1 billion cubic meters (2022 est.)",
+  "air": "12 (2025)"
+ },
+ "CHN": {
+  "file": "east-n-southeast-asia/ch.json",
+  "land": "9,326,410 sq km",
+  "mean": "1,840 m",
+  "hi": "Mount Everest (highest peak in Asia and highest point on earth above sea level) 8,849 m",
+  "coast": "14,500 km",
+  "water": "2.84 trillion cubic meters (2022 est.)",
+  "air": "552 (2025)"
+ },
+ "GEO": {
+  "file": "central-asia/gg.json",
+  "land": "69,700 sq km",
+  "mean": "1,432 m",
+  "hi": "Mt'a Shkhara 5,193 m",
+  "coast": "310 km",
+  "water": "63.33 billion cubic meters (2022 est.)",
+  "air": "21 (2025)"
+ },
+ "IND": {
+  "file": "south-asia/in.json",
+  "land": "2,973,193 sq km",
+  "mean": "160 m",
+  "hi": "Kanchenjunga 8,586 m",
+  "coast": "7,000 km",
+  "water": "1.911 trillion cubic meters (2022 est.)",
+  "air": "315 (2025)"
+ },
+ "IDN": {
+  "file": "east-n-southeast-asia/id.json",
+  "land": "1,811,569 sq km",
+  "mean": "367 m",
+  "hi": "Puncak Jaya 4,884 m",
+  "coast": "54,716 km",
+  "water": "2.019 trillion cubic meters (2022 est.)",
+  "air": "556 (2025)"
+ },
+ "IRN": {
+  "file": "middle-east/ir.json",
+  "land": "1,531,595 sq km",
+  "mean": "1,305 m",
+  "hi": "Kuh-e Damavand 5,625 m",
+  "coast": "2,440 km",
+  "water": "137 billion cubic meters (2022 est.)",
+  "air": "177 (2025)"
+ },
+ "IRQ": {
+  "file": "middle-east/iz.json",
+  "land": "437,367 sq km",
+  "mean": "312 m",
+  "hi": "Cheekha Dar (Kurdish for \"Black Tent\") 3,611 m",
+  "coast": "58 km",
+  "water": "89.86 billion cubic meters (2022 est.)",
+  "air": "73 (2025)"
+ },
+ "ISR": {
+  "file": "middle-east/is.json",
+  "land": "21,497 sq km",
+  "mean": "508 m",
+  "hi": "Mitspe Shlagim 2,224 m; note - this is the highest named point, the actual highest point is an unnamed dome slightly to the west of Mitspe Shlagim at 2,236 m; both points are on the northeastern border of Israel, along the southern end of the Anti-Lebanon mountain range",
+  "coast": "273 km",
+  "water": "1.78 billion cubic meters (2022 est.)",
+  "air": "40 (2025)"
+ },
+ "JPN": {
+  "file": "east-n-southeast-asia/ja.json",
+  "land": "364,485 sq km",
+  "mean": "438 m",
+  "hi": "Mount Fuji 3,776 m",
+  "coast": "29,751 km",
+  "water": "430 billion cubic meters (2022 est.)",
+  "air": "280 (2025)"
+ },
+ "JOR": {
+  "file": "middle-east/jo.json",
+  "land": "88,802 sq km",
+  "mean": "812 m",
+  "hi": "Jabal Umm ad Dami 1,854 m",
+  "coast": "26 km",
+  "water": "937 million cubic meters (2022 est.)",
+  "air": "18 (2025)"
+ },
+ "KAZ": {
+  "file": "central-asia/kz.json",
+  "land": "2,699,700 sq km",
+  "mean": "387 m",
+  "hi": "Pik Khan-Tengri 7,010 m<br>note - the northern most 7,000 meter peak in the World",
+  "coast": "0 km (landlocked)",
+  "water": "108.41 billion cubic meters (2022 est.)",
+  "air": "132 (2025)"
+ },
+ "KWT": {
+  "file": "middle-east/ku.json",
+  "land": "17,818 sq km",
+  "mean": "108 m",
+  "hi": "3.6 km W. of Al-Salmi Border Post 300 m",
+  "coast": "499 km",
+  "water": "20 million cubic meters (2022 est.)",
+  "air": "6 (2025)"
+ },
+ "KGZ": {
+  "file": "central-asia/kg.json",
+  "land": "191,801 sq km",
+  "mean": "2,988 m",
+  "hi": "Jengish Chokusu (Pik Pobedy) 7,439 m",
+  "coast": "0 km (landlocked)",
+  "water": "23.618 billion cubic meters (2022 est.)",
+  "air": "28 (2025)"
+ },
+ "LAO": {
+  "file": "east-n-southeast-asia/la.json",
+  "land": "230,800 sq km",
+  "mean": "710 m",
+  "hi": "Phu Bia 2,817 m",
+  "coast": "0 km (landlocked)",
+  "water": "333.5 billion cubic meters (2022 est.)",
+  "air": "20 (2025)"
+ },
+ "LBN": {
+  "file": "middle-east/le.json",
+  "land": "10,230 sq km",
+  "mean": "1,250 m",
+  "hi": "Qornet es Saouda 3,088 m",
+  "coast": "225 km",
+  "water": "4.503 billion cubic meters (2022 est.)",
+  "air": "8 (2025)"
+ },
+ "MYS": {
+  "file": "east-n-southeast-asia/my.json",
+  "land": "328,657 sq km",
+  "mean": "419 m",
+  "hi": "Gunung Kinabalu 4,095 m",
+  "coast": "4,675 km (Peninsular Malaysia 2,068 km; East Malaysia 2,607 km)",
+  "water": "580 billion cubic meters (2022 est.)",
+  "air": "100 (2025)"
+ },
+ "MDV": {
+  "file": "south-asia/mv.json",
+  "land": "298 sq km",
+  "mean": "2 m",
+  "hi": "8th tee, golf course, Villingi Island 5 m",
+  "coast": "644 km",
+  "water": "30 million cubic meters (2022 est.)",
+  "air": "20 (2025)"
+ },
+ "MNG": {
+  "file": "east-n-southeast-asia/mg.json",
+  "land": "1,553,556 sq km",
+  "mean": "1,528 m",
+  "hi": "Nayramadlin Orgil (Khuiten Peak) 4,374 m",
+  "coast": "0 km (landlocked)",
+  "water": "34.8 billion cubic meters (2022 est.)",
+  "air": "37 (2025)"
+ },
+ "MMR": {
+  "file": "east-n-southeast-asia/bm.json",
+  "land": "653,508 sq km",
+  "mean": "702 m",
+  "hi": "Gamlang Razi 5,870 m",
+  "coast": "1,930 km",
+  "water": "1.168 trillion cubic meters (2022 est.)",
+  "air": "74 (2025)"
+ },
+ "NPL": {
+  "file": "south-asia/np.json",
+  "land": "143,351 sq km",
+  "mean": "2,565 m",
+  "hi": "Mount Everest (highest peak in Asia and highest point on earth above sea level) 8,849 m",
+  "coast": "0 km (landlocked)",
+  "water": "210.2 billion cubic meters (2022 est.)",
+  "air": "51 (2025)"
+ },
+ "PRK": {
+  "file": "east-n-southeast-asia/kn.json",
+  "land": "120,408 sq km",
+  "mean": "600 m",
+  "hi": "Paektu-san 2,744 m",
+  "coast": "2,495 km",
+  "water": "77.15 billion cubic meters (2022 est.)",
+  "air": "81 (2025)"
+ },
+ "OMN": {
+  "file": "middle-east/mu.json",
+  "land": "309,500 sq km",
+  "mean": "310 m",
+  "hi": "Jabal Shams 3,004 m",
+  "coast": "2,092 km",
+  "water": "1.4 billion cubic meters (2022 est.)",
+  "air": "37 (2025)"
+ },
+ "PAK": {
+  "file": "south-asia/pk.json",
+  "land": "770,875 sq km",
+  "mean": "900 m",
+  "hi": "K2 (Mt. Godwin-Austen) 8,611 m",
+  "coast": "1,046 km",
+  "water": "246.8 billion cubic meters (2022 est.)",
+  "air": "117 (2025)"
+ },
+ "PHL": {
+  "file": "east-n-southeast-asia/rp.json",
+  "land": "298,170 sq km",
+  "mean": "442 m",
+  "hi": "Mount Apo 2,954 m",
+  "coast": "36,289 km",
+  "water": "479 billion cubic meters (2022 est.)",
+  "air": "256 (2025)"
+ },
+ "QAT": {
+  "file": "middle-east/qa.json",
+  "land": "11,586 sq km",
+  "mean": "28 m",
+  "hi": "Tuwayyir al Hamir 103 m",
+  "coast": "563 km",
+  "water": "58 million cubic meters (2022 est.)",
+  "air": "8 (2025)"
+ },
+ "SAU": {
+  "file": "middle-east/sa.json",
+  "land": "2,149,690 sq km",
+  "mean": "665 m",
+  "hi": "As Sarawat range, 3,000 m",
+  "coast": "2,640 km",
+  "water": "2.4 billion cubic meters (2022 est.)",
+  "air": "90 (2025)"
+ },
+ "SGP": {
+  "file": "east-n-southeast-asia/sn.json",
+  "land": "709.2 sq km",
+  "mean": null,
+  "hi": "Bukit Timah 166 m",
+  "coast": "193 km",
+  "water": "600 million cubic meters (2022)",
+  "air": "9 (2025)"
+ },
+ "KOR": {
+  "file": "east-n-southeast-asia/ks.json",
+  "land": "96,920 sq km",
+  "mean": "282 m",
+  "hi": "Halla-san 1,950 m",
+  "coast": "2,413 km",
+  "water": "69.7 billion cubic meters (2022 est.)",
+  "air": "92 (2025)"
+ },
+ "LKA": {
+  "file": "south-asia/ce.json",
+  "land": "64,630 sq km",
+  "mean": "228 m",
+  "hi": "Pidurutalagala 2,524 m",
+  "coast": "1,340 km",
+  "water": "52.8 billion cubic meters (2022 est.)",
+  "air": "18 (2025)"
+ },
+ "SYR": {
+  "file": "middle-east/sy.json",
+  "land": "185,887 sq km",
+  "mean": "514 m",
+  "hi": "Mount Hermon (Jabal a-Shayk) 2,814 m",
+  "coast": "193 km",
+  "water": "16.802 billion cubic meters (2022 est.)",
+  "air": "42 (2025)"
+ },
+ "TJK": {
+  "file": "central-asia/ti.json",
+  "land": "141,510 sq km",
+  "mean": "3,186 m",
+  "hi": "Qullai Somoniyon 7,495 m",
+  "coast": "0 km (landlocked)",
+  "water": "21.91 billion cubic meters (2022 est.)",
+  "air": "19 (2025)"
+ },
+ "THA": {
+  "file": "east-n-southeast-asia/th.json",
+  "land": "510,890 sq km",
+  "mean": "287 m",
+  "hi": "Doi Inthanon 2,565 m",
+  "coast": "3,219 km",
+  "water": "438.61 billion cubic meters (2022 est.)",
+  "air": "105 (2025)"
+ },
+ "TLS": {
+  "file": "east-n-southeast-asia/tt.json",
+  "land": "14,874 sq km",
+  "mean": null,
+  "hi": "Foho Tatamailau 2,963 m",
+  "coast": "706 km",
+  "water": "8.215 billion cubic meters (2022 est.)",
+  "air": "11 (2025)"
+ },
+ "TUR": {
+  "file": "middle-east/tu.json",
+  "land": "769,632 sq km",
+  "mean": "1,132 m",
+  "hi": "Mount Ararat 5,137 m",
+  "coast": "7,200 km",
+  "water": "211.6 billion cubic meters (2022 est.)",
+  "air": "116 (2025)"
+ },
+ "TKM": {
+  "file": "central-asia/tx.json",
+  "land": "469,930 sq km",
+  "mean": "230 m",
+  "hi": "Gora Ayribaba 3,139 m",
+  "coast": "0 km (landlocked)",
+  "water": "24.765 billion cubic meters (2022 est.)",
+  "air": "23 (2025)"
+ },
+ "ARE": {
+  "file": "middle-east/ae.json",
+  "land": "83,600 sq km",
+  "mean": "149 m",
+  "hi": "Jabal Bil 'Ays 1,905 m",
+  "coast": "1,318 km",
+  "water": "150 million cubic meters (2022 est.)",
+  "air": "42 (2025)"
+ },
+ "UZB": {
+  "file": "central-asia/uz.json",
+  "land": "425,400 sq km",
+  "mean": null,
+  "hi": "Xazrat Sulton Tog' 4,643 m",
+  "coast": "0 km (doubly landlocked)",
+  "water": "48.87 billion cubic meters (2022 est.)",
+  "air": "74 (2025)"
+ },
+ "VNM": {
+  "file": "east-n-southeast-asia/vm.json",
+  "land": "310,070 sq km",
+  "mean": "398 m",
+  "hi": "Fan Si Pan 3,144 m",
+  "coast": "3,444 km (excludes islands)",
+  "water": "884.12 billion cubic meters (2022 est.)",
+  "air": "36 (2025)"
+ },
+ "YEM": {
+  "file": "middle-east/ym.json",
+  "land": "527,968 sq km",
+  "mean": "999 m",
+  "hi": "Jabal an Nabi Shu'ayb 3,666 m",
+  "coast": "1,906 km",
+  "water": "2.1 billion cubic meters (2022 est.)",
+  "air": "37 (2025)"
+ },
+ "ALB": {
+  "file": "europe/al.json",
+  "land": "27,398 sq km",
+  "mean": "708 m",
+  "hi": "Maja e Korabit (Golem Korab) 2,764 m",
+  "coast": "362 km",
+  "water": "30.2 billion cubic meters (2022 est.)",
+  "air": "3 (2025)"
+ },
+ "AND": {
+  "file": "europe/an.json",
+  "land": "468 sq km",
+  "mean": "1,996 m",
+  "hi": "Pic de Coma Pedrosa 2,946 m",
+  "coast": "0 km (landlocked)",
+  "water": "315.6 million cubic meters (2022 est.)",
+  "air": null
+ },
+ "AUT": {
+  "file": "europe/au.json",
+  "land": "82,445 sq km",
+  "mean": "910 m",
+  "hi": "Grossglockner 3,798 m",
+  "coast": "0 km (landlocked)",
+  "water": "77.7 billion cubic meters (2022 est.)",
+  "air": "62 (2025)"
+ },
+ "BLR": {
+  "file": "europe/bo.json",
+  "land": "202,900 sq km",
+  "mean": "160 m",
+  "hi": "Dzyarzhynskaya Hara 346 m",
+  "coast": "0 km (landlocked)",
+  "water": "57.9 billion cubic meters (2022 est.)",
+  "air": "46 (2025)"
+ },
+ "BEL": {
+  "file": "europe/be.json",
+  "land": "30,278 sq km",
+  "mean": "181 m",
+  "hi": "Botrange 694 m",
+  "coast": "66.5 km",
+  "water": "18.3 billion cubic meters (2022 est.)",
+  "air": "48 (2025)"
+ },
+ "BIH": {
+  "file": "europe/bk.json",
+  "land": "51,187 sq km",
+  "mean": "500 m",
+  "hi": "Maglic 2,386 m",
+  "coast": "20 km",
+  "water": "37.5 billion cubic meters (2022 est.)",
+  "air": "20 (2025)"
+ },
+ "BGR": {
+  "file": "europe/bu.json",
+  "land": "108,489 sq km",
+  "mean": "472 m",
+  "hi": "Musala 2,925 m",
+  "coast": "354 km",
+  "water": "21.3 billion cubic meters (2022 est.)",
+  "air": "107 (2025)"
+ },
+ "HRV": {
+  "file": "europe/hr.json",
+  "land": "55,974 sq km",
+  "mean": "331 m",
+  "hi": "Dinara 1,831 m",
+  "coast": "5,835 km (mainland 1,777 km; islands 4,058 km)",
+  "water": "105.5 billion cubic meters (2022 est.)",
+  "air": "45 (2025)"
+ },
+ "CYP": {
+  "file": "europe/cy.json",
+  "land": "9,241 sq km",
+  "mean": "91 m",
+  "hi": "Mount Olympus 1,951 m",
+  "coast": "648 km",
+  "water": "780 million cubic meters (2022 est.)",
+  "air": "14 (2025)"
+ },
+ "CZE": {
+  "file": "europe/ez.json",
+  "land": "77,247 sq km",
+  "mean": "433 m",
+  "hi": "Snezka 1,602 m",
+  "coast": "0 km (landlocked)",
+  "water": "13.15 billion cubic meters (2022 est.)",
+  "air": "252 (2025)"
+ },
+ "DNK": {
+  "file": "europe/da.json",
+  "land": "42,434 sq km",
+  "mean": "34 m",
+  "hi": "Store Mollehoj 171 m",
+  "coast": "7,314 km",
+  "water": "6 billion cubic meters (2022 est.)",
+  "air": "102 (2025)"
+ },
+ "EST": {
+  "file": "europe/en.json",
+  "land": "42,388 sq km",
+  "mean": "61 m",
+  "hi": "Suur Munamagi 318 m",
+  "coast": "3,794 km",
+  "water": "12.806 billion cubic meters (2022 est.)",
+  "air": "34 (2025)"
+ },
+ "FIN": {
+  "file": "europe/fi.json",
+  "land": "303,815 sq km",
+  "mean": "164 m",
+  "hi": "Halti (alternatively Haltia, Haltitunturi, Haltiatunturi) 1,328 m",
+  "coast": "1,250 km",
+  "water": "110 billion cubic meters (2022 est.)",
+  "air": "98 (2025)"
+ },
+ "DEU": {
+  "file": "europe/gm.json",
+  "land": "348,672 sq km",
+  "mean": "263 m",
+  "hi": "Zugspitze 2,963 m",
+  "coast": "2,389 km",
+  "water": "154 billion cubic meters (2022 est.)",
+  "air": "840 (2025)"
+ },
+ "GRC": {
+  "file": "europe/gr.json",
+  "land": "130,647 sq km",
+  "mean": "498 m",
+  "hi": "Mount Olympus 2,917",
+  "coast": "13,676 km",
+  "water": "68 billion cubic meters (2022 est.)",
+  "air": "82 (2025)"
+ },
+ "HUN": {
+  "file": "europe/hu.json",
+  "land": "89,608 sq km",
+  "mean": "143 m",
+  "hi": "Kekes 1,014 m",
+  "coast": "0 km (landlocked)",
+  "water": "104 billion cubic meters (2022 est.)",
+  "air": "109 (2025)"
+ },
+ "ISL": {
+  "file": "europe/ic.json",
+  "land": "100,250 sq km",
+  "mean": "557 m",
+  "hi": "Hvannadalshnukur (at Vatnajokull Glacier) 2,110 m",
+  "coast": "4,970 km",
+  "water": "170 billion cubic meters (2022 est.)",
+  "air": "82 (2025)"
+ },
+ "IRL": {
+  "file": "europe/ei.json",
+  "land": "68,883 sq km",
+  "mean": "118 m",
+  "hi": "Carrauntoohil 1,041 m",
+  "coast": "1,448 km",
+  "water": "52 billion cubic meters (2022 est.)",
+  "air": "100 (2025)"
+ },
+ "ITA": {
+  "file": "europe/it.json",
+  "land": "294,140 sq km",
+  "mean": "538 m",
+  "hi": "Mont Blanc (Monte Bianco) de Courmayeur (a secondary peak of Mont Blanc) 4,748 m",
+  "coast": "7,600 km",
+  "water": "191.3 billion cubic meters (2022 est.)",
+  "air": "655 (2025)"
+ },
+ "UNK": {
+  "file": "europe/kv.json",
+  "land": "10,887 sq km",
+  "mean": "450 m",
+  "hi": "Gjeravica/Deravica 2,656 m",
+  "coast": "0 km (landlocked)",
+  "water": null,
+  "air": "2 (2025)"
+ },
+ "LVA": {
+  "file": "europe/lg.json",
+  "land": "62,249 sq km",
+  "mean": "87 m",
+  "hi": "Gaizina Kalns 312 m",
+  "coast": "498 km",
+  "water": "34.94 billion cubic meters (2022 est.)",
+  "air": "55 (2025)"
+ },
+ "LIE": {
+  "file": "europe/ls.json",
+  "land": "160 sq km",
+  "mean": null,
+  "hi": "Vorder-Grauspitz 2,599 m",
+  "coast": "0 km (doubly landlocked)",
+  "water": null,
+  "air": null
+ },
+ "LTU": {
+  "file": "europe/lh.json",
+  "land": "62,680 sq km",
+  "mean": "110 m",
+  "hi": "Aukstojas 294 m",
+  "coast": "90 km",
+  "water": "24.5 billion cubic meters (2022 est.)",
+  "air": "64 (2025)"
+ },
+ "LUX": {
+  "file": "europe/lu.json",
+  "land": "2,586 sq km",
+  "mean": "325 m",
+  "hi": "Buurgplaatz 559 m",
+  "coast": "0 km (landlocked)",
+  "water": "3.5 billion cubic meters (2022 est.)",
+  "air": "3 (2025)"
+ },
+ "MLT": {
+  "file": "europe/mt.json",
+  "land": "316 sq km",
+  "mean": null,
+  "hi": "Ta'Dmejrek on Dingli Cliffs 253 m",
+  "coast": "196.8 km (excludes 56 km for the island of Gozo)",
+  "water": "50.5 million cubic meters (2022 est.)",
+  "air": "1 (2025)"
+ },
+ "MDA": {
+  "file": "europe/md.json",
+  "land": "32,891 sq km",
+  "mean": "139 m",
+  "hi": "Dealul Balanesti 430 m",
+  "coast": "0 km (landlocked)",
+  "water": "12.27 billion cubic meters (2022 est.)",
+  "air": "10 (2025)"
+ },
+ "MCO": {
+  "file": "europe/mn.json",
+  "land": "2 sq km",
+  "mean": null,
+  "hi": "Chemin des Revoires on Mont Agel 162 m",
+  "coast": "4.1 km",
+  "water": null,
+  "air": null
+ },
+ "MNE": {
+  "file": "europe/mj.json",
+  "land": "13,452 sq km",
+  "mean": "1,086 m",
+  "hi": "Zia Kolata 2,534 m",
+  "coast": "293.5 km",
+  "water": null,
+  "air": "5 (2025)"
+ },
+ "NLD": {
+  "file": "europe/nl.json",
+  "land": "33,893 sq km",
+  "mean": "30 m",
+  "hi": "Mount Scenery (on the island of Saba in the Caribbean, now considered an integral part of the Netherlands following the dissolution of the Netherlands Antilles) 862 m",
+  "coast": "451 km",
+  "water": "91 billion cubic meters (2022 est.)",
+  "air": "44 (2025)"
+ },
+ "MKD": {
+  "file": "europe/mk.json",
+  "land": "25,433 sq km",
+  "mean": "741 m",
+  "hi": "Golem Korab (Maja e Korabit) 2,764 m",
+  "coast": "0 km (landlocked)",
+  "water": "6.4 billion cubic meters (2022 est.)",
+  "air": "13 (2025)"
+ },
+ "NOR": {
+  "file": "europe/no.json",
+  "land": "304,282 sq km",
+  "mean": "460 m",
+  "hi": "Galdhopiggen 2,469 m",
+  "coast": "25,148 km",
+  "water": "393 billion cubic meters (2022 est.)",
+  "air": "146 (2025)"
+ },
+ "POL": {
+  "file": "europe/pl.json",
+  "land": "304,255 sq km",
+  "mean": "173 m",
+  "hi": "Rysy 2,499 m",
+  "coast": "440 km",
+  "water": "60.5 billion cubic meters (2022 est.)",
+  "air": "318 (2025)"
+ },
+ "PRT": {
+  "file": "europe/po.json",
+  "land": "91,470 sq km",
+  "mean": "372 m",
+  "hi": "Ponta do Pico (Pico or Pico Alto) on Ilha do Pico in the Azores 2,351 m",
+  "coast": "1,793 km",
+  "water": "77.4 billion cubic meters (2022 est.)",
+  "air": "128 (2025)"
+ },
+ "ROU": {
+  "file": "europe/ro.json",
+  "land": "229,891 sq km",
+  "mean": "414 m",
+  "hi": "Moldoveanu 2,544 m",
+  "coast": "225 km",
+  "water": "212.01 billion cubic meters (2022 est.)",
+  "air": "103 (2025)"
+ },
+ "RUS": {
+  "file": "central-asia/rs.json",
+  "land": "16,377,742 sq km",
+  "mean": "600 m",
+  "hi": "Gora El'brus (highest point in Europe) 5,642 m",
+  "coast": "37,653 km",
+  "water": "4.53 trillion cubic meters (2022 est.)",
+  "air": "905 (2025)"
+ },
+ "SMR": {
+  "file": "europe/sm.json",
+  "land": "61 sq km",
+  "mean": null,
+  "hi": "Monte Titano 739 m",
+  "coast": "0 km (landlocked)",
+  "water": null,
+  "air": "1 (2025)"
+ },
+ "SRB": {
+  "file": "europe/ri.json",
+  "land": "77,474 sq km",
+  "mean": "442 m",
+  "hi": "Midzor 2,169 m",
+  "coast": "0 km (landlocked)",
+  "water": "162.2 billion cubic meters (2022 est.)",
+  "air": "46 (2025)"
+ },
+ "SVK": {
+  "file": "europe/lo.json",
+  "land": "48,105 sq km",
+  "mean": "458 m",
+  "hi": "Gerlachovsky Stit 2,655 m",
+  "coast": "0 km (landlocked)",
+  "water": "50.1 billion cubic meters (2022 est.)",
+  "air": "116 (2025)"
+ },
+ "SVN": {
+  "file": "europe/si.json",
+  "land": "20,151 sq km",
+  "mean": "492 m",
+  "hi": "Triglav 2,864 m",
+  "coast": "46.6 km",
+  "water": "31.87 billion cubic meters (2022 est.)",
+  "air": "42 (2025)"
+ },
+ "ESP": {
+  "file": "europe/sp.json",
+  "land": "498,980 sq km",
+  "mean": "660 m",
+  "hi": "Pico de Teide (Tenerife) on Canary Islands 3,718 m",
+  "coast": "4,964 km",
+  "water": "111.5 billion cubic meters (2022 est.)",
+  "air": "365 (2025)"
+ },
+ "SWE": {
+  "file": "europe/sw.json",
+  "land": "410,335 sq km",
+  "mean": "320 m",
+  "hi": "Kebnekaise South 2,100 m",
+  "coast": "3,218 km",
+  "water": "174 billion cubic meters (2022 est.)",
+  "air": "206 (2025)"
+ },
+ "CHE": {
+  "file": "europe/sz.json",
+  "land": "39,997 sq km",
+  "mean": "1,350 m",
+  "hi": "Dufourspitze on Monte Rosa 4,634 m",
+  "coast": "0 km (landlocked)",
+  "water": "53.5 billion cubic meters (2022 est.)",
+  "air": "66 (2025)"
+ },
+ "UKR": {
+  "file": "europe/up.json",
+  "land": "579,330 sq km",
+  "mean": "175 m",
+  "hi": "Hora Hoverla 2,061 m",
+  "coast": "2,782 km",
+  "water": "175.28 billion cubic meters (2022 est.)",
+  "air": "152 (2025)"
+ },
+ "GBR": {
+  "file": "europe/uk.json",
+  "land": "241,930 sq km",
+  "mean": "162 m",
+  "hi": "Ben Nevis 1,345 m",
+  "coast": "12,429 km",
+  "water": "147 billion cubic meters (2022 est.)",
+  "air": "1,057 (2025)"
+ },
+ "VAT": {
+  "file": "europe/vt.json",
+  "land": "0.44 sq km",
+  "mean": null,
+  "hi": "Vatican Gardens (Vatican Hill) 78 m",
+  "coast": "0 km (landlocked)",
+  "water": null,
+  "air": null
+ },
+ "ATG": {
+  "file": "central-america-n-caribbean/ac.json",
+  "land": "443 sq km",
+  "mean": null,
+  "hi": "Mount Obama 402 m",
+  "coast": "153 km",
+  "water": "52 million cubic meters (2022)",
+  "air": "4 (2025)"
+ },
+ "BHS": {
+  "file": "central-america-n-caribbean/bf.json",
+  "land": "10,010 sq km",
+  "mean": null,
+  "hi": "1.3 km NE of Old Bight on Cat Island 64 m",
+  "coast": "3,542 km",
+  "water": "700 million cubic meters (2022 est.)",
+  "air": "54 (2025)"
+ },
+ "BRB": {
+  "file": "central-america-n-caribbean/bb.json",
+  "land": "430 sq km",
+  "mean": null,
+  "hi": "Mount Hillaby 336 m",
+  "coast": "97 km",
+  "water": "80 million cubic meters (2022 est.)",
+  "air": "1 (2025)"
+ },
+ "BLZ": {
+  "file": "central-america-n-caribbean/bh.json",
+  "land": "22,806 sq km",
+  "mean": "173 m",
+  "hi": "Doyle's Delight 1,124 m",
+  "coast": "386 km",
+  "water": "21.734 billion cubic meters (2022 est.)",
+  "air": "27 (2025)"
+ },
+ "CAN": {
+  "file": "north-america/ca.json",
+  "land": "9,093,507 sq km",
+  "mean": "487 m",
+  "hi": "Mount Logan 5,959 m",
+  "coast": "202,080 km",
+  "water": "2.902 trillion cubic meters (2022 est.)",
+  "air": "1,459 (2025)"
+ },
+ "CRI": {
+  "file": "central-america-n-caribbean/cs.json",
+  "land": "51,060 sq km",
+  "mean": "746 m",
+  "hi": "Cerro Chirripo 3,819 m",
+  "coast": "1,290 km",
+  "water": "113 billion cubic meters (2022 est.)",
+  "air": "132 (2025)"
+ },
+ "CUB": {
+  "file": "central-america-n-caribbean/cu.json",
+  "land": "109,820 sq km",
+  "mean": "108 m",
+  "hi": "Pico Turquino 1,974 m",
+  "coast": "3,735 km",
+  "water": "38.12 billion cubic meters (2022 est.)",
+  "air": "120 (2025)"
+ },
+ "DMA": {
+  "file": "central-america-n-caribbean/do.json",
+  "land": "751 sq km",
+  "mean": null,
+  "hi": "Morne Diablotins 1,447 m",
+  "coast": "148 km",
+  "water": "200 million cubic meters (2022 est.)",
+  "air": "2 (2025)"
+ },
+ "DOM": {
+  "file": "central-america-n-caribbean/dr.json",
+  "land": "48,320 sq km",
+  "mean": "424 m",
+  "hi": "Pico Duarte 3,098 m",
+  "coast": "1,288 km",
+  "water": "23.5 billion cubic meters (2022 est.)",
+  "air": "32 (2025)"
+ },
+ "SLV": {
+  "file": "central-america-n-caribbean/es.json",
+  "land": "20,721 sq km",
+  "mean": "442 m",
+  "hi": "Cerro El Pital 2,730 m",
+  "coast": "307 km",
+  "water": "26.27 billion cubic meters (2022 est.)",
+  "air": "27 (2025)"
+ },
+ "GRD": {
+  "file": "central-america-n-caribbean/gj.json",
+  "land": "344 sq km",
+  "mean": null,
+  "hi": "Mount Saint Catherine 840 m",
+  "coast": "121 km",
+  "water": "200 million cubic meters (2022 est.)",
+  "air": "2 (2025)"
+ },
+ "GTM": {
+  "file": "central-america-n-caribbean/gt.json",
+  "land": "107,159 sq km",
+  "mean": "759 m",
+  "hi": "Volcan Tajumulco (highest point in Central America) 4,220 m",
+  "coast": "400 km",
+  "water": "127.91 billion cubic meters (2022 est.)",
+  "air": "58 (2025)"
+ },
+ "HTI": {
+  "file": "central-america-n-caribbean/ha.json",
+  "land": "27,560 sq km",
+  "mean": "470 m",
+  "hi": "Pic la Selle 2,674 m",
+  "coast": "1,771 km",
+  "water": "14.022 billion cubic meters (2022 est.)",
+  "air": "17 (2025)"
+ },
+ "HND": {
+  "file": "central-america-n-caribbean/ho.json",
+  "land": "111,890 sq km",
+  "mean": "684 m",
+  "hi": "Cerro Las Minas 2,870 m",
+  "coast": "823 km (Caribbean Sea 669 km; Gulf of Fonseca 163 km)",
+  "water": "92.164 billion cubic meters (2022 est.)",
+  "air": "129 (2025)"
+ },
+ "JAM": {
+  "file": "central-america-n-caribbean/jm.json",
+  "land": "10,831 sq km",
+  "mean": "18 m",
+  "hi": "Blue Mountain Peak 2,256 m",
+  "coast": "1,022 km",
+  "water": "10.823 billion cubic meters (2022 est.)",
+  "air": "20 (2025)"
+ },
+ "MEX": {
+  "file": "north-america/mx.json",
+  "land": "1,943,945 sq km",
+  "mean": "1,111 m",
+  "hi": "Volcan Pico de Orizaba 5,636 m",
+  "coast": "9,330 km",
+  "water": "461.888 billion cubic meters (2022 est.)",
+  "air": "1,580 (2025)"
+ },
+ "NIC": {
+  "file": "central-america-n-caribbean/nu.json",
+  "land": "119,990 sq km",
+  "mean": "298 m",
+  "hi": "Mogoton 2,085 m",
+  "coast": "910 km",
+  "water": "164.52 billion cubic meters (2022 est.)",
+  "air": "39 (2025)"
+ },
+ "PAN": {
+  "file": "central-america-n-caribbean/pm.json",
+  "land": "74,340 sq km",
+  "mean": "360 m",
+  "hi": "Volcan Baru 3,475 m",
+  "coast": "2,490 km",
+  "water": "139.304 billion cubic meters (2022 est.)",
+  "air": "77 (2025)"
+ },
+ "KNA": {
+  "file": "central-america-n-caribbean/sc.json",
+  "land": "261 sq km",
+  "mean": null,
+  "hi": "Mount Liamuiga 1,156 m",
+  "coast": "135 km",
+  "water": "24 million cubic meters (2022 est.)",
+  "air": "2 (2025)"
+ },
+ "LCA": {
+  "file": "central-america-n-caribbean/st.json",
+  "land": "606 sq km",
+  "mean": null,
+  "hi": "Mount Gimie 948 m",
+  "coast": "158 km",
+  "water": "300 million cubic meters (2022 est.)",
+  "air": "2 (2025)"
+ },
+ "VCT": {
+  "file": "central-america-n-caribbean/vc.json",
+  "land": "389 sq km",
+  "mean": null,
+  "hi": "La Soufriere 1,234 m",
+  "coast": "84 km",
+  "water": "100 million cubic meters (2022 est.)",
+  "air": "5 (2025)"
+ },
+ "TTO": {
+  "file": "central-america-n-caribbean/td.json",
+  "land": "5,128 sq km",
+  "mean": "83 m",
+  "hi": "El Cerro del Aripo 940 m",
+  "coast": "362 km",
+  "water": "3.84 billion cubic meters (2022 est.)",
+  "air": "3 (2025)"
+ },
+ "USA": {
+  "file": "north-america/us.json",
+  "land": "9,147,593 sq km",
+  "mean": "760 m",
+  "hi": "Mount McKinley 6,190 m (highest point in North America)",
+  "coast": "19,924 km",
+  "water": "3.069 trillion cubic meters (2022 est.)",
+  "air": "16,116 (2025)"
+ },
+ "ARG": {
+  "file": "south-america/ar.json",
+  "land": "2,736,690 sq km",
+  "mean": "595 m",
+  "hi": "Cerro Aconcagua (located in the northwestern corner of the province of Mendoza; highest point in South America) 6,962 m",
+  "coast": "4,989 km",
+  "water": "876.24 billion cubic meters (2022 est.)",
+  "air": "764 (2025)"
+ },
+ "BOL": {
+  "file": "south-america/bl.json",
+  "land": "1,083,301 sq km",
+  "mean": "1,192 m",
+  "hi": "Nevado Sajama 6,542 m",
+  "coast": "0 km (landlocked)",
+  "water": "574 billion cubic meters (2022 est.)",
+  "air": "201 (2025)"
+ },
+ "BRA": {
+  "file": "south-america/br.json",
+  "land": "8,358,140 sq km",
+  "mean": "320 m",
+  "hi": "Pico da Neblina 2,994 m",
+  "coast": "7,491 km",
+  "water": "8.647 trillion cubic meters (2022 est.)",
+  "air": "5,297 (2025)"
+ },
+ "CHL": {
+  "file": "south-america/ci.json",
+  "land": "743,812 sq km",
+  "mean": "1,871 m",
+  "hi": "Nevado Ojos del Salado 6,893 m (highest volcano in the world)",
+  "coast": "6,435 km",
+  "water": "923.06 billion cubic meters (2022 est.)",
+  "air": "379 (2025)"
+ },
+ "COL": {
+  "file": "south-america/co.json",
+  "land": "1,038,700 sq km",
+  "mean": "593 m",
+  "hi": "Pico Cristobal Colon 5,730 m",
+  "coast": "3,208 km (Caribbean Sea 1,760 km, North Pacific Ocean 1,448 km)",
+  "water": "2.36 trillion cubic meters (2022 est.)",
+  "air": "661 (2025)"
+ },
+ "ECU": {
+  "file": "south-america/ec.json",
+  "land": "276,841 sq km",
+  "mean": "1,117 m",
+  "hi": "Chimborazo 6,267",
+  "coast": "2,237 km",
+  "water": "442.4 billion cubic meters (2022 est.)",
+  "air": "317 (2025)"
+ },
+ "GUY": {
+  "file": "south-america/gy.json",
+  "land": "196,849 sq km",
+  "mean": "207 m",
+  "hi": "Laberintos del Norte on Mount Roraima 2,775 m",
+  "coast": "459 km",
+  "water": "271 billion cubic meters (2022 est.)",
+  "air": "55 (2025)"
+ },
+ "PRY": {
+  "file": "south-america/pa.json",
+  "land": "397,302 sq km",
+  "mean": "178 m",
+  "hi": "Cerro Pero 842 m",
+  "coast": "0 km (landlocked)",
+  "water": "387.77 billion cubic meters (2022 est.)",
+  "air": "83 (2025)"
+ },
+ "PER": {
+  "file": "south-america/pe.json",
+  "land": "1,279,996 sq km",
+  "mean": "1,555 m",
+  "hi": "Nevado Huascaran 6,746 m",
+  "coast": "2,414 km",
+  "water": "1.88 trillion cubic meters (2022 est.)",
+  "air": "174 (2025)"
+ },
+ "SUR": {
+  "file": "south-america/ns.json",
+  "land": "156,000 sq km",
+  "mean": "246 m",
+  "hi": "Juliana Top 1,230 m",
+  "coast": "386 km",
+  "water": "99 billion cubic meters (2022 est.)",
+  "air": "55 (2025)"
+ },
+ "URY": {
+  "file": "south-america/uy.json",
+  "land": "175,015 sq km",
+  "mean": "109 m",
+  "hi": "Cerro Catedral 514 m",
+  "coast": "660 km",
+  "water": "172.2 billion cubic meters (2022 est.)",
+  "air": "65 (2025)"
+ },
+ "VEN": {
+  "file": "south-america/ve.json",
+  "land": "882,050 sq km",
+  "mean": "450 m",
+  "hi": "Pico Bolivar 4,978 m",
+  "coast": "2,800 km",
+  "water": "1.325 trillion cubic meters (2022 est.)",
+  "air": "509 (2025)"
+ },
+ "AUS": {
+  "file": "australia-oceania/as.json",
+  "land": "7,682,300 sq km",
+  "mean": "330 m",
+  "hi": "Mount Kosciuszko 2,228 m",
+  "coast": "25,760 km",
+  "water": "492 billion cubic meters (2022 est.)",
+  "air": "2,257 (2025)"
+ },
+ "FJI": {
+  "file": "australia-oceania/fj.json",
+  "land": "18,274 sq km",
+  "mean": null,
+  "hi": "Tomanivi 1,324 m",
+  "coast": "1,129 km",
+  "water": "28.55 billion cubic meters (2022 est.)",
+  "air": "26 (2025)"
+ },
+ "KIR": {
+  "file": "australia-oceania/kr.json",
+  "land": "811 sq km",
+  "mean": "2 m",
+  "hi": "unnamed elevation on Banaba 81 m",
+  "coast": "1,143 km",
+  "water": null,
+  "air": "21 (2025)"
+ },
+ "MHL": {
+  "file": "australia-oceania/rm.json",
+  "land": "181 sq km",
+  "mean": "2 m",
+  "hi": "East-central Airik Island, Maloelap Atoll 14 m",
+  "coast": "370.4 km",
+  "water": null,
+  "air": "33 (2025)"
+ },
+ "FSM": {
+  "file": "australia-oceania/fm.json",
+  "land": "702 sq km",
+  "mean": null,
+  "hi": "Nanlaud on Pohnpei 782 m",
+  "coast": "6,112 km",
+  "water": null,
+  "air": "7 (2025)"
+ },
+ "NRU": {
+  "file": "australia-oceania/nr.json",
+  "land": "21 sq km",
+  "mean": null,
+  "hi": "Command Ridge 70 m",
+  "coast": "30 km",
+  "water": "10 million cubic meters (2022 est.)",
+  "air": "1 (2025)"
+ },
+ "NZL": {
+  "file": "australia-oceania/nz.json",
+  "land": "264,537 sq km",
+  "mean": "388 m",
+  "hi": "Aoraki/Mount Cook 3,724 m; note - the mountain's height was 3,764 m until 14 December 1991 when it lost about 10 m in an avalanche of rock and ice; erosion of the ice cap since then has brought the height down another 30 m",
+  "coast": "15,134 km",
+  "water": "327 billion cubic meters (2022)",
+  "air": "206 (2025)"
+ },
+ "PLW": {
+  "file": "australia-oceania/ps.json",
+  "land": "459 sq km",
+  "mean": null,
+  "hi": "Mount Ngerchelchuus 242 m",
+  "coast": "1,519 km",
+  "water": null,
+  "air": "3 (2025)"
+ },
+ "PNG": {
+  "file": "east-n-southeast-asia/pp.json",
+  "land": "452,860 sq km",
+  "mean": "667 m",
+  "hi": "Mount Wilhelm 4,509 m",
+  "coast": "5,152 km",
+  "water": "801 billion cubic meters (2022 est.)",
+  "air": "569 (2025)"
+ },
+ "WSM": {
+  "file": "australia-oceania/ws.json",
+  "land": "2,821 sq km",
+  "mean": null,
+  "hi": "Mount Silisili 1,857 m",
+  "coast": "403 km",
+  "water": null,
+  "air": "4 (2025)"
+ },
+ "SLB": {
+  "file": "australia-oceania/bp.json",
+  "land": "27,986 sq km",
+  "mean": null,
+  "hi": "Mount Popomanaseu 2,335 m",
+  "coast": "5,313 km",
+  "water": "44.7 billion cubic meters (2022 est.)",
+  "air": "36 (2025)"
+ },
+ "TON": {
+  "file": "australia-oceania/tn.json",
+  "land": "717 sq km",
+  "mean": null,
+  "hi": "Kao Volcano on Kao Island 1,046 m",
+  "coast": "419 km",
+  "water": null,
+  "air": "6 (2025)"
+ },
+ "TUV": {
+  "file": "australia-oceania/tv.json",
+  "land": "26 sq km",
+  "mean": "2 m",
+  "hi": "unnamed location 5 m",
+  "coast": "24 km",
+  "water": null,
+  "air": "1 (2025)"
+ },
+ "VUT": {
+  "file": "australia-oceania/nh.json",
+  "land": "12,189 sq km",
+  "mean": null,
+  "hi": "Tabwemasana 1,877 m",
+  "coast": "2,528 km",
+  "water": "10 billion cubic meters (2022 est.)",
+  "air": "31 (2025)"
+ },
+ "FRA": {
+  "file": "europe/fr.json",
+  "land": "640,427 sq km ; 549,970 sq km (metropolitan France)",
+  "mean": "375 m",
+  "hi": "Mont Blanc 4,810",
+  "coast": "4,853 km",
+  "water": "211 billion cubic meters (2022 est.)",
+  "air": "1,218 (2025)"
+ }
+}

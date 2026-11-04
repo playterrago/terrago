@@ -28,6 +28,31 @@ Daily score per game: Polygo and Capitalo 100 − 15 per extra guess/turn; Equal
 
 `build_site.py` now uses paths relative to the repo, so it runs from anywhere: `python3 src/site/build_site.py`.
 
+## Equalo (`equalo2/`, since Nov 4, 2026)
+
+One daily balance puzzle: 5–10 country flags, one statistic, 3 weighs. Every puzzle has an exact zero-difference split.
+
+```
+python3 equalo2/build_data.py     # sources/ -> stats.json (exact integers)
+python3 equalo2/gen_puzzles.py    # stats.json -> puzzles.json (730 days + 400 practice; ~7 min)
+python3 equalo2/test_puzzles.py   # brute-force check of every puzzle; must print ALL PUZZLES VALID
+python3 equalo2/build_page.py     # -> standalone/equalo.html and /flags/*.svg (needs flag-icons; set FLAGS_DIR)
+node equalo2/test_ui.js http://localhost:8765   # browser test (drag, touch, tap, keyboard, refresh, scoring, migration)
+```
+
+- **Statistics** (all stored as integers): population (World Bank SP.POP.TOTL, 2024), GDP (World Bank NY.GDP.MKTP.CD, 2022, US$ millions), and from the CIA World Factbook (Sep 2026 snapshot): land area, mean elevation, highest point, coastline, renewable freshwater (2022 est., thousand m³) and airports (2025). Rejected: railways (mixed years 2014–2022), forest area (only a %), precipitation and reservoirs (no consistent country-level source reachable).
+- **Score out of 1,000:** exact balance on weigh 1/2/3 = 1,000/850/700; otherwise the closest weigh scores 600 × (1 − off% ÷ 20%), where off% = |left − right| ÷ total. Daily-run score = points ÷ 10.
+- **Saves:** `equalo-v2:day` (`place`, `weighs`, `done`, `pts`) and `equalo-v2:stats`. The old `equalo-v1` keys are never written; the old games-played count is carried over once.
+- Puzzles cycle after day 730 (Nov 1, 2028). Run the generator again before then.
+
+## Voyago scoring (since Nov 4, 2026)
+
+- 10 prompts, up to 100 points each, 1,000 a day. Tiers: Tourist 10, Traveller 25, Explorer 45, Rare find 65, Deep cut 85, Off the map 100.
+- Tier = position of the answer in the prompt's valid answers ranked by a fixed familiarity score (`fam` in voyago.json): under 25% / 45% / 65% / 80% / 93% / above. The same answer always gets the same points.
+- `FROZEN[day][promptId][answer] = tier` can hold player-based tiers, fixed before a day starts. `RESPONSES` is `null`: no player answers are collected (the site has no server), so the results screen shows reference rarity and says that popularity data isn't collected.
+- Saves keep the tier of each answer, so days saved on the old 15–130 scale are rescored exactly. Stats move to the new scale the first time a new day is finished (played count kept).
+- `node voyago/test_scoring.js http://localhost:8765` tests scoring, normalization, refresh, migration and the results screen.
+
 ## Folders
 
 | Folder | What's in it |

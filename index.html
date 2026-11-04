@@ -120,7 +120,7 @@ window.tgTrack = function (name) {
  "hasPart":[
   {"@type":"VideoGame","name":"Capitalo","url":"https://playterrago.com/capitalo/","genre":"Geography puzzle","description":"Guess the daily capital city in six turns."},
   {"@type":"VideoGame","name":"Polygo","url":"https://playterrago.com/polygo/","genre":"Geography puzzle","description":"Name the country from its outline, starting at 2 edges."},
-  {"@type":"VideoGame","name":"Equalo","url":"https://playterrago.com/equalo/","genre":"Geography puzzle","description":"Balance seven countries by population, area and GDP."},
+  {"@type":"VideoGame","name":"Equalo","url":"https://playterrago.com/equalo/","genre":"Geography puzzle","description":"Balance 5 to 10 countries on a scale by a hidden statistic."},
   {"@type":"VideoGame","name":"Roadtripo","url":"https://playterrago.com/roadtripo/","genre":"Geography puzzle","description":"Drive across the US through a famous landmark."},
   {"@type":"VideoGame","name":"Voyago","url":"https://playterrago.com/voyago/","genre":"Geography trivia","description":"Rare geography answers take you further around the world."}]}
 </script>
@@ -171,7 +171,7 @@ window.tgTrack = function (name) {
     <div>
       <div class="eyebrow" id="eqNo">Today's puzzle</div>
       <h2 id="eqTitle">Equal<span>o</span></h2>
-      <p>Seven countries, two pans. Split them so both sides weigh the same: first by population, then by area, then by GDP.</p>
+      <p>Five to ten countries, two pans, one hidden statistic. Drag the flags so both sides weigh exactly the same.</p>
       <svg class="stages" viewBox="0 0 320 100" aria-hidden="true"><g transform="rotate(-6 160 30)"><rect x="40" y="27" width="240" height="6" rx="3"/></g><rect x="157" y="30" width="6" height="58" rx="2"/><rect x="120" y="86" width="80" height="7" rx="3"/><g transform="translate(0 12)"><path d="M28 52 h64 a32 17 0 0 1 -64 0 z" opacity=".35"/><line x1="60" y1="30" x2="36" y2="52" stroke="currentColor" stroke-width="1.5"/><line x1="60" y1="30" x2="84" y2="52" stroke="currentColor" stroke-width="1.5"/></g><g transform="translate(0 -13)"><path d="M228 52 h64 a32 17 0 0 1 -64 0 z" opacity=".35"/><line x1="260" y1="30" x2="236" y2="52" stroke="currentColor" stroke-width="1.5"/><line x1="260" y1="30" x2="284" y2="52" stroke="currentColor" stroke-width="1.5"/></g></svg>
       <div class="status" id="eqStatus"></div>
     </div>
@@ -240,13 +240,13 @@ if (stats.played) add("Played", stats.played);
   if (ps.played) put("Played", ps.played);
 }
 {
-  const ed = read("equalo-v1:day"), es = read("equalo-v1:stats") || {}, st = document.getElementById("eqStatus"), eb = document.getElementById("eqBtn");
+  const ed = read("equalo-v2:day"), es = read("equalo-v2:stats") || read("equalo-v1:stats") || {}, st = document.getElementById("eqStatus"), eb = document.getElementById("eqBtn");
   const put = (label, val) => { const s = document.createElement("span"); s.append(label + " "); const b = document.createElement("b"); b.textContent = val; s.append(b); st.append(s); };
   document.getElementById("eqNo").textContent = `Today's puzzle · No. ${DAY + 53}`;
-  if (ed && ed.day === DAY && ed.results && ed.results.length >= 3) { eb.textContent = "See today's result"; eb.classList.add("done"); put("Today:", ed.results.map(r => ({ g: "🟩", y: "🟨", x: "🟥" })[r.g]).join("")); }
-  else if (ed && ed.day === DAY && ed.results && ed.results.length) { eb.textContent = "Finish today's puzzle"; put("Round", `${ed.results.length + 1} of 3`); }
+  if (ed && ed.day === DAY && ed.done) { eb.textContent = "See today's result"; eb.classList.add("done"); put("Today:", ed.won ? `balanced · ${ed.pts} pts` : `${ed.pts} pts`); }
+  else if (ed && ed.day === DAY && ed.weighs && ed.weighs.length) { eb.textContent = "Finish today's puzzle"; put("Weigh", `${ed.weighs.length + 1} of 3`); }
   if (es.played) put("Played", es.played);
-  if (es.greens) put("Green rounds", es.greens);
+  if (es.wins) put("Exact", es.wins);
 }
 {
   const rd = read("roadtripo-v1:day"), rs = read("roadtripo-v1:stats") || {}, st = document.getElementById("rtStatus"), rb = document.getElementById("rtBtn");
@@ -261,10 +261,10 @@ if (stats.played) add("Played", stats.played);
   const vd = read("voyago-v2:day"), vs = read("voyago-v2:stats") || {}, st = document.getElementById("vgStatus"), vb = document.getElementById("vgBtn");
   const put = (label, val) => { const s = document.createElement("span"); s.append(label + " "); const b = document.createElement("b"); b.textContent = val; s.append(b); st.append(s); };
   document.getElementById("vgNo").textContent = `Today's puzzle · No. ${DAY}`;
-  const pts = vd && vd.answers ? vd.answers.reduce((a, x) => a + x.pts, 0) : 0;
+  const TP = [10, 25, 45, 65, 85, 100], pts = vd && vd.answers ? vd.answers.reduce((a, x) => a + (x.tier >= 0 ? TP[x.tier] || 0 : 0), 0) : 0;
   if (vd && vd.day === DAY && vd.answers && vd.answers.length >= 10) { vb.textContent = "See today's result"; vb.classList.add("done"); put("Today:", `${pts} points`); }
   else if (vd && vd.day === DAY && vd.answers && vd.answers.length) { vb.textContent = "Finish today's voyage"; put("Prompt", `${vd.answers.length + 1} of 10`); }
-  if (vs.best) put("Best", vs.best);
+  if (vs.best && vs.scale === 1000) put("Best", vs.best);
   if (vs.played) put("Played", vs.played);
 }
 /* Today's run across all five games (shared with the end-of-game card and /today/) */
