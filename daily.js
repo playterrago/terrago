@@ -35,8 +35,11 @@
   /* ---- scoring: a 0-100 daily score per game, derived from each game's own result ---- */
   function score(id, r) {
     if (!r) return 0;
-    if (id === "polygo") return r.won ? Math.max(0, 100 - 13 * (r.n - 1)) : 0; /* 8 rounds: 100 … 9 */
-    if (id === "capitalo") return r.won ? Math.max(0, 100 - 15 * (r.n - 1)) : 0;
+    /* Polygo: start at 100; a miss at 2 / 4 / 8 edges costs 2 / 4 / 8, every later miss costs 10.
+       Solved on guess 1-8: 100, 98, 94, 86, 76, 66, 56, 46. Not solved: 0. */
+    if (id === "polygo") return r.won ? 100 - [0, 2, 6, 14, 24, 34, 44, 54][Math.min(r.n, 8) - 1] : 0;
+    /* Capitalo: start at 100; the first wasted turn costs 5, every later one 10. Turn 1-6: 100, 95, 85, 75, 65, 55. */
+    if (id === "capitalo") return r.won ? (r.n <= 1 ? 100 : Math.max(0, 95 - 10 * (r.n - 2))) : 0;
     if (id === "equalo" && r.pts != null) return Math.round(r.pts / 10); /* new Equalo: points out of 1,000 / 10 */
     if (id === "equalo") { /* old 3-round Equalo */
       var g = r.g || [];
@@ -44,7 +47,9 @@
       return g.reduce(function (a, x) { return a + (x === "g" ? 33 : x === "y" ? 15 : 0); }, 0);
     }
     if (id === "roadtripo") return r.won && r.best ? Math.max(0, 100 - 20 * Math.max(0, r.n - r.best)) : 0;
-    if (id === "voyago") return Math.max(0, Math.min(100, Math.round((r.pts || 0) / 10))); /* out of 1,000 */
+    /* Voyago (out of 1,000): exponential curve, so early points count most and the last ones least.
+       1000 -> 100, 800 -> 96, 600 -> 88, 400 -> 74, 200 -> 47, 0 -> 0 */
+    if (id === "voyago") { var vp = Math.max(0, Math.min(1000, r.pts || 0)); return Math.round(100 * (1 - Math.exp(-3 * vp / 1000)) / (1 - Math.exp(-3))); }
     return 0;
   }
   function line(id, r) {

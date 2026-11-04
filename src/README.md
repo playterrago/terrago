@@ -28,6 +28,14 @@ Daily score per game: Polygo and Capitalo 100 − 15 per extra guess/turn; Equal
 
 `build_site.py` now uses paths relative to the repo, so it runs from anywhere: `python3 src/site/build_site.py`.
 
+## Daily-run scores (out of 100, in `/daily.js`)
+
+- Polygo: 100, minus 2 / 4 / 8 for a miss at 2 / 4 / 8 edges and 10 for every later miss (solved on guess 1–8: 100, 98, 94, 86, 76, 66, 56, 46).
+- Capitalo: 100, minus 5 for the first wasted turn and 10 for each later one (turn 1–6: 100, 95, 85, 75, 65, 55).
+- Equalo: points ÷ 10. Roadtripo: 100 − 20 per state over the shortest route.
+- Voyago: 100 × (1 − e^(−3·points/1000)) ÷ (1 − e^(−3)) (1000 → 100, 800 → 96, 600 → 88, 400 → 74, 200 → 47).
+- Not solved = 0.
+
 ## Equalo (`equalo2/`, since Nov 4, 2026)
 
 One daily balance puzzle: 5–10 country flags, one statistic, 3 weighs. Every puzzle has an exact zero-difference split.

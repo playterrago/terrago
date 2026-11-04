@@ -120,7 +120,7 @@ const DAYCALC = () => { const n = new Date(); return Math.floor((Date.UTC(n.getF
     await page.reload(); await page.waitForTimeout(400);
     ok(await page.evaluate(() => total()) === 800 && await page.evaluate(() => localStorage.getItem("voyago-v2:stats")) === st, "refreshing a finished day changes nothing");
     const daily = await page.evaluate(() => tgDaily.status().find(x => x.id === "voyago"));
-    ok(daily.score === 80, `daily run score = points / 10 (${daily.score})`);
+    ok(daily.score === 96, `daily run score follows the curve: 800 points → ${daily.score}`);
     // practice is separate
     const keep = await page.evaluate(() => localStorage.getItem("voyago-v2:day") + localStorage.getItem("voyago-v2:stats"));
     await page.evaluate(() => { startPractice(); for (let i = 0; i < NQ; i++) { renderPrompt(); finishPrompt(BANK[set[answers.length]].ans[0]); } renderEnd(); });
