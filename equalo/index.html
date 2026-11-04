@@ -542,9 +542,7 @@ function renderEnd(fresh) {
   const h = document.createElement("h2");
   h.textContent = sc.won ? (sc.at === 1 ? "Perfect balance, first weigh!" : `Perfect balance on weigh ${sc.at}.`) : `Closest: ${pctTxt(offBp(bw))} apart.`;
   const score = document.createElement("div"); score.className = "score"; score.innerHTML = `<b></b><span>/ 1,000 points</span>`; score.querySelector("b").textContent = group(sc.pts);
-  const how = document.createElement("p"); how.className = "how";
-  how.textContent = `Closest weigh ${sc.bp ? pctTxt(sc.bp) + " apart" : "exactly balanced"}, ${sc.used} weigh${sc.used === 1 ? "" : "s"} used: 1,000 × (1 − ${(sc.bp / 100).toFixed(2)}%) − 100 × (${sc.used} − 1) = ${group(sc.pts)}.`;
-  box.append(h, score, how);
+  box.append(h, score);
   /* 1. your best weigh, left on the scale as it tipped; 2. the exact balance, settling level */
   const sol = sc.won ? best : P.sol, scales = [];
   const section = (title, placeStr, deg, from, notes) => {

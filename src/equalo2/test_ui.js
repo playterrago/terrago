@@ -156,7 +156,7 @@ async function placeAll(page, str) { await page.evaluate(s => { s.split("").forE
     await page.waitForTimeout(1400);
     const sc = await page.evaluate(() => scoreOf(weighs, P));
     ok(sc.won && sc.at === 3 && sc.pts === 800, `exact balance on weigh 3 scores 800 (got ${sc.pts})`);
-    ok((await page.textContent("#end .how")).includes("− 100 × (3 − 1) = 800"), "results explain the 200-point deduction");
+    ok(!(await page.textContent("#end")).includes("1,000 ×"), "results don't show the calculation");
     await ctx.close();
   }
 
