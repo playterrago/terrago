@@ -41,7 +41,7 @@ node equalo2/test_ui.js http://localhost:8765   # browser test (drag, touch, tap
 ```
 
 - **Statistics** (all stored as integers): population (World Bank SP.POP.TOTL, 2024), GDP (World Bank NY.GDP.MKTP.CD, 2022, US$ millions), and from the CIA World Factbook (Sep 2026 snapshot): land area, mean elevation, highest point, coastline, renewable freshwater (2022 est., thousand m³) and airports (2025). Rejected: railways (mixed years 2014–2022), forest area (only a %), precipitation and reservoirs (no consistent country-level source reachable).
-- **Score out of 1,000:** each weigh k scores 1000 × (1 − gap) − 100 × (k − 1), where gap = |left − right| ÷ total; the best weigh counts (minimum 0). Daily-run score = points ÷ 10.
+- **Score out of 1,000:** 1000 × (1 − best gap) − 100 × (weighs used − 1), minimum 0; gap = |left − right| ÷ total. An exact balance ends the game, so it scores 1,000/900/800. Daily-run score = points ÷ 10.
 - **Saves:** `equalo-v2:day` (`place`, `weighs`, `done`, `pts`) and `equalo-v2:stats`. The old `equalo-v1` keys are never written; the old games-played count is carried over once.
 - Puzzles cycle after day 730 (Nov 1, 2028). Run the generator again before then.
 

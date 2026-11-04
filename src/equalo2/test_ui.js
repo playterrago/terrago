@@ -77,12 +77,16 @@ async function placeAll(page, str) { await page.evaluate(s => { s.split("").forE
     await page.waitForTimeout(1200);
     ok(await page.isVisible("#end"), "game ends after 3 weighs");
     const sc = await page.evaluate(() => scoreOf(weighs, P));
-    const want = await page.evaluate(() => Math.max(...weighs.map((x, k) => Math.max(0, 1000 - 100 * k - Math.round(offBp(weighOf(P, x.p.split(""))) / 10)))));
-    ok(!sc.won && sc.pts === want, `missed score = best of 1000×(1−gap) − 100×(weigh−1): ${sc.pts} (best weigh ${sc.best + 1}, ${sc.bp / 100}% apart)`);
+    const want = await page.evaluate(() => { const b = Math.min(...weighs.map(x => offBp(weighOf(P, x.p.split(""))))); return Math.max(0, 1000 - Math.round(b / 10) - 200); });
+    ok(!sc.won && sc.pts === want, `missed after 3 weighs = 1000×(1−best gap) − 200: ${sc.pts} (${sc.bp / 100}% apart)`);
     ok((await page.textContent(".score b")).replace(",", "") === String(sc.pts), "score shown on the results screen");
     ok((await page.textContent("#end")).includes("The exact balance"), "results show the exact balance");
-    ok((await page.textContent("#end")).includes("Your closest weigh"), "results show the player's closest weigh");
-    const tots = await page.$$eval("#end .sides", s => [...s[0].querySelectorAll(".tot")].map(x => x.textContent));
+    ok((await page.textContent("#end")).includes("Your best weigh"), "results show the player's best weigh");
+    ok(await page.$$eval("#end .scale", e => e.length) === 2, "results show two scales: best weigh, then the exact balance");
+    await page.waitForTimeout(1200);
+    const degs = await page.evaluate(() => [...document.querySelectorAll("#end .scale")].map(e => e._deg));
+    ok(degs[0] !== 0 && degs[1] === 0, `best weigh stays tilted (${degs[0].toFixed(1)}°), exact balance settles level`);
+    const tots = await page.$$eval("#end .sides", s => [...s[s.length - 1].querySelectorAll(".tot")].map(x => x.textContent));
     ok(tots.length === 2 && tots[0] === tots[1], "exact solution totals are equal: " + tots.join(" | "));
     ok((await page.$$("#end .sides .chip small")).length >= N, "actual values shown per country");
     ok(await page.isVisible(".tgd .tgd-next"), "next-game button shown");
@@ -127,8 +131,7 @@ async function placeAll(page, str) { await page.evaluate(s => { s.split("").forE
     if (!first) { await placeAll(page, sol); await page.tap("#weigh"); }
     await page.waitForTimeout(1600);
     const sc = await page.evaluate(() => scoreOf(weighs, P));
-    const w1 = await page.evaluate(() => Math.max(0, 1000 - Math.round(offBp(weighOf(P, weighs[0].p.split(""))) / 10)));
-    ok(sc.won && sc.pts === (first ? 1000 : Math.max(900, w1)), `exact balance on weigh ${sc.at}: score ${sc.pts} = best of weigh 1 (${w1}) and exact on weigh 2 (900)`);
+    ok(sc.won && sc.pts === (first ? 1000 : 900), `exact balance on weigh ${sc.at} scores ${sc.pts} (1,000 − 100 × ${sc.at - 1})`);
     ok(await page.evaluate(() => done) && (await page.textContent("#end h2")).includes("Perfect balance"), "perfect balance ends the game immediately");
     ok(!(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)), "no horizontal scroll on phone");
     if (OUT) { await page.evaluate(() => document.querySelector("#end h3").scrollIntoView()); await page.waitForTimeout(1200); await page.screenshot({ path: OUT + "/eq-phone-end.png", fullPage: true }); }
@@ -141,6 +144,19 @@ async function placeAll(page, str) { await page.evaluate(s => { s.split("").forE
     ok(keep === await page.evaluate(() => [localStorage.getItem("equalo-v2:day"), localStorage.getItem("equalo-v2:stats")].join("|")), "practice does not change today's result or stats");
     ok(!(await page.isVisible(".tgd")), "practice shows no daily-run card");
     ok(page._errs.length === 0, "no page errors (phone) " + page._errs.join("|"));
+    await ctx.close();
+  }
+
+  /* ---------- 2b. two misses, then exact on weigh 3 = 800 ---------- */
+  {
+    const { ctx, page } = await fresh(browser, { viewport: { width: 1000, height: 900 } });
+    await page.goto(BASE + "/equalo/"); await page.click("#helpClose");
+    const ws = await page.evaluate(() => { const s = P.sol.split(""), out = []; for (let k = 0; k < N && out.length < 2; k++) { const t = s.slice(); t[k] = t[k] === "L" ? "R" : "L"; if (t.includes("L") && t.includes("R") && weighOf(P, t).d) out.push(t.join("")); } return out; });
+    for (const w of [...ws, await page.evaluate(() => P.sol)]) { await placeAll(page, w); await page.click("#weigh"); await page.waitForTimeout(250); }
+    await page.waitForTimeout(1400);
+    const sc = await page.evaluate(() => scoreOf(weighs, P));
+    ok(sc.won && sc.at === 3 && sc.pts === 800, `exact balance on weigh 3 scores 800 (got ${sc.pts})`);
+    ok((await page.textContent("#end .how")).includes("− 100 × (3 − 1) = 800"), "results explain the 200-point deduction");
     await ctx.close();
   }
 

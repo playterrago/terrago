@@ -127,6 +127,7 @@ h1 span { color: var(--accent); }
 .side .chip { cursor: default; touch-action: auto; font-size: 12px; }
 .side .tot { font: 600 14px var(--mono); border-top: 1px solid var(--line); padding-top: 6px; margin-top: auto; overflow-wrap: anywhere; }
 .diffline { text-align: center; font: 600 14px var(--body); margin: 0; }
+.diffline.far { color: var(--far); }
 .balanced { display: inline-block; background: var(--good); color: #fff; font: 600 12px var(--body); letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 6px; opacity: 0; transform: scale(.8); transition: opacity .3s .9s, transform .3s .9s; }
 .settled .balanced { opacity: 1; transform: none; }
 .grid { font: 500 14px var(--mono); line-height: 1.7; background: var(--bg); border-radius: 10px; padding: 10px 12px; white-space: pre-wrap; }
@@ -156,7 +157,7 @@ h3 { font: 700 17px var(--display); margin: 4px 0 -4px; }
       <li>Every day: <b>5 to 10 countries</b> and one statistic, like coastline or population.</li>
       <li>Drag every flag onto the left or right pan. Or tap a flag, then tap a pan.</li>
       <li>Press <b>Weigh</b>. The heavier side drops and you see how far apart the sides are. You get <b>3 weighs</b>.</li>
-      <li>There is always a split that balances <b>exactly</b>. Each weigh scores <b>1,000</b>, minus 10 points for every 1% the sides are apart, minus <b>100</b> for each earlier weigh. So an exact balance is worth 1,000, 900 or 800. Your best weigh counts.</li>
+      <li>There is always a split that balances <b>exactly</b>. Your score is <b>1,000</b>, minus 10 points for every 1% your closest weigh was apart, minus <b>100</b> for every weigh after the first. So an exact balance is worth 1,000, 900 or 800.</li>
     </ol>
     <button type="button" class="btn ghost" id="helpClose">Let's weigh</button>
   </div>
@@ -190,14 +191,15 @@ function weighOf(P, place) {
 /* share of the total weight by which the sides differ, in hundredths of a percent (integer, rounded half up) */
 const offBp = w => w.d === 0 ? 0 : Math.max(1, Math.floor((w.d * 10000 * 2 + (w.L + w.R)) / (2 * (w.L + w.R))));
 const pctTxt = bp => (bp / 100).toFixed(bp < 1000 ? 2 : 1) + "%";
-/* Score out of 1,000. Each weigh k (1, 2, 3) scores 1000 x (1 - gap) - 100 x (k - 1), where gap = |left - right| / total
-   (gap% in hundredths of a percent, so 1000 x gap = bp / 10). Your best-scoring weigh counts; minimum 0. */
-const weighPts = (w, k) => Math.max(0, 1000 - 100 * k - Math.round(offBp(w) / 10));
+/* Score out of 1,000 = 1000 x (1 - best gap) - 100 x (weighs used - 1), minimum 0.
+   gap = |left - right| / total (in hundredths of a percent, so 1000 x gap = bp / 10). The best gap is your closest weigh;
+   the game stops as soon as you balance exactly, so an exact balance on weigh 1 / 2 / 3 scores 1,000 / 900 / 800. */
 function scoreOf(weighs, P) {
   const ws = weighs.map(x => weighOf(P, x.p));
-  let best = 0; ws.forEach((w, k) => { if (weighPts(w, k) > weighPts(ws[best], best)) best = k; });
-  const ex = ws.findIndex(w => w.d === 0);
-  return { pts: ws.length ? weighPts(ws[best], best) : 0, won: ex >= 0, at: ex + 1, best, bp: ws.length ? offBp(ws[best]) : 0 };
+  if (!ws.length) return { pts: 0, won: false, at: 0, best: 0, bp: 0, used: 0 };
+  let best = 0; ws.forEach((w, k) => { if (offBp(w) < offBp(ws[best])) best = k; });
+  const bp = offBp(ws[best]), used = ws.length, ex = ws.findIndex(w => w.d === 0);
+  return { pts: Math.max(0, 1000 - Math.round(bp / 10) - 100 * (used - 1)), won: ex >= 0, at: ex + 1, best, bp, used };
 }
 const grade = w => w.d === 0 ? "🟩" : offBp(w) <= 500 ? "🟨" : "🟥";
 
@@ -489,21 +491,22 @@ function renderEnd(fresh) {
   h.textContent = sc.won ? (sc.at === 1 ? "Perfect balance, first weigh!" : `Perfect balance on weigh ${sc.at}.`) : `Closest: ${pctTxt(offBp(bw))} apart.`;
   const score = document.createElement("div"); score.className = "score"; score.innerHTML = `<b></b><span>/ 1,000 points</span>`; score.querySelector("b").textContent = group(sc.pts);
   const how = document.createElement("p"); how.className = "how";
-  how.textContent = `Best weigh: weigh ${sc.best + 1}, ${sc.bp ? pctTxt(sc.bp) + " apart" : "exactly balanced"}. 1,000 × (1 − ${(sc.bp / 100).toFixed(2)}%) − 100 × ${sc.best} = ${group(sc.pts)}.`;
+  how.textContent = `Closest weigh ${sc.bp ? pctTxt(sc.bp) + " apart" : "exactly balanced"}, ${sc.used} weigh${sc.used === 1 ? "" : "s"} used: 1,000 × (1 − ${(sc.bp / 100).toFixed(2)}%) − 100 × (${sc.used} − 1) = ${group(sc.pts)}.`;
   box.append(h, score, how);
-  /* the exact balance, animated from the player's best tilt to level */
-  const h3a = document.createElement("h3"); h3a.textContent = sc.won ? "Your exact balance" : "The exact balance";
-  const scBox = document.createElement("div"); const sol = sc.won ? best : P.sol;
-  box.append(h3a, scBox);
-  const sideBlock = sidesBlock(sol, "");
+  /* 1. your best weigh, left on the scale as it tipped; 2. the exact balance, settling level */
+  const sol = sc.won ? best : P.sol, scales = [];
+  const section = (title, placeStr, deg, from, notes) => {
+    const h3 = document.createElement("h3"); h3.textContent = title; const sb = document.createElement("div");
+    box.append(h3, sb, ...notes, sidesBlock(placeStr, ""));
+    scales.push({ sb, placeStr, deg, from });
+  };
+  if (!sc.won) {
+    const dl = document.createElement("p"); dl.className = "diffline far"; dl.textContent = `${bw.heavy === "L" ? "Left" : "Right"} side heavier by ${fmt(P.s, bw.d)} (${pctTxt(sc.bp)} of the total)`;
+    section(`Your best weigh · weigh ${sc.best + 1}`, best, tiltDeg(bw), tiltDeg(bw), [dl]);
+  }
   const ok = document.createElement("p"); ok.className = "diffline"; ok.innerHTML = `<span class="balanced">Perfectly balanced</span>`;
   const each = document.createElement("div"); each.className = "how"; each.style.textAlign = "center"; each.textContent = `${fmt(P.s, weighOf(P, sol.split("")).L)} on each side`;
-  box.append(ok, each, sideBlock);
-  if (!sc.won) {
-    const h3b = document.createElement("h3"); h3b.textContent = "Your closest weigh";
-    const dl = document.createElement("p"); dl.className = "how"; dl.textContent = `Weigh ${sc.best + 1}: ${bw.heavy === "L" ? "left" : "right"} side heavier by ${fmt(P.s, bw.d)} (${pctTxt(sc.bp)} of the total).`;
-    box.append(h3b, sidesBlock(best, ""), dl);
-  }
+  section(sc.won ? "Your exact balance" : "The exact balance", sol, 0, sc.won ? 0 : tiltDeg(bw), [ok, each]);
   const g = document.createElement("div"); g.className = "grid"; g.textContent = shareText().split("\n").slice(1, 3).join("\n");
   const acts = document.createElement("div"); acts.className = "row-btns";
   const share = document.createElement("button"); share.type = "button"; share.className = "btn primary"; share.textContent = "Copy result";
@@ -519,16 +522,17 @@ function renderEnd(fresh) {
   }
   const src = document.createElement("p"); src.className = "source"; src.textContent = `${S.name}: ${S.definition} Source: ${S.source}, ${S.year}.`; box.append(src);
   end.append(box);
-  /* static scale with the solution on its pans */
-  const sEl = buildScale(scBox, N > 8 ? 300 : 260);
-  for (let k = 0; k < N; k++) sEl.querySelector(`.pan.${sol[k]} .tray`).append(chip(k, { static: true }));
-  fitScale(sEl, N > 8 ? 300 : 260);
-  sEl.querySelectorAll(".cnt").forEach(c => c.remove());
-  const startDeg = sc.won ? 0 : tiltDeg(bw);
-  setTilt(sEl, fresh ? startDeg : 0, true);
-  if (fresh && startDeg) requestAnimationFrame(() => setTimeout(() => { setTilt(sEl, 0); }, 250));
+  /* draw the scales now that they are in the page */
+  scales.forEach(({ sb, placeStr, deg, from }) => {
+    const el = buildScale(sb, N > 8 ? 300 : 260);
+    for (let k = 0; k < N; k++) el.querySelector(`.pan.${placeStr[k]} .tray`).append(chip(k, { static: true }));
+    fitScale(el, N > 8 ? 300 : 260);
+    el.querySelectorAll(".cnt").forEach(c => c.remove());
+    setTilt(el, fresh ? from : deg, true);
+    if (fresh && from !== deg) requestAnimationFrame(() => setTimeout(() => { setTilt(el, deg); }, 250));
+    window.addEventListener("resize", () => { if (el.isConnected) layoutScale(el); });
+  });
   box.classList.add("settled");
-  window.addEventListener("resize", () => { if (sEl.isConnected) layoutScale(sEl); });
   share.onclick = () => {
     const text = shareText(); track(practice ? "equalo-share-practice" : "equalo-share");
     const fallback = () => { let ta = box.querySelector("textarea"); if (!ta) { ta = document.createElement("textarea"); ta.className = "sharebox"; ta.rows = 4; ta.readOnly = true; note.after(ta); } ta.value = text; ta.focus(); ta.select(); note.textContent = "Select and copy the text below"; };
