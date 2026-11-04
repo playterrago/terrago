@@ -96,7 +96,7 @@ h1 span { color: var(--accent); }
 .shape path.line { fill: none; stroke: var(--sil); stroke-width: 6; stroke-linecap: round; }
 .shape .pop { animation: pop .45s ease-out; transform-origin: 150px 150px; }
 @keyframes pop { from { opacity: .25; transform: scale(.96); } to { opacity: 1; transform: none; } }
-.ladder { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; }
+.ladder { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 5px; }
 .ladder div { text-align: center; padding: 6px 0 5px; border-radius: 8px; background: var(--bg); color: var(--muted); font: 600 14px var(--mono); line-height: 1.1; min-width: 0; }
 @media (max-width: 420px) { .ladder div { font-size: 12px; } .ladder div small { font-size: 8px; } }
 .ladder div small { display: block; font: 500 10px var(--body); letter-spacing: .06em; text-transform: uppercase; margin-top: 2px; opacity: .8; }
@@ -228,8 +228,10 @@ const ALIASES = {
   "Laos": ["Lao"],
   "Syria": ["Syrian Arab Republic"],
 };
-const LEVELS = [2, 4, 8, 16, 32, 64, 128];
+/* 8 rounds: 2 → 128 edges, then the country's full outline as a last chance */
+const LEVELS = [2, 4, 8, 16, 32, 64, 128, "Full"];
 const MAXG = LEVELS.length;
+const lvl = k => LEVELS[k] === "Full" ? "the full outline" : `${LEVELS[k]} edges`;
 DATA.forEach((c, i) => { c.i = i; c.names = [c.country, ...(ALIASES[c.country] || [])]; });
 
 const norm = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
@@ -270,7 +272,7 @@ function renderShape() {
   const svg = $("shape"), L = level();
   let grid = "";
   for (let k = 50; k < 300; k += 50) grid += `<line class="gridl" x1="${k}" y1="0" x2="${k}" y2="300"/><line class="gridl" x1="0" y1="${k}" x2="300" y2="${k}"/>`;
-  const d = L >= MAXG ? answer.full : answer.levels[L];
+  const d = L >= MAXG - 1 ? answer.full : answer.levels[L];
   const cls = L === 0 ? "line" : "poly";
   const animate = L !== lastLevel && lastLevel !== -1;
   svg.innerHTML = `${grid}<g class="${animate ? "pop" : ""}"><path class="${cls}" d="${d}"/></g>`;
@@ -279,17 +281,17 @@ function renderShape() {
   LEVELS.forEach((n, k) => {
     const el = document.createElement("div");
     el.className = done ? "seen" : k === L ? "now" : k < L ? "seen" : "";
-    el.innerHTML = `${n}<small>edges</small>`;
+    el.innerHTML = n === "Full" ? `Full<small>shape</small>` : `${n}<small>edges</small>`;
     lad.append(el);
   });
-  $("hint").textContent = done ? `Full outline of ${answer.country}` : L === 0 ? "Two edges: just its longest stretch. Which country lies like this?" : L === MAXG - 1 ? `${LEVELS[L]} edges. Last guess.` : `${LEVELS[L]} edges. Miss, and it doubles to ${LEVELS[L + 1]}.`;
+  $("hint").textContent = done ? `Full outline of ${answer.country}` : L === 0 ? "Two edges: just its longest stretch. Which country lies like this?" : L === MAXG - 1 ? "The full outline. Last guess." : L === MAXG - 2 ? `${LEVELS[L]} edges. Miss, and you get the full outline for one last guess.` : `${LEVELS[L]} edges. Miss, and it doubles to ${LEVELS[L + 1]}.`;
 }
 
 function renderLog() {
   const log = $("log"); log.replaceChildren();
   for (let k = 0; k < MAXG; k++) {
     const r = document.createElement("div");
-    const lv = document.createElement("span"); lv.className = "lvl"; lv.textContent = `${LEVELS[k]} edges`;
+    const lv = document.createElement("span"); lv.className = "lvl"; lv.textContent = LEVELS[k] === "Full" ? "Full" : `${LEVELS[k]} edges`;
     const gi = guesses[k];
     if (gi === undefined) { r.className = "row empty"; r.append(lv); log.append(r); continue; }
     const g = DATA[gi], hit = gi === answer.i;
@@ -302,12 +304,13 @@ function renderLog() {
 
 function shareText() {
   const row = guesses.map(i => i === answer.i ? "🟩" : "⬛").join("") + "⬜".repeat(MAXG - guesses.length);
-  const tail = won ? `Got it at ${LEVELS[guesses.length - 1]} edges` : `Stumped at ${LEVELS[MAXG - 1]} edges`;
+  const tail = won ? `Got it at ${lvl(guesses.length - 1)}` : "Stumped, even by the full outline";
   return `Polygo ${practice ? "(practice)" : "#" + SHOWN} ${won ? guesses.length : "X"}/${MAXG}\n${row}\n${tail}\n${location.origin}${location.pathname}`;
 }
 
 function statsBlock() {
   const s = { played: 0, wins: 0, streak: 0, max: 0, dist: Array(MAXG).fill(0), ...store.get(":stats", {}) };
+  while (s.dist.length < MAXG) s.dist.push(0); /* stats saved when Polygo had 7 rounds */
   const wrap = document.createElement("div"); wrap.style.cssText = "display:flex;flex-direction:column;gap:12px";
   const g = document.createElement("div"); g.className = "stats";
   [[s.played, "Played"], [s.played ? Math.round(s.wins / s.played * 100) + "%" : "–", "Solved"], [s.streak, "Streak"], [s.max, "Best streak"]].forEach(([v, l]) => {
@@ -329,6 +332,7 @@ function statsBlock() {
 function recordResult() {
   if (practice) return;
   const s = { played: 0, wins: 0, streak: 0, max: 0, dist: Array(MAXG).fill(0), ...store.get(":stats", {}) };
+  while (s.dist.length < MAXG) s.dist.push(0); /* stats saved when Polygo had 7 rounds */
   if (s.lastDay === DAY) return;
   s.played++;
   if (won) { s.wins++; s.streak = s.lastWonDay === DAY - 1 ? s.streak + 1 : 1; s.max = Math.max(s.max, s.streak); s.dist[guesses.length - 1]++; s.lastWonDay = DAY; }
@@ -342,7 +346,7 @@ function renderEnd() {
   if (!done) return;
   const box = document.createElement("div"); box.className = "end";
   const h = document.createElement("h2");
-  h.textContent = won ? (guesses.length === 1 ? `${answer.country} from a single line. Impressive.` : `${answer.country}, at ${LEVELS[guesses.length - 1]} edges`) : `It was ${answer.country}`;
+  h.textContent = won ? (guesses.length === 1 ? `${answer.country} from a single line. Impressive.` : `${answer.country}, at ${lvl(guesses.length - 1)}`) : `It was ${answer.country}`;
   const p = document.createElement("p");
   p.textContent = practice ? "Practice rounds don't touch your streak." : "Next outline in ";
   if (!practice) { const t = document.createElement("strong"); t.id = "countdown"; p.append(t); }
@@ -414,7 +418,7 @@ function submit(text) {
   guesses.push(c.i);
   if (!practice && guesses.length === 1) track("polygo-start");
   if (c.i === answer.i) { done = true; won = true; } else if (guesses.length >= MAXG) { done = true; won = false; }
-  if (done) { recordResult(); if (!practice) track(won ? "polygo-solved-edges-" + LEVELS[guesses.length - 1] : "polygo-missed"); }
+  if (done) { recordResult(); if (!practice) track(won ? (LEVELS[guesses.length - 1] === "Full" ? "polygo-solved-full" : "polygo-solved-edges-" + LEVELS[guesses.length - 1]) : "polygo-missed"); }
   persist();
   $("guess").value = ""; $("sugg").hidden = true; opts = [];
   renderAll();

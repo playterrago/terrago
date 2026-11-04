@@ -12,7 +12,7 @@
     { id: "roadtripo", name: "Roadtripo", icon: "🚗", path: "/roadtripo/", ls: "roadtripo-v1", off: 0 },
     { id: "voyago", name: "Voyago", icon: "🌍", path: "/voyago/", ls: "voyago-v2", off: 0 }
   ];
-  var LEVELS = [2, 4, 8, 16, 32, 64, 128];
+  var LEVELS = [2, 4, 8, 16, 32, 64, 128, "Full"];
   var EQ = { g: "🟩", y: "🟨", x: "🟥" };
   var byId = {}; GAMES.forEach(function (g) { byId[g.id] = g; });
 
@@ -35,7 +35,8 @@
   /* ---- scoring: a 0-100 daily score per game, derived from each game's own result ---- */
   function score(id, r) {
     if (!r) return 0;
-    if (id === "polygo" || id === "capitalo") return r.won ? Math.max(0, 100 - 15 * (r.n - 1)) : 0;
+    if (id === "polygo") return r.won ? Math.max(0, 100 - 13 * (r.n - 1)) : 0; /* 8 rounds: 100 … 9 */
+    if (id === "capitalo") return r.won ? Math.max(0, 100 - 15 * (r.n - 1)) : 0;
     if (id === "equalo") {
       var g = r.g || [];
       if (g.length === 3 && g.every(function (x) { return x === "g"; })) return 100;
@@ -47,7 +48,7 @@
   }
   function line(id, r) {
     if (!r) return "";
-    if (id === "polygo") return r.won ? LEVELS[r.n - 1] + " edges" : "Stumped";
+    if (id === "polygo") return !r.won ? "Stumped" : LEVELS[r.n - 1] === "Full" ? "Full outline" : LEVELS[r.n - 1] + " edges";
     if (id === "capitalo") return r.won ? "Turn " + r.n + "/6" : "Stumped";
     if (id === "equalo") return (r.g || []).map(function (x) { return EQ[x]; }).join("");
     if (id === "roadtripo") return !r.won ? "Ran out of gas" : !r.best ? "Arrived in " + r.n : r.n === r.best ? "Shortest route" : "+" + (r.n - r.best) + " over shortest";

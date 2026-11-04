@@ -149,7 +149,7 @@ window.tgTrack = function (name) {
     <div>
       <div class="eyebrow" id="polyNo">Today's puzzle</div>
       <h2 id="polyTitle">Poly<span>go</span></h2>
-      <p>Name the country from its outline. It starts as just 2 edges, and every miss doubles the detail, up to 128.</p>
+      <p>Name the country from its outline. It starts as just 2 edges, and every miss doubles the detail up to 128, then you get one last look at the full outline.</p>
       <svg class="stages" viewBox="0 0 320 100" aria-hidden="true"><g transform="translate(0 0) scale(.333)"><path d="M137.8,12L142.1,88.2L241.4,224.5L38.2,42.6Z"/></g><g transform="translate(110 0) scale(.333)"><path d="M137.8,12L165.9,26.7L142.1,88.2L173.8,128.7L266.4,193.3L241.4,224.5L147,161.6L72.9,81.6L37.4,82L38.2,42.6ZM200.7,288L143.3,258.9L210.2,245.5ZM69.5,228.4L58.3,174.6L78.8,166.3Z"/></g><g transform="translate(220 0) scale(.333)"><path d="M56.6,40.8L68,27.4L78.1,44.2L84.4,27.2L96.7,30.6L106.5,17.4L137.8,12L141.8,22.1L165.9,26.7L160.1,33.7L164.9,46.7L139.7,55.6L144.4,68.3L142.1,88.2L163.6,104.3L173.8,128.7L197.2,148.2L213,147.5L214.5,160.8L254.7,179.4L266.4,193.3L264.1,201.1L253.5,189.5L234.2,185.9L226.9,202.3L239.6,214.4L241.4,224.5L229,232.7L219.5,253.9L212.5,254.2L216.8,233.4L221.5,231.9L209.7,199.6L194.3,193.5L190.2,182.2L176.7,178.3L169.1,167.6L147,161.6L118.1,133.1L105.9,116.8L100.8,97.7L72.9,81.6L59.3,94.4L37.4,82L40.5,72L33.6,60.9L44,54L38.2,42.6ZM199.8,267.5L200.7,288L187.6,285.4L143.3,258.9L149.6,249.2L169.5,253.8L210.2,245.5ZM89.6,185.3L85.1,217.2L73.4,219.9L69.5,228.4L60.2,220.2L63.6,203.5L58.3,174.6L65.2,176.6L78.8,166.3Z"/></g></svg>
       <div class="status" id="polyStatus"></div>
     </div>
@@ -232,10 +232,10 @@ if (stats.streak) add("Streak", stats.streak);
 if (stats.played) add("Played", stats.played);
 {
   const pd = read("polygo-v1:day"), ps = read("polygo-v1:stats") || {}, st = document.getElementById("polyStatus"), pb = document.getElementById("polyBtn");
-  const LV = [2, 4, 8, 16, 32, 64, 128];
+  const LV = [2, 4, 8, 16, 32, 64, 128, "full outline"]; const lvE = k => typeof LV[k] === "number" ? `${LV[k]} edges` : LV[k];
   const put = (label, val) => { const s = document.createElement("span"); s.append(label + " "); const b = document.createElement("b"); b.textContent = val; s.append(b); st.append(s); };
-  if (pd && pd.day === DAY && pd.done) { pb.textContent = "See today's result"; pb.classList.add("done"); put(pd.won ? "Got it at" : "Today:", pd.won ? `${LV[pd.guesses.length - 1]} edges` : "missed"); }
-  else if (pd && pd.day === DAY && pd.guesses && pd.guesses.length) { pb.textContent = "Finish today's puzzle"; put("Now at", `${LV[pd.guesses.length]} edges`); }
+  if (pd && pd.day === DAY && pd.done) { pb.textContent = "See today's result"; pb.classList.add("done"); put(pd.won ? "Got it at" : "Today:", pd.won ? lvE(pd.guesses.length - 1) : "missed"); }
+  else if (pd && pd.day === DAY && pd.guesses && pd.guesses.length) { pb.textContent = "Finish today's puzzle"; put("Now at", lvE(pd.guesses.length)); }
   if (ps.streak) put("Streak", ps.streak);
   if (ps.played) put("Played", ps.played);
 }
