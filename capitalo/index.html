@@ -34,6 +34,7 @@ window.tgTrack = function (name) {
 })();
 </script>
 <script data-goatcounter="https://terrago.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script src="/daily.js"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7437173923776764" crossorigin="anonymous"></script>
 <title>Capitalo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -435,6 +436,7 @@ function renderEnd() {
     try { navigator.clipboard.writeText(text).then(() => { note.textContent = "Copied. Paste it anywhere."; }, fallback); } catch (e) { fallback(); }
   };
   again.onclick = startPractice;
+  if (!practice && window.tgDaily) tgDaily.finish("capitalo", { won, n: turns.length, clues: cluesUsed() }, end, share, shareText().split("\n")[1]);
   tick();
 }
 

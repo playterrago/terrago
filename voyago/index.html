@@ -34,6 +34,7 @@ window.tgTrack = function (name) {
 })();
 </script>
 <script data-goatcounter="https://terrago.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script src="/daily.js"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7437173923776764" crossorigin="anonymous"></script>
 <title>Voyago (beta)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -575,6 +576,7 @@ function renderEnd() {
     try { navigator.clipboard.writeText(text).then(() => { $("copied").textContent = "Copied. Paste it anywhere."; }, fallback); } catch (e) { fallback(); }
   };
   $("again").onclick = startPractice;
+  if (!practice && window.tgDaily) tgDaily.finish("voyago", { pts: total(), city: reachedCity() }, card, $("share"), shareText().split("\n")[1]);
   if (!practice) {
     const s = { played: 0, best: 0, sum: 0, perth: 0, ...store.get(":stats", {}) };
     const box = document.createElement("div"); box.className = "stats";

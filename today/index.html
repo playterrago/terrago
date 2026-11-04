@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Your combined score across today&#x27;s five Terrago games.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Terrago">
+<meta property="og:title" content="Today&#x27;s Terrago: your daily results">
+<meta property="og:description" content="Your combined score across today&#x27;s five Terrago games.">
+<meta property="og:image" content="https://playterrago.com/og.png">
+<meta property="og:url" content="https://playterrago.com/today/">
+<link rel="canonical" href="https://playterrago.com/today/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<script>
+/* Terrago analytics: GoatCounter visit counting (no cookies) + anonymous game and return events */
+window.tgTrack = function (name) {
+  var ready = function () { return window.goatcounter && window.goatcounter.count; };
+  var send = function () { try { window.goatcounter.count({ path: name, title: name, event: true }); } catch (e) {} };
+  if (ready()) { send(); return; }
+  var tries = 0, t = setInterval(function () { if (ready() || ++tries > 20) { clearInterval(t); if (ready()) send(); } }, 500);
+};
+(function () {
+  try {
+    var n = new Date(), day = Math.floor((Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()) - Date.UTC(2026, 10, 2)) / 864e5) + 1;
+    var first = parseInt(localStorage.getItem("terrago-first-day") || "0", 10);
+    if (!first) { localStorage.setItem("terrago-first-day", String(day)); window.tgTrack("first-visit"); return; }
+    var d = day - first, sent = JSON.parse(localStorage.getItem("terrago-returns") || "[]");
+    if ([1, 3, 7, 14, 30].indexOf(d) >= 0 && sent.indexOf(d) < 0) { sent.push(d); localStorage.setItem("terrago-returns", JSON.stringify(sent)); window.tgTrack("return-day-" + d); }
+  } catch (e) {}
+})();
+</script>
+<script data-goatcounter="https://terrago.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script src="/daily.js"></script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7437173923776764" crossorigin="anonymous"></script>
+<title>Today's Terrago</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Today's Terrago: combined score, one row per game, combined share. Reads only browser storage, through /daily.js. */
+:root {
+  --bg: #e9edf1; --surface: #ffffff; --ink: #111a24; --muted: #5d6a78; --line: #d3dae2;
+  --accent: #d9590b; --accent-ink: #ffffff; --accent-soft: #fde9da;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d131a; --surface: #151e28; --ink: #e5ebf1; --muted: #93a1af; --line: #263342;
+    --accent: #ff8a3d; --accent-ink: #1c0c02; --accent-soft: #3a2212; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d131a; --surface: #151e28; --ink: #e5ebf1; --muted: #93a1af; --line: #263342;
+  --accent: #ff8a3d; --accent-ink: #1c0c02; --accent-soft: #3a2212; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 16px/1.55 var(--body); padding: 20px max(16px, env(safe-area-inset-right, 0px)) 48px max(16px, env(safe-area-inset-left, 0px)); }
+.wrap { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+.hero { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 24px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+.hero small { font: 600 12px var(--body); letter-spacing: .09em; text-transform: uppercase; color: var(--accent); }
+.hero h1 { font: 800 clamp(30px, 7vw, 40px)/1 var(--display); letter-spacing: -.035em; margin: 0; }
+.hero h1 span { color: var(--accent); }
+.big { width: 148px; height: 148px; border-radius: 50%; display: grid; place-items: center; align-content: center; position: relative; margin: 8px 0 2px;
+  background: conic-gradient(var(--accent) calc(var(--p, 0) * 1%), var(--line) 0); }
+.big::before { content: ""; position: absolute; inset: 9px; border-radius: 50%; background: var(--surface); }
+.big b, .big span { position: relative; }
+.big b { font: 800 46px/1 var(--display); letter-spacing: -.04em; }
+.big span { font: 500 13px var(--mono); color: var(--muted); }
+.verdict { margin: 0; color: var(--muted); max-width: 40ch; }
+.rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.rows li { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; }
+.rows .ic { font-size: 22px; text-align: center; }
+.rows .nm { font: 700 16px var(--display); letter-spacing: -.01em; }
+.rows .nm small { font: 500 12px var(--mono); color: var(--muted); margin-left: 6px; }
+.rows .ln { grid-column: 2; color: var(--muted); font-size: 14px; overflow-wrap: anywhere; }
+.rows .ln em { font-style: normal; letter-spacing: 1px; }
+.rows .sc { grid-row: 1 / span 2; grid-column: 3; font: 600 18px var(--mono); text-align: right; }
+.rows .sc small { display: block; font: 500 11px var(--mono); color: var(--muted); }
+.rows a.play { grid-row: 1 / span 2; grid-column: 3; background: var(--accent); color: var(--accent-ink); text-decoration: none; font: 600 14px var(--body); padding: 9px 14px; border-radius: 10px; white-space: nowrap; }
+.rows li.skip, .rows li.new { opacity: .9; }
+.rows li.anim { animation: rowIn .28s ease-out both; }
+@keyframes rowIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn { flex: 1 1 200px; display: inline-flex; justify-content: center; align-items: center; font: 600 16px var(--body); padding: 14px 20px; border-radius: 12px; cursor: pointer; text-decoration: none; border: 1.5px solid transparent; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.copied { min-height: 1.2em; font-size: 14px; color: var(--muted); text-align: center; }
+.sharebox { width: 100%; font: 14px/1.5 var(--mono); padding: 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); resize: none; }
+.next { text-align: center; color: var(--muted); font-size: 14px; margin: 0; }
+.next strong { font-family: var(--mono); color: var(--ink); }
+@media (prefers-reduced-motion: reduce) { .rows li.anim { animation: none; } }
+</style>
+<style>
+.tg-nav{max-width:1180px;margin:0 auto 6px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;font:500 13px "IBM Plex Sans",system-ui,sans-serif}
+.tg-nav a{color:var(--muted);text-decoration:none}
+.tg-nav a:hover,.tg-nav a[aria-current=page]{color:var(--ink)}
+.tg-nav .tg-brand{font:800 16px "Bricolage Grotesque",system-ui,sans-serif;color:var(--ink);letter-spacing:-.02em;margin-right:4px}
+.tg-nav .tg-brand i{font-style:normal;color:#c2672b}
+.tg-beta{display:inline-block;margin-left:8px;padding:2px 6px;border:1.5px solid currentColor;border-radius:5px;color:#c2672b;font:600 11px/1.2 "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.08em;vertical-align:middle;position:relative;top:-.15em}
+.tg-nav .tg-beta{margin-left:4px;padding:0 4px;font-size:9px;border-width:1px;top:-.1em}
+.tg-foot{max-width:640px;margin:28px auto 0;text-align:center;font:12px "IBM Plex Sans",system-ui,sans-serif;color:var(--muted)}
+.tg-foot a{color:inherit}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="tg-nav" aria-label="Terrago games"><a class="tg-brand" href="/">terra<i>go</i></a><a href="/polygo/">Polygo</a><a href="/capitalo/">Capitalo</a><a href="/equalo/">Equalo</a><a href="/roadtripo/">Roadtripo<small class="tg-beta">BETA</small></a><a href="/voyago/">Voyago<small class="tg-beta">BETA</small></a><a href="/about/">About</a></nav>
+
+  <section class="hero" aria-labelledby="th">
+    <small id="date"></small>
+    <h1 id="th">Today's terra<span>go</span></h1>
+    <div class="big" id="ring" role="img"><b id="total">0</b><span>/500</span></div>
+    <p class="verdict" id="verdict"></p>
+  </section>
+  <ol class="rows" id="rows" aria-label="Today's games"></ol>
+  <div class="actions" id="actions"></div>
+  <div class="copied" id="copied" aria-live="polite"></div>
+  <p class="next">New puzzles in <strong id="countdown">--:--:--</strong></p>
+</div>
+<script>
+(function () {
+  const D = window.tgDaily; if (!D) return;
+  const $ = id => document.getElementById(id);
+  const list = D.status(), total = list.reduce((a, x) => a + (x.score || 0), 0);
+  const doneN = list.filter(D.finished).length, all = doneN === 5;
+  $("date").textContent = new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+  D.track(all ? "today-view-complete" : "today-view");
+  /* only animate the first time a finished day is opened */
+  let firstView = true;
+  try { const k = "terrago-today-seen", v = new Date().toDateString() + ":" + total; firstView = localStorage.getItem(k) !== v; if (all) localStorage.setItem(k, v); } catch (e) {}
+  const animate = all && firstView && !D.reduced() && !!window.requestAnimationFrame;
+  const tb = $("total"), ring = $("ring");
+  const show = v => { tb.textContent = v; ring.style.setProperty("--p", v / 5); }; /* ring fills by share of 500 */
+  if (!animate) show(total);
+  else { let t0 = null; const step = t => { if (t0 === null) t0 = t; const k = Math.min(1, (t - t0) / 700); show(Math.round(total * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(step); }; show(0); requestAnimationFrame(step); }
+  ring.setAttribute("aria-label", `${total} out of 500`);
+  $("verdict").textContent = !all ? `${doneN} of 5 games done. Finish the rest to complete today's run.`
+    : total >= 450 ? "Outstanding. A near-perfect day around the world."
+    : total >= 350 ? "Strong day. Well travelled."
+    : total >= 200 ? "A solid run. Tomorrow's another trip."
+    : "Every explorer has off days. New puzzles at midnight.";
+  list.forEach((x, k) => {
+    const li = document.createElement("li"); li.className = x.state + (animate ? " anim" : ""); if (animate) li.style.animationDelay = (k * 60) + "ms";
+    const ic = document.createElement("span"); ic.className = "ic"; ic.textContent = x.icon; ic.setAttribute("aria-hidden", "true");
+    const nm = document.createElement("div"); nm.className = "nm"; nm.textContent = x.name; const no = document.createElement("small"); no.textContent = "No. " + x.no; nm.append(no);
+    const ln = document.createElement("div"); ln.className = "ln";
+    if (x.state === "done") { ln.textContent = x.line; if (x.grid && x.id !== "equalo") { ln.append(" "); const em = document.createElement("em"); em.textContent = x.grid; ln.append(em); } }
+    else ln.textContent = x.state === "skip" ? "Skipped today" : x.state === "started" ? "In progress" : "Not played yet";
+    li.append(ic, nm, ln);
+    if (x.state === "done") { const sc = document.createElement("div"); sc.className = "sc"; sc.textContent = x.score; const s = document.createElement("small"); s.textContent = "/100"; sc.append(s); li.append(sc); }
+    else { const a = document.createElement("a"); a.className = "play"; a.href = x.path; a.textContent = x.state === "started" ? "Finish" : "Play"; a.onclick = () => D.track("today-play-" + x.id); li.append(a); }
+    $("rows").append(li);
+  });
+  const acts = $("actions");
+  const next = list.find(x => !D.finished(x));
+  if (next) { const a = document.createElement("a"); a.className = "btn primary"; a.href = next.path; a.textContent = (next.state === "started" ? "Finish " : "Play ") + next.name + " →"; a.onclick = () => D.track("today-next-" + next.id); acts.append(a); }
+  if (doneN) {
+    const b = document.createElement("button"); b.type = "button"; b.className = "btn " + (next ? "ghost" : "primary"); b.textContent = all ? "Share today's results" : "Copy results so far";
+    b.onclick = () => {
+      const text = D.shareText(list); D.track(all ? "daily-share" : "daily-share-partial");
+      const fallback = () => { let ta = document.querySelector(".sharebox"); if (!ta) { ta = document.createElement("textarea"); ta.className = "sharebox"; ta.rows = 7; ta.readOnly = true; $("copied").after(ta); } ta.value = text; ta.focus(); ta.select(); $("copied").textContent = "Select and copy the text below"; };
+      try { navigator.clipboard.writeText(text).then(() => { $("copied").textContent = "Copied. Paste it anywhere."; }, fallback); } catch (e) { fallback(); }
+    };
+    acts.append(b);
+  }
+  const home = document.createElement("a"); home.className = "btn ghost"; home.href = "/"; home.textContent = "All games"; if (!next) acts.append(home);
+  function tick() {
+    const now = new Date(), nx = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1), s = Math.max(0, Math.floor((nx - now) / 1000));
+    $("countdown").textContent = [Math.floor(s / 3600), Math.floor(s / 60) % 60, s % 60].map(v => String(v).padStart(2, "0")).join(":");
+  }
+  tick(); setInterval(tick, 1000);
+})();
+</script>
+
+<footer class="tg-foot">A <a href="/">Terrago</a> game · <a href="/about/">About</a> · <a href="/privacy/">Privacy</a> · Feedback: playterrago@gmail.com</footer>
+</body>
+</html>

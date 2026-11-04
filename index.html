@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Terrago: daily geography games · Polygo, Capitalo, Equalo, Roadtripo, Voyago</title>
-<meta name="description" content="Terrago makes small daily games about the world. Two new puzzles every day: Capitalo and Polygo.">
+<meta name="description" content="Terrago makes small daily games about the world. Five new puzzles every day: Polygo, Capitalo, Equalo, Roadtripo and Voyago.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://playterrago.com/">
 <link rel="canonical" href="https://playterrago.com/">
@@ -84,6 +84,11 @@ body {
 .play { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--accent); color: var(--accent-ink); font: 600 16px var(--body); padding: 14px 22px; border-radius: 12px; text-decoration: none; white-space: nowrap; }
 .play.done { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
 .play:focus-visible, 
+.run { background: var(--surface); border: 1.5px solid var(--accent); border-radius: 18px; padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; }
+.run-top { display: flex; justify-content: space-between; align-items: center; gap: 12px 20px; flex-wrap: wrap; }
+.run-top strong { display: block; font: 800 22px/1.15 var(--display); letter-spacing: -.02em; margin-top: 4px; }
+.run-top strong b { font-family: var(--mono); font-weight: 600; font-size: 18px; color: var(--muted); margin-left: 6px; }
+@media (max-width: 560px) { .run-top .play { width: 100%; } }
 .soon { color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); padding-top: 16px; }
 footer { color: var(--muted); font-size: 13px; display: flex; gap: 8px 18px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 16px; }
 footer a { color: inherit; }
@@ -119,6 +124,7 @@ window.tgTrack = function (name) {
   {"@type":"VideoGame","name":"Roadtripo","url":"https://playterrago.com/roadtripo/","genre":"Geography puzzle","description":"Drive across the US through a famous landmark."},
   {"@type":"VideoGame","name":"Voyago","url":"https://playterrago.com/voyago/","genre":"Geography trivia","description":"Rare geography answers take you further around the world."}]}
 </script>
+<script src="/daily.js"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7437173923776764" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -130,6 +136,14 @@ window.tgTrack = function (name) {
     </div>
     <div class="mast-right"><a class="about-link" href="/about/">About</a><div class="date" id="date"></div></div>
   </header>
+
+  <section class="run" id="run" aria-labelledby="runTitle" hidden>
+    <div class="run-top">
+      <div><div class="eyebrow">Today's run</div><strong id="runTitle"></strong></div>
+      <a class="play" id="runBtn" href="/polygo/">Start with Polygo</a>
+    </div>
+    <div id="runProg"></div>
+  </section>
 
   <section class="daily" aria-labelledby="polyTitle">
     <div>
@@ -252,6 +266,19 @@ if (stats.played) add("Played", stats.played);
   else if (vd && vd.day === DAY && vd.answers && vd.answers.length) { vb.textContent = "Finish today's voyage"; put("Prompt", `${vd.answers.length + 1} of 10`); }
   if (vs.best) put("Best", vs.best);
   if (vs.played) put("Played", vs.played);
+}
+/* Today's run across all five games (shared with the end-of-game card and /today/) */
+if (window.tgDaily) {
+  const D = window.tgDaily, list = D.status(), n = list.filter(D.finished).length, played = list.filter(x => x.state === "done").length;
+  const total = list.reduce((a, x) => a + (x.score || 0), 0), btn = document.getElementById("runBtn"), t = document.getElementById("runTitle");
+  const next = list.find(x => !D.finished(x));
+  if (n === 0 && !list.some(x => x.state === "started")) { t.textContent = "Five games · about 10 minutes"; }
+  else { t.textContent = n === 5 ? "All five done" : `${n} of 5 done`; const b = document.createElement("b"); b.textContent = `${total}/500`; t.append(b); }
+  if (!next) { btn.textContent = "View daily results →"; btn.href = "/today/"; }
+  else { btn.textContent = n === 0 && next.state !== "started" ? `Start with ${next.name} →` : `${next.state === "started" ? "Finish" : "Play"} ${next.name} →`; btn.href = next.path; }
+  btn.addEventListener("click", () => D.track(next ? "home-run-" + next.id : "home-run-results"));
+  D.css(); document.getElementById("runProg").append(D.progress(list, null, false));
+  document.getElementById("run").hidden = false;
 }
 </script>
 </body>
