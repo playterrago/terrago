@@ -113,33 +113,86 @@ h1 span { color: var(--accent); }
 .weighs li b { font: 600 12px var(--mono); color: var(--muted); }
 .weighs li span:last-child { overflow-wrap: anywhere; }
 
-/* ---- results ---- */
-.result h2 { font: 800 28px/1.1 var(--display); margin: 0; letter-spacing: -.02em; }
-.score { display: flex; align-items: baseline; gap: 8px; }
-.score b { font: 800 44px/1 var(--display); letter-spacing: -.03em; }
-.score span { font: 500 15px var(--mono); color: var(--muted); }
-.how { font-size: 13px; color: var(--muted); margin: -6px 0 0; }
-.sides { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
-.side { border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-.side.L { background: var(--left-soft); } .side.R { background: var(--right-soft); }
-.side h4 { margin: 0; font: 600 12px var(--body); letter-spacing: .06em; text-transform: uppercase; }
-.side.L h4 { color: var(--left); } .side.R h4 { color: var(--right); }
-.side .chip { cursor: default; touch-action: auto; font-size: 12px; }
-.side .tot { font: 600 14px var(--mono); border-top: 1px solid var(--line); padding-top: 6px; margin-top: auto; overflow-wrap: anywhere; }
-.diffline { text-align: center; font: 600 14px var(--body); margin: 0; }
-.diffline.far { color: var(--far); }
-.balanced { display: inline-block; background: var(--good); color: #fff; font: 600 12px var(--body); letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 6px; opacity: 0; transform: scale(.8); transition: opacity .3s .9s, transform .3s .9s; }
-.settled .balanced { opacity: 1; transform: none; }
-.grid { font: 500 14px var(--mono); line-height: 1.7; background: var(--bg); border-radius: 10px; padding: 10px 12px; white-space: pre-wrap; }
-.copied { font-size: 13px; color: var(--good); min-height: 18px; }
+/* ---- results: headline, best gap, one scale with a You / Solution toggle, two pan panels, values on demand, score, actions ---- */
+.result { gap: 16px; }
+.r-head { display: flex; flex-direction: column; gap: 8px; }
+.r-head h2 { font: 800 30px/1.05 var(--display); margin: 0; letter-spacing: -.025em; }
+.r-head h2.win { color: var(--good); }
+.r-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 14px; color: var(--muted); margin: 0; }
+.r-sub b { color: var(--ink); font: 600 15px var(--mono); }
+.pill { display: inline-flex; align-items: center; gap: 4px; font: 600 11px var(--body); letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 6px; }
+.pill.ok { background: var(--good); color: #fff; } .pill.no { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
+.pips { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; list-style: none; margin: 0; padding: 0; }
+.pips li { border: 1.5px solid var(--line); border-radius: 10px; padding: 6px 9px; display: flex; flex-direction: column; font-size: 11px; color: var(--muted); background: var(--bg); min-width: 0; }
+.pips li b { font: 600 13px var(--mono); color: var(--ink); white-space: nowrap; }
+.pips li.best { border-color: var(--accent); background: var(--accent-soft); }
+.pips li.best span::after { content: " · best"; color: var(--accent); font-weight: 600; }
+.pips li.unused { opacity: .5; border-style: dashed; background: none; }
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: var(--bg); border-radius: 12px; }
+.seg button { min-height: 44px; border: 0; border-radius: 9px; background: transparent; color: var(--muted); font: 600 14px var(--body); cursor: pointer; padding: 6px 8px; touch-action: manipulation; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 0 0 1px var(--line), 0 1px 3px rgba(0,0,0,.1); }
+.seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.rview { display: flex; flex-direction: column; gap: 10px; }
+.rview .scale { margin: 0; }
+.rview .tray { gap: 5px; padding: 0 4px 5px; }
+.rview .tray .chip { width: calc(33.333% - 4px); padding: 4px; border-radius: 7px; }
+.rview .tray .chip img { width: 30px; height: 22px; }
+.rview .tray .chip span { display: none; }
+.rview .tray .chip, .rview .pn li { transition: opacity .17s ease, transform .17s ease; }
+.rview.swap .tray .chip, .rview.swap .pn li { opacity: 0; transform: translateY(-5px) scale(.94); }
+.r-cap { text-align: center; font: 600 14px var(--body); margin: -2px 0 0; min-height: 21px; }
+.r-cap.good { color: var(--good); } .r-cap.warm { color: var(--warm); } .r-cap.far { color: var(--far); }
+.r-cap .balanced { margin-right: 6px; vertical-align: 1px; }
+.pans { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+.pn { border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 6px; min-width: 0; border: 1.5px solid transparent; }
+.pn.L { background: var(--left-soft); } .pn.R { background: var(--right-soft); }
+.pn.heavy.L { border-color: var(--left); } .pn.heavy.R { border-color: var(--right); }
+.pn h4 { margin: 0; font: 600 11px var(--body); letter-spacing: .07em; text-transform: uppercase; display: flex; justify-content: space-between; gap: 4px; }
+.pn.L h4 { color: var(--left); } .pn.R h4 { color: var(--right); }
+.pn ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.pn li { display: flex; align-items: center; gap: 7px; font: 500 13px/1.2 var(--body); min-width: 0; }
+.pn li img { width: 24px; height: 18px; border-radius: 2px; flex: none; object-fit: cover; box-shadow: 0 0 0 1px rgba(0,0,0,.12); }
+.pn li span { min-width: 0; overflow-wrap: break-word; hyphens: auto; }
+.pn li i { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); margin-left: auto; }
+.pn .tot { font: 600 15px/1.2 var(--mono); border-top: 1px solid var(--line); padding-top: 6px; margin-top: auto; overflow-wrap: anywhere; }
+.moved-key { font-size: 12px; color: var(--muted); text-align: center; margin: -4px 0 0; }
+.moved-key i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); margin-right: 5px; vertical-align: 1px; }
+.r-more { border: 1px solid var(--line); border-radius: 12px; }
+.r-more summary { cursor: pointer; padding: 12px 14px; font: 600 14px var(--body); list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 46px; }
+.r-more summary::-webkit-details-marker { display: none; }
+.r-more summary::after { content: "+"; font: 500 20px/1 var(--mono); color: var(--muted); }
+.r-more[open] summary::after { content: "−"; }
+.r-more .in { padding: 0 14px 14px; display: flex; flex-direction: column; gap: 10px; }
+.vt { width: 100%; border-collapse: collapse; font-size: 13px; }
+.vt th { font: 600 11px var(--body); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); text-align: left; padding: 0 4px 6px; }
+.vt td { padding: 6px 4px; border-top: 1px solid var(--line); vertical-align: middle; }
+.vt td:first-child { display: flex; align-items: center; gap: 7px; }
+.vt td img { width: 22px; height: 16px; border-radius: 2px; flex: none; object-fit: cover; box-shadow: 0 0 0 1px rgba(0,0,0,.12); }
+.vt .num { font: 500 12px var(--mono); text-align: right; white-space: nowrap; }
+.vt th.c, .vt td.c { text-align: center; width: 1%; }
+.vt tfoot td { font: 600 12px var(--mono); }
+.sd { display: inline-block; min-width: 20px; padding: 1px 5px; border-radius: 5px; font: 600 11px var(--mono); }
+.sd.L { background: var(--left-soft); color: var(--left); } .sd.R { background: var(--right-soft); color: var(--right); }
+.r-score { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid var(--line); padding-top: 14px; flex-wrap: wrap; }
+.r-score .pts { display: flex; align-items: baseline; gap: 6px; }
+.r-score .pts b { font: 800 34px/1 var(--display); letter-spacing: -.03em; }
+.r-score .pts span { font: 500 13px var(--mono); color: var(--muted); }
+.r-score .brk { font: 500 12px/1.45 var(--mono); color: var(--muted); }
+.r-stats { font-size: 12px; color: var(--muted); margin: -8px 0 0; }
+.r-stats b { color: var(--ink); font-family: var(--mono); font-weight: 600; }
+.r-acts .btn { min-height: 48px; }
+.balanced { display: inline-block; background: var(--good); color: #fff; font: 600 11px var(--body); letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 6px; animation: pop .3s .75s both; }
+@keyframes pop { from { opacity: 0; transform: scale(.8); } }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .balanced, :root:not([data-theme="light"]) .pill.ok { color: #04210f; } }
+:root[data-theme="dark"] .balanced, :root[data-theme="dark"] .pill.ok { color: #04210f; }
+.copied { font-size: 13px; color: var(--good); min-height: 0; }
+.copied:empty { display: none; }
 .sharebox { width: 100%; font: 500 13px var(--mono); padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); resize: none; }
-.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; text-align: center; }
-.stats b { display: block; font: 600 22px/1.1 var(--mono); }
-.stats span { font-size: 11px; color: var(--muted); }
-h3 { font: 700 17px var(--display); margin: 4px 0 -4px; }
 @media (max-width: 380px) { .card { padding: 14px 12px; } }
-@media (max-width: 420px) { .stat h2 { font-size: 23px; } .chip { font-size: 12px; } .tray .chip { font-size: 10.5px; } .stats b { font-size: 19px; } }
-@media (prefers-reduced-motion: reduce) { .scale .beam, .scale .pan, .balanced { transition: none; } }
+@media (max-width: 420px) { .stat h2 { font-size: 23px; } .chip { font-size: 12px; } .tray .chip { font-size: 10.5px; }
+  .r-head h2 { font-size: 26px; } .pn { padding: 8px; } .pn li { font-size: 12px; gap: 6px; } .pn li img { width: 21px; height: 16px; } .pn .tot { font-size: 13px; }
+  .pips li { padding: 5px 7px; } .pips li.best span::after { content: none; } .r-score .pts b { font-size: 30px; } }
+@media (prefers-reduced-motion: reduce) { .scale .beam, .scale .pan, .rview .tray .chip, .rview .pn li { transition: none; } .balanced { animation: none; } }
 </style>
 
 <div class="wrap">
@@ -297,10 +350,10 @@ function layoutScale(el) {
   setTilt(el, el._deg || 0, true);
 }
 /* make the pans tall enough for the flags they hold (2 flags per row) */
-function fitScale(el, base) {
+function fitScale(el, base, perRow = 2) {
   const trays = [...el.querySelectorAll(".tray")];
   const most = Math.max(...trays.map(t => t.children.length)), all = trays.flatMap(t => [...t.children]);
-  const rows = Math.ceil(most / 2), chipH = all.length ? Math.max(...all.map(c => c.offsetHeight)) : 52;
+  const rows = Math.ceil(most / perRow), chipH = all.length ? Math.max(...all.map(c => c.offsetHeight)) : 52;
   const need = rows * (chipH + 4) + 8 + 14 + 25 + 16 + 22 + 26 + 10;
   const h = Math.max(base, need);
   if (h !== parseFloat(el.style.getPropertyValue("--h"))) { el.style.setProperty("--h", h + "px"); layoutScale(el); }
@@ -469,88 +522,169 @@ function shareText() {
   const site = /^https?:/.test(location.origin) && !/claude|localhost/.test(location.host) ? `\n${location.origin}/equalo/` : "";
   return `Equalo ${practice ? "(practice)" : "#" + SHOWN} ⚖️ ${S.name}\n${row} ${sc.won ? `Balanced on weigh ${sc.at}` : `Closest: ${pctTxt(sc.bp)} apart`}\n${sc.pts}/1000${site}`;
 }
-function sidesBlock(placeStr, title) {
-  const wrap = document.createElement("div"); wrap.className = "sides";
-  const w = weighOf(P, placeStr.split(""));
-  ["L", "R"].forEach(s => {
-    const col = document.createElement("div"); col.className = "side " + s;
-    const h = document.createElement("h4"); h.textContent = s === "L" ? "Left" : "Right"; col.append(h);
-    for (let k = 0; k < N; k++) if (placeStr[k] === s) col.append(chip(k, { static: true, value: true }));
-    const t = document.createElement("div"); t.className = "tot"; t.textContent = "= " + fmt(P.s, s === "L" ? w.L : w.R); col.append(t);
-    wrap.append(col);
-  });
-  return wrap;
+/* Results view. Display only: every number comes from scoreOf / weighOf / offBp, the same code the game scores with. */
+const reducedMotion = () => { try { return matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { return true; } };
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const mirror = p => p.replace(/[LR]/g, x => x === "L" ? "R" : "L");
+const sideCount = (a, b) => [...a].filter((x, k) => x !== b[k]).length;
+function headline(sc) {
+  if (sc.won) return sc.at === 1 ? "Perfect balance, first weigh!" : "Perfect balance!";
+  return sc.bp <= 100 ? "So close!" : sc.bp <= 500 ? "Almost balanced!" : sc.bp <= 1500 ? "Not quite balanced" : "Way off balance";
 }
+let endScale = null;
 function renderEnd(fresh) {
   $("play").hidden = true;
   const end = $("end"); end.hidden = false; end.replaceChildren();
   const sc = scoreOf(weighs, P), S = D.stats[P.s];
   const best = weighs[sc.best].p, bw = weighOf(P, best.split(""));
-  const box = document.createElement("div"); box.style.cssText = "display:flex;flex-direction:column;gap:14px";
-  const h = document.createElement("h2");
-  h.textContent = sc.won ? (sc.at === 1 ? "Perfect balance, first weigh!" : `Perfect balance on weigh ${sc.at}.`) : `Closest: ${pctTxt(offBp(bw))} apart.`;
-  const score = document.createElement("div"); score.className = "score"; score.innerHTML = `<b></b><span>/ 1,000 points</span>`; score.querySelector("b").textContent = group(sc.pts);
-  box.append(h, score);
-  /* 1. your best weigh, left on the scale as it tipped; 2. the exact balance, settling level */
-  const sol = sc.won ? best : P.sol, scales = [];
-  const section = (title, placeStr, deg, from, notes) => {
-    const h3 = document.createElement("h3"); h3.textContent = title; const sb = document.createElement("div");
-    box.append(h3, sb, ...notes, sidesBlock(placeStr, ""));
-    scales.push({ sb, placeStr, deg, from });
-  };
-  if (!sc.won) {
-    const dl = document.createElement("p"); dl.className = "diffline far"; dl.textContent = `${bw.heavy === "L" ? "Left" : "Right"} side heavier by ${fmt(P.s, bw.d)} (${pctTxt(sc.bp)} of the total)`;
-    section(`Your best weigh · weigh ${sc.best + 1}`, best, tiltDeg(bw), tiltDeg(bw), [dl]);
+  /* the verified exact split, turned to whichever side matches more of your flags (both orientations balance) */
+  const sol = sc.won ? best : sideCount(P.sol, best) <= sideCount(mirror(P.sol), best) ? P.sol : mirror(P.sol);
+  const views = { you: { p: best, w: bw }, sol: { p: sol, w: weighOf(P, sol.split("")) } };
+  let view = "you";
+
+  /* 1-2. headline, best gap and which weigh */
+  const head = el("div", "r-head");
+  const h = el("h2", sc.won ? "win" : "", headline(sc));
+  const sub = el("p", "r-sub");
+  if (sc.won) sub.append(el("span", "pill ok", "✓ Exact balance"), `on weigh ${sc.at} of ${MAXW}`);
+  else { const b = el("b", null, pctTxt(sc.bp)); sub.append("Closest:", b, `apart, on weigh ${sc.best + 1}`, el("span", "pill no", "No exact balance")); }
+  const pips = el("ol", "pips"); pips.setAttribute("aria-label", "Your weighs");
+  for (let k = 0; k < MAXW; k++) {
+    const li = el("li"), w = weighs[k] && weighOf(P, weighs[k].p);
+    li.append(el("span", null, `Weigh ${k + 1}`), el("b", null, !w ? "—" : w.d === 0 ? "🟩 Exact" : `${grade(w)} ${pctTxt(offBp(w))}`));
+    if (!w) li.className = "unused"; else if (k === sc.best) li.className = "best";
+    pips.append(li);
   }
-  const ok = document.createElement("p"); ok.className = "diffline"; ok.innerHTML = `<span class="balanced">Perfectly balanced</span>`;
-  const each = document.createElement("div"); each.className = "how"; each.style.textAlign = "center"; each.textContent = `${fmt(P.s, weighOf(P, sol.split("")).L)} on each side`;
-  section(sc.won ? "Your exact balance" : "The exact balance", sol, 0, sc.won ? 0 : tiltDeg(bw), [ok, each]);
-  const g = document.createElement("div"); g.className = "grid"; g.textContent = shareText().split("\n").slice(1, 3).join("\n");
-  const acts = document.createElement("div"); acts.className = "row-btns";
-  const share = document.createElement("button"); share.type = "button"; share.className = "btn primary"; share.textContent = "Copy result";
-  const again = document.createElement("button"); again.type = "button"; again.className = "btn ghost"; again.textContent = practice ? "Another practice puzzle" : "Practice a random puzzle";
-  acts.append(share, again);
-  const note = document.createElement("div"); note.className = "copied";
-  box.append(g, acts, note);
-  if (!practice) {
-    const s = stats(), st = document.createElement("div"); st.className = "stats";
-    const avg = s.scored ? Math.round(s.sum / s.scored) : 0;
-    [[s.played, "Played"], [s.wins, "Exact"], [s.streak, "Streak"], [avg, "Avg pts"]].forEach(([v, l]) => { const d = document.createElement("div"); const b = document.createElement("b"); b.textContent = v; const sp = document.createElement("span"); sp.textContent = l; d.append(b, sp); st.append(d); });
-    box.append(st);
-  }
-  const src = document.createElement("p"); src.className = "source"; src.textContent = `${S.name}: ${S.definition} Source: ${S.source}, ${S.year}.`; box.append(src);
-  end.append(box);
-  /* draw the scales now that they are in the page */
-  scales.forEach(({ sb, placeStr, deg, from }) => {
-    const el = buildScale(sb, N > 8 ? 300 : 260);
-    for (let k = 0; k < N; k++) el.querySelector(`.pan.${placeStr[k]} .tray`).append(chip(k, { static: true }));
-    fitScale(el, N > 8 ? 300 : 260);
-    el.querySelectorAll(".cnt").forEach(c => c.remove());
-    setTilt(el, fresh ? from : deg, true);
-    if (fresh && from !== deg) requestAnimationFrame(() => setTimeout(() => { setTilt(el, deg); }, 250));
-    window.addEventListener("resize", () => { if (el.isConnected) layoutScale(el); });
+  head.append(h, sub, pips);
+
+  /* 3. one scale; toggle between your best weigh and the exact solution */
+  const seg = el("div", "seg"); seg.setAttribute("role", "group"); seg.setAttribute("aria-label", "Show on the scale");
+  const bYou = el("button", null, "Your attempt"), bSol = el("button", null, "Perfect solution");
+  [bYou, bSol].forEach(b => { b.type = "button"; seg.append(b); });
+  const rv = el("div", "rview"), sb = el("div"), cap = el("p", "r-cap"); cap.setAttribute("aria-live", "polite");
+  /* 4-5. the two pans, then a key for flags that moved */
+  const pans = el("div", "pans"), key = el("p", "moved-key"); key.innerHTML = "<i></i>Moved from your attempt";
+  rv.append(sb, cap, pans, key);
+
+  /* country values, collapsed */
+  const more = el("details", "r-more"), sum = el("summary", null, `Country values · ${S.name}`), inner = el("div", "in");
+  const tb = el("table", "vt"), thead = el("thead"), tbody = el("tbody"), tfoot = el("tfoot"), trh = el("tr");
+  const cols = sc.won ? ["Country", "Value", "Side"] : ["Country", "Value", "You", "Fix"];
+  cols.forEach((t, i) => { const th = el("th", i === 1 ? "num" : i > 1 ? "c" : "", t); th.scope = "col"; trh.append(th); });
+  thead.append(trh);
+  const order = [...Array(N).keys()].sort((a, b) => val(P, b) - val(P, a));
+  order.forEach(k => {
+    const c = C[P.c[k]], tr = el("tr"), td = el("td"); td.append(flagImg(c), el("span", null, c.n));
+    const v = el("td", "num", short(P.s, val(P, k))); v.title = fmt(P.s, val(P, k)); tr.append(td, v);
+    (sc.won ? [best] : [best, sol]).forEach(p => { const x = el("td", "c"); x.append(el("span", "sd " + p[k], p[k])); tr.append(x); });
+    tbody.append(tr);
   });
-  box.classList.add("settled");
+  const ft = el("tr"); ft.append(el("td", null, "Total"), el("td", "num", short(P.s, bw.L + bw.R))); ft.lastChild.title = fmt(P.s, bw.L + bw.R);
+  for (let i = 2; i < cols.length; i++) ft.append(el("td"));
+  tfoot.append(ft); tb.append(thead, tbody, tfoot);
+  inner.append(tb, el("p", "source", `${S.definition} Unit: ${S.unit}. Source: ${S.source}, ${S.year}.`));
+  more.append(sum, inner);
+  more.addEventListener("toggle", () => { if (more.open) track("equalo-results-values"); });
+
+  /* 6. score, unchanged: shown with the parts it is made of */
+  const scoreRow = el("div", "r-score"), pts = el("div", "pts");
+  pts.append(el("b", null, group(sc.pts)), el("span", null, "/ 1,000"));
+  const gapPts = Math.round(sc.bp / 10), extra = 100 * (sc.used - 1), brk = el("div", "brk");
+  brk.append(el("div", null, sc.bp ? `1,000 − ${group(gapPts)} for the ${pctTxt(sc.bp)} gap` : "1,000 for an exact balance"));
+  if (extra) brk.append(el("div", null, `− ${extra} for ${sc.used - 1} extra weigh${sc.used === 2 ? "" : "s"}`));
+  if (1000 - gapPts - extra < 0) brk.append(el("div", null, "(score can't go below 0)"));
+  scoreRow.append(pts, brk);
+  const statsLine = el("p", "r-stats");
+  if (!practice) {
+    const s = stats(), avg = s.scored ? Math.round(s.sum / s.scored) : 0;
+    [[s.played, "played"], [s.wins, "exact"], [s.streak, "streak"], [avg, "avg pts"]].forEach(([v, l], i) => { if (i) statsLine.append(" · "); statsLine.append(el("b", null, group(v)), " " + l); });
+  }
+
+  /* 7. actions */
+  const acts = el("div", "row-btns r-acts");
+  const share = el("button", "btn " + (practice ? "ghost" : "primary"), "Copy result"); share.type = "button";
+  const again = el("button", "btn " + (practice ? "primary" : "ghost"), practice ? "Another practice puzzle" : "Practice puzzle"); again.type = "button";
+  if (practice) acts.append(again, share); else acts.append(share, again);
+  const note = el("div", "copied"), slot = el("div");
+
+  end.append(head);
+  if (!sc.won) end.append(seg);
+  end.append(rv, more, scoreRow);
+  if (!practice) end.append(statsLine);
+  end.append(acts, note, slot);
+
+  /* draw the scale once, tall enough for both arrangements, then fill it for the current view */
+  const base = 170, scale = buildScale(sb, base);
+  scale.setAttribute("aria-hidden", "true"); scale.querySelectorAll(".cnt").forEach(c => c.remove());
+  const fill = p => { const t = { L: scale.querySelector(".pan.L .tray"), R: scale.querySelector(".pan.R .tray") }; t.L.replaceChildren(); t.R.replaceChildren(); for (let k = 0; k < N; k++) { const ch = chip(k, { static: true }); ch.title = C[P.c[k]].n; t[p[k]].append(ch); } };
+  fill(views.sol.p); fitScale(scale, base, 3); fill(views.you.p); fitScale(scale, parseFloat(scale.style.getPropertyValue("--h")), 3);
+  endScale = scale;
+
+  const drawText = () => {
+    const v = views[view], w = v.w, solView = view === "sol";
+    cap.className = "r-cap " + (w.d === 0 ? "good" : offBp(w) <= 500 ? "warm" : "far"); cap.replaceChildren();
+    if (w.d === 0) { if (!sc.won) cap.append(el("span", "balanced", "Balanced")); cap.append(`${fmt(P.s, w.L)} on each side`); }
+    else cap.textContent = `${w.heavy === "L" ? "Left" : "Right"} heavier by ${fmt(P.s, w.d)} (${pctTxt(offBp(w))})`;
+    pans.replaceChildren();
+    ["L", "R"].forEach(s => {
+      const pn = el("div", "pn " + s + (w.heavy === s ? " heavy" : "")), h4 = el("h4");
+      h4.append(el("span", null, `${s === "L" ? "Left" : "Right"} pan`), el("span", null, w.heavy === s ? "▼ heavier" : ""));
+      const ul = el("ul");
+      for (let k = 0; k < N; k++) if (v.p[k] === s) {
+        const li = el("li"); li.append(flagImg(C[P.c[k]]), el("span", null, C[P.c[k]].n));
+        if (solView && !sc.won && views.you.p[k] !== s) { const m = el("i"); m.title = "Moved from your attempt"; li.append(m); }
+        ul.append(li);
+      }
+      const tot = el("div", "tot", short(P.s, s === "L" ? w.L : w.R)); tot.title = fmt(P.s, s === "L" ? w.L : w.R);
+      pn.append(h4, ul, tot); pans.append(pn);
+    });
+    key.hidden = !solView || sc.won;
+    bYou.setAttribute("aria-pressed", String(!solView)); bSol.setAttribute("aria-pressed", String(solView));
+  };
+  const show = (v, animate) => {
+    if (v === view && animate) return;
+    view = v; const deg = views[v].w.d === 0 ? 0 : tiltDeg(views[v].w);
+    if (!animate || reducedMotion()) { fill(views[v].p); drawText(); setTilt(scale, deg, !animate); return; }
+    rv.classList.add("swap");
+    bYou.setAttribute("aria-pressed", String(v === "you")); bSol.setAttribute("aria-pressed", String(v === "sol"));
+    setTimeout(() => {
+      fill(views[v].p); drawText(); rv.getBoundingClientRect();
+      rv.classList.add("swap"); requestAnimationFrame(() => { rv.classList.remove("swap"); setTilt(scale, deg); });
+    }, 170);
+  };
+  bYou.onclick = () => show("you", true);
+  bSol.onclick = () => { if (view !== "sol") track("equalo-results-solution"); show("sol", true); };
+
+  /* opening: on a fresh finish the beam swings from level to your best weigh's tilt */
+  const deg0 = bw.d === 0 ? 0 : tiltDeg(bw);
+  drawText(); setTilt(scale, fresh ? 0 : deg0, true);
+  if (fresh && deg0 && !reducedMotion()) requestAnimationFrame(() => setTimeout(() => setTilt(scale, deg0), 250));
+  else setTilt(scale, deg0, true);
+
   share.onclick = () => {
     const text = shareText(); track(practice ? "equalo-share-practice" : "equalo-share");
-    const fallback = () => { let ta = box.querySelector("textarea"); if (!ta) { ta = document.createElement("textarea"); ta.className = "sharebox"; ta.rows = 4; ta.readOnly = true; note.after(ta); } ta.value = text; ta.focus(); ta.select(); note.textContent = "Select and copy the text below"; };
+    const fallback = () => { let ta = end.querySelector("textarea"); if (!ta) { ta = el("textarea", "sharebox"); ta.rows = 4; ta.readOnly = true; note.after(ta); } ta.value = text; ta.focus(); ta.select(); note.textContent = "Select and copy the text below"; };
     try { navigator.clipboard.writeText(text).then(() => { note.textContent = "Copied. Paste it anywhere."; }, fallback); } catch (e) { fallback(); }
   };
   again.onclick = startPractice;
-  if (!practice && window.tgDaily) tgDaily.finish("equalo", { pts: sc.pts, won: sc.won, at: sc.at, bp: sc.bp }, end, share, weighs.map(x => grade(weighOf(P, x.p))).join(""));
-  if (fresh && !(window.tgDaily && !practice)) end.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+  /* daily run: the shared card becomes the footer (next game, copy, practice, skip) */
+  if (!practice && window.tgDaily) {
+    tgDaily.finish("equalo", { pts: sc.pts, won: sc.won, at: sc.at, bp: sc.bp }, slot, share, weighs.map(x => grade(weighOf(P, x.p))).join(""), { compact: true, extra: [again] });
+    if (slot.querySelector(".tgd")) acts.hidden = true;
+  }
+  if (fresh) end.scrollIntoView({ behavior: reducedMotion() ? "auto" : "smooth", block: "start" });
 }
 function startPractice() {
   practice = true; track("equalo-practice");
   let q; do { q = D.practice[Math.floor(Math.random() * D.practice.length)]; } while (q === P);
   P = q; N = P.c.length; place = Array(N).fill(""); weighs = []; done = false; sel = -1; tiltFor = null; scaleEl = null;
-  $("end").hidden = true; renderHead(); renderPlay(); window.scrollTo({ top: 0, behavior: "smooth" });
+  $("end").hidden = true; endScale = null; renderHead(); renderPlay(); window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 $("helpBtn").onclick = () => { $("help").hidden = !$("help").hidden; };
 $("helpClose").onclick = () => { $("help").hidden = true; try { localStorage.setItem(LS + ":seenHelp", "1"); } catch (e) {} };
 try { if (!localStorage.getItem(LS + ":seenHelp") && !done) $("help").hidden = false; } catch (e) { $("help").hidden = false; }
-window.addEventListener("resize", () => { if (scaleEl && scaleEl.isConnected) layoutScale(scaleEl); });
+window.addEventListener("resize", () => { if (scaleEl && scaleEl.isConnected) layoutScale(scaleEl); if (endScale && endScale.isConnected) layoutScale(endScale); });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && sel >= 0) { sel = -1; renderPlay(); } });
 
 renderHead();

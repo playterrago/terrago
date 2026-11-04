@@ -79,17 +79,32 @@ async function placeAll(page, str) { await page.evaluate(s => { s.split("").forE
     const sc = await page.evaluate(() => scoreOf(weighs, P));
     const want = await page.evaluate(() => { const b = Math.min(...weighs.map(x => offBp(weighOf(P, x.p.split(""))))); return Math.max(0, 1000 - Math.round(b / 10) - 200); });
     ok(!sc.won && sc.pts === want, `missed after 3 weighs = 1000×(1−best gap) − 200: ${sc.pts} (${sc.bp / 100}% apart)`);
-    ok((await page.textContent(".score b")).replace(",", "") === String(sc.pts), "score shown on the results screen");
-    ok((await page.textContent("#end")).includes("The exact balance"), "results show the exact balance");
-    ok((await page.textContent("#end")).includes("Your best weigh"), "results show the player's best weigh");
-    ok(await page.$$eval("#end .scale", e => e.length) === 2, "results show two scales: best weigh, then the exact balance");
+    ok((await page.textContent(".r-score .pts b")).replace(",", "") === String(sc.pts), "score shown on the results screen");
+    ok((await page.textContent(".r-sub")).includes((sc.bp / 100).toFixed(sc.bp < 1000 ? 2 : 1) + "%") && (await page.textContent(".r-sub")).includes("weigh " + (sc.best + 1)), "best gap and its weigh number shown");
+    ok((await page.textContent(".r-sub")).includes("No exact balance"), "says there was no exact balance");
+    ok(await page.$$eval("#end .pips li.best", e => e.length) === 1, "the best weigh is marked");
+    ok(await page.$$eval("#end .scale", e => e.length) === 1, "results show one scale");
     await page.waitForTimeout(1200);
-    const degs = await page.evaluate(() => [...document.querySelectorAll("#end .scale")].map(e => e._deg));
-    ok(degs[0] !== 0 && degs[1] === 0, `best weigh stays tilted (${degs[0].toFixed(1)}°), exact balance settles level`);
-    const tots = await page.$$eval("#end .sides", s => [...s[s.length - 1].querySelectorAll(".tot")].map(x => x.textContent));
+    const lean = await page.evaluate(() => document.querySelector("#end .scale")._deg);
+    const want0 = await page.evaluate(() => tiltDeg(weighOf(P, weighs[scoreOf(weighs, P).best].p.split(""))));
+    ok(lean === want0 && lean !== 0, `your attempt: the scale leans like your best weigh (${lean.toFixed(1)}°)`);
+    const youSide = await page.$$eval("#end .pn", p => p.map(x => [...x.querySelectorAll("li span")].map(s => s.textContent).join(",")));
+    ok(await page.$$eval("#end .scale .tray .chip", c => c.length) === N && youSide.join(",").split(",").length === N, "every country is on the scale and in the pan panels");
+    await page.click(".seg button:nth-child(2)"); await page.waitForTimeout(1300);
+    ok(await page.evaluate(() => document.querySelector("#end .scale")._deg) === 0, "perfect solution: the scale settles level");
+    ok(await page.getAttribute(".seg button:nth-child(2)", "aria-pressed") === "true", "toggle shows the solution as selected");
+    const tots = await page.$$eval("#end .pn .tot", t => t.map(x => x.title));
     ok(tots.length === 2 && tots[0] === tots[1], "exact solution totals are equal: " + tots.join(" | "));
-    ok((await page.$$("#end .sides .chip small")).length >= N, "actual values shown per country");
-    ok(await page.isVisible(".tgd .tgd-next"), "next-game button shown");
+    const solPlace = await page.evaluate(() => { const L = [...document.querySelectorAll("#end .scale .pan.L .tray .chip span")].map(s => s.textContent); return P.c.map(i => L.includes(C[i].n) ? "L" : "R").join(""); });
+    ok(await page.evaluate(p => weighOf(P, p.split("")).d === 0, solPlace), "flags on the scale form an exact split");
+    ok((await page.textContent("#end .r-cap")).includes("on each side"), "caption says balanced");
+    await page.click(".seg button:nth-child(1)"); await page.waitForTimeout(1300);
+    ok(await page.evaluate(() => document.querySelector("#end .scale")._deg) === want0, "switching back tilts to your attempt again");
+    ok(!(await page.isVisible("#end .vt")), "country values are collapsed by default");
+    await page.click("#end .r-more summary");
+    ok(await page.$$eval("#end .vt tbody tr", r => r.length) === N, "country values open with one row per country");
+    ok(await page.isVisible(".tgd .tgd-next") && (await page.textContent(".tgd-next")).startsWith("Play next game"), "Play next game button shown");
+    ok(!(await page.isVisible(".tgd-score")), "the daily card does not repeat the score");
     ok(await page.evaluate(() => scoreOf(weighs, P).pts) === sc.pts, "score unchanged");
     const st = await page.evaluate(() => JSON.parse(localStorage.getItem("equalo-v2:stats")));
     await page.reload(); await page.waitForTimeout(300);
@@ -134,7 +149,7 @@ async function placeAll(page, str) { await page.evaluate(s => { s.split("").forE
     ok(sc.won && sc.pts === (first ? 1000 : 900), `exact balance on weigh ${sc.at} scores ${sc.pts} (1,000 − 100 × ${sc.at - 1})`);
     ok(await page.evaluate(() => done) && (await page.textContent("#end h2")).includes("Perfect balance"), "perfect balance ends the game immediately");
     ok(!(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)), "no horizontal scroll on phone");
-    if (OUT) { await page.evaluate(() => document.querySelector("#end h3").scrollIntoView()); await page.waitForTimeout(1200); await page.screenshot({ path: OUT + "/eq-phone-end.png", fullPage: true }); }
+    if (OUT) { await page.evaluate(() => document.querySelector("#end").scrollIntoView()); await page.waitForTimeout(1200); await page.screenshot({ path: OUT + "/eq-phone-end.png", fullPage: true }); }
     const daily = await page.evaluate(() => tgDaily.status().find(x => x.id === "equalo"));
     ok(daily.state === "done" && daily.score === Math.round(sc.pts / 10), `daily run score = points / 10 (${daily.score})`);
     // practice keeps today's result and stats untouched
@@ -143,6 +158,7 @@ async function placeAll(page, str) { await page.evaluate(s => { s.split("").forE
     await placeAll(page, await page.evaluate(() => P.sol)); await page.evaluate(() => doWeigh()); await page.waitForTimeout(1300);
     ok(keep === await page.evaluate(() => [localStorage.getItem("equalo-v2:day"), localStorage.getItem("equalo-v2:stats")].join("|")), "practice does not change today's result or stats");
     ok(!(await page.isVisible(".tgd")), "practice shows no daily-run card");
+    ok((await page.textContent("#end .r-acts .btn.primary")) === "Another practice puzzle", "practice: main action is another practice puzzle");
     ok(page._errs.length === 0, "no page errors (phone) " + page._errs.join("|"));
     await ctx.close();
   }

@@ -144,6 +144,10 @@
     ".tgd-skip{align-self:flex-start;background:none;border:0;padding:0;color:var(--muted);font:500 13px var(--body,system-ui);text-decoration:underline;text-underline-offset:3px;cursor:pointer}",
     ".tgd-skip:hover{color:var(--ink)}",
     ".tgd-hide{display:none!important}",
+    ".tgd-compact{border:0;padding:0;background:none;gap:10px}",
+    ".tgd-compact .tgd-act .tgd-copy,.tgd-compact .tgd-act .btn{flex:1 1 120px;min-height:48px}",
+    ".tgd-compact .tgd-next{flex:1 1 100%;min-height:52px}",
+    "@media (max-width:420px){.tgd.tgd-compact{padding:0}}",
     "@media (max-width:420px){.tgd{padding:16px}.tgd-score{width:66px;height:66px}.tgd-score b{font-size:22px}.tgd-head strong{font-size:19px}.tgd-prog li{font-size:10px}}",
     "@media (prefers-reduced-motion:reduce){.tgd.anim,.tgd-prog .cur.pop i{animation:none}.tgd-next{transition:none}}"
   ].join("\n");
@@ -177,8 +181,11 @@
     return ol;
   }
 
-  /* Shared results card. Called by each game at the end of renderEnd(), daily mode only. */
-  function finish(id, r, container, shareBtn, grid) {
+  /* Shared results card. Called by each game at the end of renderEnd(), daily mode only.
+     opts.compact (Equalo): the game shows its own headline and score, so the card drops its score ring and
+     headline, sits at the end of `container` as the footer, and opts.extra (buttons) join its action row. */
+  function finish(id, r, container, shareBtn, grid, opts) {
+    opts = opts || {};
     try {
       if (!byId[id] || !container) return;
       css();
@@ -192,7 +199,7 @@
       var animate = !had;
       var old = container.querySelector(":scope > .tgd"); if (old) old.remove();
 
-      var card = el("section", "tgd" + (animate ? " anim" : "")); card.setAttribute("aria-label", "Today's Terrago progress");
+      var card = el("section", "tgd" + (opts.compact ? " tgd-compact" : "") + (animate ? " anim" : "")); card.setAttribute("aria-label", "Today's Terrago progress");
       var top = el("div", "tgd-top"), ring = el("div", "tgd-score"), b = el("b"), small = el("span", null, "/100");
       ring.setAttribute("aria-label", me.score + " out of 100"); ring.append(b, small);
       var head = el("div", "tgd-head");
@@ -204,7 +211,7 @@
       var sub = el("div", "tgd-sub"); sub.append(doneN + " of 5 done today · ", el("b", null, total + "/500"), " Terrago score");
 
       var act = el("div", "tgd-act"), nx = nextGame(list, id), go = el("a", "tgd-next");
-      if (nx) { go.href = nx.path; go.textContent = (nx.state === "started" ? "Finish " : "Play ") + nx.name + " →"; go.onclick = function () { track("next-click-" + id); }; }
+      if (nx) { go.href = nx.path; go.textContent = opts.compact ? "Play next game: " + nx.name + " →" : (nx.state === "started" ? "Finish " : "Play ") + nx.name + " →"; go.onclick = function () { track("next-click-" + id); }; }
       else { go.href = "/today/"; go.textContent = "View daily results →"; go.onclick = function () { track("next-click-" + id + "-results"); }; }
       act.append(go);
       if (shareBtn) {
@@ -213,12 +220,14 @@
         cp.onclick = function () { shareBtn.click(); };
         act.append(cp);
       }
-      card.append(top, progress(list, id, animate), sub, act);
+      (opts.extra || []).forEach(function (x) { act.append(x); });
+      if (opts.compact) card.append(progress(list, id, animate), sub, act); else card.append(top, progress(list, id, animate), sub, act);
       if (nx) {
         var sk = el("button", "tgd-skip", "Skip " + nx.name + " today"); sk.type = "button";
-        sk.onclick = function () { skip(nx.id); track("daily-skip-" + nx.id); finish(id, r, container, shareBtn, grid); };
+        sk.onclick = function () { skip(nx.id); track("daily-skip-" + nx.id); finish(id, r, container, shareBtn, grid, opts); };
         card.append(sk);
       }
+      if (opts.compact) { container.append(card); return; }
       container.insertBefore(card, container.firstChild);
       countUp(b, ring, me.score, animate);
       /* just finished: bring the card (and its next-game button) on screen, e.g. below Polygo's guess list on phones */
