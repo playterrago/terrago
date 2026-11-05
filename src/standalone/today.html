@@ -54,6 +54,10 @@ body { background: var(--bg); color: var(--ink); font: 16px/1.55 var(--body); pa
 .btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
 .copied { min-height: 1.2em; font-size: 14px; color: var(--muted); text-align: center; }
 .sharebox { width: 100%; font: 14px/1.5 var(--mono); padding: 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); resize: none; }
+.pass-prev { display: block; width: min(100%, 340px); margin: 0 auto; border-radius: 16px; }
+.links { display: flex; justify-content: center; gap: 8px; margin-top: -8px; }
+.links button { background: none; border: 0; color: var(--muted); font: 500 14px var(--body); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; padding: 10px 12px; min-height: 44px; }
+.links button:hover { color: var(--ink); }
 .next { text-align: center; color: var(--muted); font-size: 14px; margin: 0; }
 .next strong { font-family: var(--mono); color: var(--ink); }
 @media (prefers-reduced-motion: reduce) { .rows li.anim { animation: none; } }
@@ -70,6 +74,7 @@ body { background: var(--bg); color: var(--ink); font: 16px/1.55 var(--body); pa
   <div class="copied" id="copied" aria-live="polite"></div>
   <p class="next">New puzzles in <strong id="countdown">--:--:--</strong></p>
 </div>
+<script src="/pass.js"></script>
 <script>
 (function () {
   const D = window.tgDaily; if (!D) return;
@@ -107,13 +112,41 @@ body { background: var(--bg); color: var(--ink); font: 16px/1.55 var(--body); pa
   const acts = $("actions");
   const next = list.find(x => !D.finished(x));
   if (next) { const a = document.createElement("a"); a.className = "btn primary"; a.href = next.path; a.textContent = (next.state === "started" ? "Finish " : "Play ") + next.name + " →"; a.onclick = () => D.track("today-next-" + next.id); acts.append(a); }
-  if (doneN) {
-    const b = document.createElement("button"); b.type = "button"; b.className = "btn " + (next ? "ghost" : "primary"); b.textContent = all ? "Share today's results" : "Copy results so far";
+  const copyText = () => {
+    const text = D.shareText(list);
+    const fallback = () => { let ta = document.querySelector(".sharebox"); if (!ta) { ta = document.createElement("textarea"); ta.className = "sharebox"; ta.rows = 7; ta.readOnly = true; $("copied").after(ta); } ta.value = text; ta.focus(); ta.select(); $("copied").textContent = "Select and copy the text below"; };
+    try { navigator.clipboard.writeText(text).then(() => { $("copied").textContent = "Copied. Paste it anywhere."; }, fallback); } catch (e) { fallback(); }
+  };
+  const P = window.tgPass;
+  if (all && P) {
+    /* finished day: the boarding pass image is the main share; text stays one tap away */
+    const b = document.createElement("button"); b.type = "button"; b.className = "btn primary"; b.textContent = "Share my boarding pass";
+    const prev = document.createElement("img"); prev.className = "pass-prev"; prev.alt = `Boarding pass: ${total} out of 500 today`; prev.hidden = true;
+    const links = document.createElement("div"); links.className = "links";
+    const save = document.createElement("button"); save.type = "button"; save.textContent = "Save image";
+    const txt = document.createElement("button"); txt.type = "button"; txt.textContent = "Copy as text";
+    links.append(save, txt);
+    let pass = null;
+    P.prepare(list).then(p => {
+      pass = p; if (!p.blob) return;
+      prev.src = URL.createObjectURL(p.blob); prev.hidden = false;
+      if (!P.canShareFile(p.file)) b.textContent = "Copy boarding pass image";
+    }).catch(() => {});
     b.onclick = () => {
-      const text = D.shareText(list); D.track(all ? "daily-share" : "daily-share-partial");
-      const fallback = () => { let ta = document.querySelector(".sharebox"); if (!ta) { ta = document.createElement("textarea"); ta.className = "sharebox"; ta.rows = 7; ta.readOnly = true; $("copied").after(ta); } ta.value = text; ta.focus(); ta.select(); $("copied").textContent = "Select and copy the text below"; };
-      try { navigator.clipboard.writeText(text).then(() => { $("copied").textContent = "Copied. Paste it anywhere."; }, fallback); } catch (e) { fallback(); }
+      if (!pass || !pass.blob) { D.track("daily-share"); copyText(); return; } /* image not ready or canvas blocked: text still works */
+      const text = `Terrago · Day ${P.dayNo()} · ${total}/500. Beat my score: https://playterrago.com/?ref=pass`;
+      P.share(pass, text).then(r => {
+        D.track("daily-share-image-" + r);
+        $("copied").textContent = r === "copied" ? "Image copied. Paste it into a message." : r === "downloaded" ? "Image saved to your downloads." : r === "shared" ? "Shared. Have a good trip." : "";
+      });
     };
+    save.onclick = () => { if (pass && pass.blob) { P.download(pass); D.track("daily-share-image-save"); $("copied").textContent = "Image saved to your downloads."; } };
+    txt.onclick = () => { D.track("daily-share"); copyText(); };
+    acts.append(b);
+    $("copied").after(prev); prev.after(links);
+  } else if (doneN) {
+    const b = document.createElement("button"); b.type = "button"; b.className = "btn " + (next ? "ghost" : "primary"); b.textContent = all ? "Share today's results" : "Copy results so far";
+    b.onclick = () => { D.track(all ? "daily-share" : "daily-share-partial"); copyText(); };
     acts.append(b);
   }
   const home = document.createElement("a"); home.className = "btn ghost"; home.href = "/"; home.textContent = "All games"; if (!next) acts.append(home);
