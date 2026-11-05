@@ -242,7 +242,7 @@ function bank() {
   const P = [], seenText = new Set();
   const has = v => v !== null && v !== undefined;
   /* keep only prompts with 10-40 valid answers: enough room for a rarity ladder, small enough to recall */
-  const add = (type, text, kind, ok, sub) => { if (seenText.has(text)) return; const ans = C.filter(c => { try { return ok(c); } catch (e) { return false; } }); if (ans.length >= 10 && ans.length <= 40) { seenText.add(text); P.push({ type, text, kind, sub, ans: ans.map(c => c.n) }); } };
+  const add = (type, text, kind, ok, sub, nm) => { if (seenText.has(text)) return; const ans = C.filter(c => { try { return ok(c); } catch (e) { return false; } }); if (ans.length >= 10 && ans.length <= 40) { seenText.add(text); P.push({ type, text, kind, sub, nm, ans: ans.map(c => c.n) }); } };
   const CAP = "Type the city, not the country.";
   const ADJ = { Africa: "an African", Asia: "an Asian", Europe: "a European", "North America": "a North American", "South America": "a South American", Oceania: "an Oceanian" };
   const IN = k => ` in ${k}`;
@@ -257,7 +257,7 @@ function bank() {
   /* letters */
   "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(L => {
     add("letter", `Name a country starting with ${L}`, "country", c => startsWith(c, L));
-    add("capletter", `Name a capital city starting with ${L}`, "capital", c => [c.cap, ...c.ca].some(x => first(x) === L), CAP);
+    { const nm = x => first(x) === L; add("capletter", `Name a capital city starting with ${L}`, "capital", c => [c.cap, ...c.ca].some(nm), CAP, nm); }
     add("ends", `Name a country ending in ${L}`, "country", c => norm(c.n).slice(-1).toUpperCase() === L);
   });
 
@@ -318,10 +318,10 @@ function bank() {
   add("name", "Name a country whose name starts with a vowel", "country", c => /^[aeiou]/.test(norm(c.n)));
   add("capname", "Name a capital city with more than one word in its name", "capital", c => /\s/.test(c.cap.trim()), CAP);
   add("capname", "Name a capital city that shares its country's name", "capital", c => norm(c.cap).startsWith(norm(c.n)) || (norm(c.n).split(" ")[0].length > 3 && norm(c.cap).startsWith(norm(c.n).split(" ")[0])), "e.g. Mexico City");
-  add("capname", "Name a capital city with 4 letters", "capital", c => [c.cap, ...c.ca].some(x => norm(x).replace(/ /g, "").length === 4), CAP);
-  add("capname", "Name a capital city ending in A", "capital", c => [c.cap, ...c.ca].some(x => norm(x).endsWith("a")), CAP);
-  add("capname", "Name a capital city ending in O", "capital", c => [c.cap, ...c.ca].some(x => norm(x).endsWith("o")), CAP);
-  add("capname", "Name a capital city with the letter K in it", "capital", c => [c.cap, ...c.ca].some(x => /k/.test(norm(x))), CAP);
+  { const nm = x => norm(x).replace(/ /g, "").length === 4; add("capname", "Name a capital city with 4 letters", "capital", c => [c.cap, ...c.ca].some(nm), CAP, nm); }
+  { const nm = x => norm(x).endsWith("a"); add("capname", "Name a capital city ending in A", "capital", c => [c.cap, ...c.ca].some(nm), CAP, nm); }
+  { const nm = x => norm(x).endsWith("o"); add("capname", "Name a capital city ending in O", "capital", c => [c.cap, ...c.ca].some(nm), CAP, nm); }
+  { const nm = x => /k/.test(norm(x)); add("capname", "Name a capital city with the letter K in it", "capital", c => [c.cap, ...c.ca].some(nm), CAP, nm); }
 
   /* groups and geography sets */
   const S = (type, text, list, sub) => { const L = new Set(list); add(type, text, "country", c => L.has(c.n), sub); };
@@ -388,7 +388,9 @@ function popularity(responses, p) {
   return { ok: true, n, rows: counts.sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1)).map(([a, k]) => ({ a, k, pct: Math.round(k * 1000 / n) / 10 })) };
 }
 const RESPONSES = null; /* not collected: Terrago has no server that stores answers */
-const label = (p, c) => p.kind === "capital" ? `${c.cap} (${c.n})` : c.n;
+/* show the capital that fits the prompt: Lobamba (Eswatini) for "starts with L", not Mbabane */
+const capFor = (p, c) => (p.nm && !p.nm(c.cap) && c.ca.find(x => p.nm(x))) || c.cap;
+const label = (p, c) => p.kind === "capital" ? `${capFor(p, c)} (${c.n})` : c.n;
 
 /* ---------- daily set ---------- */
 const EPOCH = Date.UTC(2026, 10, 2);
